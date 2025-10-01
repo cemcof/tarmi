@@ -1,0 +1,3 @@
+set ASPNETCORE_ENVIRONMENT=Development
+set DOTNET_ENVIRONMENT=Development
+CFLMnavi.exe

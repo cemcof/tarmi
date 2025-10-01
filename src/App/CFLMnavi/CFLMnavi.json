@@ -1,0 +1,33 @@
+{
+  "SimulationOptions": {
+    "Enabled": false
+  },
+  "ThermofisherInstrumentOptions": {
+    "SemQuad": 1,
+    "IonQuad": 2
+  },
+  "Thorlabs4100Options": {
+    "Port": {
+      "DeviceName": "COM4",
+      "BaudRate": 115200
+    },
+    "Lights": {
+      "RedWavelengthNanoMeters": 625.0,
+      "GreenWavelengthNanoMeters": 565.0,
+      "BlueWavelengthNanoMeters": 470.0,
+      "UltraVioletWavelengthNanoMeters": 385.0
+    }
+  },
+  "FilterHandlerOptions": {
+    "Port": {
+      "DeviceName": "COM1"
+    }
+  },
+  "CameraOptions": {
+    "CameraName": "Basler acA3088-57um (23713667)",
+    "Width": 3088,
+    "Height": 2080,
+    "FieldWidthMicoMeters": 7411.2,
+    "FieldHeightMicoMeters": 4953.6
+  }
+}

@@ -1,0 +1,287 @@
+﻿<UserControl x:Class="UIShowcase.IconGallery"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <WrapPanel UseLayoutRounding="false">
+        <WrapPanel.Resources>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="BorderBrush" Value="DarkGray"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Width" Value="50"/>
+                <Setter Property="Height" Value="50"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+            <Style TargetType="{x:Type Image}">
+                <Setter Property="Width" Value="48"/>
+                <Setter Property="Height" Value="48"/>
+            </Style>
+        </WrapPanel.Resources>
+        <Border>
+            <Image Source="{StaticResource icon_patterns}" ToolTip="icon_patterns" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_atom}" ToolTip="icon_atom" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_pencil}" ToolTip="icon_pencil" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_swap}" ToolTip="icon_swap" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_pattern_1}" ToolTip="icon_pattern_1" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_camera}" ToolTip="icon_camera" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_stage}" ToolTip="icon_stage" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource checkmark_checkbox_active}" ToolTip="checkmark_checkbox_active" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_square_arrow_up}" ToolTip="icon_square_arrow_up" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_blue_1}" ToolTip="alert_blue_1" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource eye_green}" ToolTip="eye_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_circle}" ToolTip="icon_circle" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_green}" ToolTip="alert_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_stack_box}" ToolTip="icon_stack_box" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_circle_plus}" ToolTip="icon_circle_plus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_trash}" ToolTip="icon_trash" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_3dots_vertical_white}" ToolTip="icon_3dots_vertical_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_x4}" ToolTip="icon_x4" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_roi}" ToolTip="icon_roi" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_circle_minus}" ToolTip="icon_circle_minus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_3}" ToolTip="label_dot_3" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_fiducial_point}" ToolTip="icon_fiducial_point" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_tilt_auto}" ToolTip="icon_tilt_auto" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource search}" ToolTip="search" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_arrow_right}" ToolTip="icon_arrow_right" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_patterns_4}" ToolTip="icon_patterns_4" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_tilt}" ToolTip="icon_tilt" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_correlation}" ToolTip="icon_correlation" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_AF_white}" ToolTip="icon_AF_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_crop_white}" ToolTip="icon_crop_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_plus}" ToolTip="icon_plus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource aim_pink}" ToolTip="aim_pink" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource dotted_icon_light}" ToolTip="dotted_icon_light" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource open_in_new}" ToolTip="open_in_new" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_focus_point}" ToolTip="icon_focus_point" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource button_icon_plus}" ToolTip="button_icon_plus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_tilt_manual}" ToolTip="icon_tilt_manual" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_forward}" ToolTip="icon_forward" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_square_arrow_down}" ToolTip="icon_square_arrow_down" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource checkmark}" ToolTip="checkmark" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_5}" ToolTip="label_dot_5" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource logo}" ToolTip="logo" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource button_icon_AF}" ToolTip="button_icon_AF" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource light_bulb_gray}" ToolTip="light_bulb_gray" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_rewind}" ToolTip="icon_rewind" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource lock_reset_green}" ToolTip="lock_reset_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource dotted_icon_ON}" ToolTip="dotted_icon_ON" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_patterns_2}" ToolTip="icon_patterns_2" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_cog}" ToolTip="icon_cog" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_milling}" ToolTip="icon_milling" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_ion}" ToolTip="icon_ion" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_projects}" ToolTip="icon_projects" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource dotted_icon_dark}" ToolTip="dotted_icon_dark" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_focus}" ToolTip="icon_focus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource aim_green}" ToolTip="aim_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_fiducial_point_blue}" ToolTip="icon_fiducial_point_blue" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_yellow_1}" ToolTip="alert_yellow_1" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_red_2}" ToolTip="alert_red_2" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_autofocus_point}" ToolTip="icon_autofocus_point" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_yellow_2}" ToolTip="alert_yellow_2" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_polygon}" ToolTip="icon_polygon" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource chevron_right_white}" ToolTip="chevron_right_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_blue_2}" ToolTip="alert_blue_2" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_chevron_right_green}" ToolTip="icon_chevron_right_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource aim_blue}" ToolTip="aim_blue" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_skip_next}" ToolTip="icon_skip_next" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_angle_white}" ToolTip="icon_angle_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_6}" ToolTip="label_dot_6" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource alert_red_1}" ToolTip="alert_red_1" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource light_bulb_green}" ToolTip="light_bulb_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_ruler}" ToolTip="icon_ruler" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_manual_focus}" ToolTip="icon_manual_focus" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource light_bulb_white}" ToolTip="light_bulb_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_roi_yellow}" ToolTip="icon_roi_yellow" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource eye_not_visible_green}" ToolTip="eye_not_visible_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_skip_prev}" ToolTip="icon_skip_prev" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_2}" ToolTip="label_dot_2" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_stage_white}" ToolTip="icon_stage_white" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_play}" ToolTip="icon_play" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource arrow_drop_down}" ToolTip="arrow_drop_down" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_arrow}" ToolTip="icon_arrow" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource lock_arrow_left_green}" ToolTip="lock_arrow_left_green" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_3dots_vertical_hover}" ToolTip="icon_3dots_vertical_hover" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource icon_rectangle}" ToolTip="icon_rectangle" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_4}" ToolTip="label_dot_4" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource label_dot_1}" ToolTip="label_dot_1" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource folder}" ToolTip="folder" />
+        </Border>
+        <Border>
+            <Image Source="{StaticResource export}" ToolTip="export" />
+        </Border>
+    </WrapPanel>
+</UserControl>

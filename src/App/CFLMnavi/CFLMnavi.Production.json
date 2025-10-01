@@ -1,0 +1,13 @@
+﻿{
+  "LoggingOptions": {
+    "DefaultMinimumLevel": "Debug",
+    "OverrideMinimumLevel": {
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "SeqOptions": {
+      "Enabled": false
+    }
+  }
+}

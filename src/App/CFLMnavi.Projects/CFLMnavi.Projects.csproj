@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="UnitsNet" />
+        <PackageReference Include="UUIDNext" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libs\Betrian.App.Infrastructure\Betrian.App.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Libs\Betrian.Imaging.Common\Betrian.Imaging.Common.csproj" />
+        <ProjectReference Include="..\..\Libs\Betrian.Models\Betrian.Models.csproj" />
+        <ProjectReference Include="..\CFLMnavi.Configuration\CFLMnavi.Configuration.csproj" />
+    </ItemGroup>
+
+</Project>

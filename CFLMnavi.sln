@@ -1,0 +1,239 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11018.127 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{F7E5B9F1-C388-407B-9E63-7F963D5B3F9F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		ci-build.ps1 = ci-build.ps1
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+		exclusion.dic = exclusion.dic
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{36408B2E-33D2-4039-A982-34AEAD265A39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devices", "Devices", "{305162A2-CB88-4E78-9CE7-56A70916B18C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AB0AD8F8-F5B5-4D03-8031-E940DCCBAC29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{05DCA964-3F05-498B-A165-5E72543AA006}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFLMnavi", "src\App\CFLMnavi\CFLMnavi.csproj", "{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.App.Infrastructure", "src\Libs\Betrian.App.Infrastructure\Betrian.App.Infrastructure.csproj", "{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Imaging.Algorithms", "src\Libs\Betrian.Imaging.Algorithms\Betrian.Imaging.Algorithms.csproj", "{E7C67999-1F69-444D-A7A4-AB92B0179F66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Devices.Basler.Camera", "src\Devices\Betrian.Devices.Basler.Camera\Betrian.Devices.Basler.Camera.csproj", "{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevicesTestApp", "src\Utilities\DevicesTestApp\DevicesTestApp.csproj", "{21563F9B-D22F-469B-8EA7-E30707FE6D29}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.WPF.CeitecStyles", "src\Libs\Betrian.WPF.CeitecStyles\Betrian.WPF.CeitecStyles.csproj", "{E0ED0FAD-8768-43C1-A190-923B763187AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.WPF", "src\Libs\Betrian.WPF\Betrian.WPF.csproj", "{4CE56003-7120-44FB-9C3B-C783F91DD57B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Devices.Thermofisher.Instrument", "src\Devices\Betrian.Devices.Thermofisher.Instrument\Betrian.Devices.Thermofisher.Instrument.csproj", "{D743389E-B547-4574-845B-7F0A630157DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Imaging.Common", "src\Libs\Betrian.Imaging.Common\Betrian.Imaging.Common.csproj", "{85295243-FBAA-424A-A67F-24EE2BEDE3B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Imaging.Common.Tests", "src\Tests\Betrian.Imaging.Common.Tests\Betrian.Imaging.Common.Tests.csproj", "{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Devices.SmarAct.Stage", "src\Devices\Betrian.Devices.SmarAct.Stage\Betrian.Devices.SmarAct.Stage.csproj", "{A6DB426B-F789-4A3F-B480-84DC0B9964A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Serializers.Ini", "src\Libs\Betrian.Serializers.Ini\Betrian.Serializers.Ini.csproj", "{26B6AA1A-6500-41AF-B920-B00C890F752A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Devices.Thorlabs.Light", "src\Devices\Betrian.Devices.Thorlabs.Light\Betrian.Devices.Thorlabs.Light.csproj", "{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Communication.Common", "src\Libs\Betrian.Communication.Common\Betrian.Communication.Common.csproj", "{BD736F95-D79F-4E5A-931D-A106068684F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIShowcase", "src\Tests\UIShowcase\UIShowcase.csproj", "{E18A085E-B3EE-4C56-B1E6-1E866A4E2039}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Devices.Arduino.FilterHandler", "src\Devices\Betrian.Devices.Arduino.FilterHandler\Betrian.Devices.Arduino.FilterHandler.csproj", "{58FED998-4AB1-402A-BCED-7977BBDAD99C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFLMnavi.Configuration", "src\App\CFLMnavi.Configuration\CFLMnavi.Configuration.csproj", "{B12D454D-ECE9-42A0-A81C-05A264CD8073}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFLMnavi.VirtualDevices", "src\App\CFLMnavi.VirtualDevices\CFLMnavi.VirtualDevices.csproj", "{8C8AF95D-CA90-422C-AECD-D29BAA4CE321}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.Models", "src\Libs\Betrian.Models\Betrian.Models.csproj", "{09D74092-2483-4094-8A83-934B0D0F2B74}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFLMnavi.Projects", "src\App\CFLMnavi.Projects\CFLMnavi.Projects.csproj", "{987916CF-EC46-48DB-B917-9D40E61054B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Betrian.PointMapping", "src\Libs\Betrian.PointMapping\Betrian.PointMapping.csproj", "{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFLMnavi.ImagePipeline", "src\App\CFLMnavi.ImagePipeline\CFLMnavi.ImagePipeline.csproj", "{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigsGenerator", "src\Utilities\ConfigsGenerator\ConfigsGenerator.csproj", "{96FD9689-E6BF-4273-9724-BF2F788E0E47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installer", "src\App\installer\installer.csproj", "{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Betrian.TileSet.ImageSimulator.Abstractions", "src\Devices\Betrian.TileSet.ImageSimulator.Abstractions\Betrian.TileSet.ImageSimulator.Abstractions.csproj", "{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Betrian.TileSet.ImageSimulator", "src\App\Betrian.TileSet.ImageSimulator\Betrian.TileSet.ImageSimulator.csproj", "{CE18541C-2782-41BE-8571-D8E4D8E006F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Betrian.Maps.DataFormat", "src\Libs\Betrian.Maps.DataFormat\Betrian.Maps.DataFormat.csproj", "{0409DB54-5E3C-4F1E-925C-84A09F195068}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFLMnavi.WPF", "src\App\CFLMnavi.WPF\CFLMnavi.WPF.csproj", "{C8872E67-24D0-6367-0629-4357628F496A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7}.Debug|x64.ActiveCfg = Debug|x64
+		{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7}.Debug|x64.Build.0 = Debug|x64
+		{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7}.Release|x64.ActiveCfg = Release|x64
+		{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7}.Release|x64.Build.0 = Release|x64
+		{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D}.Debug|x64.ActiveCfg = Debug|x64
+		{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D}.Debug|x64.Build.0 = Debug|x64
+		{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D}.Release|x64.ActiveCfg = Release|x64
+		{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D}.Release|x64.Build.0 = Release|x64
+		{E7C67999-1F69-444D-A7A4-AB92B0179F66}.Debug|x64.ActiveCfg = Debug|x64
+		{E7C67999-1F69-444D-A7A4-AB92B0179F66}.Debug|x64.Build.0 = Debug|x64
+		{E7C67999-1F69-444D-A7A4-AB92B0179F66}.Release|x64.ActiveCfg = Release|x64
+		{E7C67999-1F69-444D-A7A4-AB92B0179F66}.Release|x64.Build.0 = Release|x64
+		{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9}.Debug|x64.ActiveCfg = Debug|x64
+		{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9}.Debug|x64.Build.0 = Debug|x64
+		{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9}.Release|x64.ActiveCfg = Release|x64
+		{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9}.Release|x64.Build.0 = Release|x64
+		{21563F9B-D22F-469B-8EA7-E30707FE6D29}.Debug|x64.ActiveCfg = Debug|x64
+		{21563F9B-D22F-469B-8EA7-E30707FE6D29}.Debug|x64.Build.0 = Debug|x64
+		{21563F9B-D22F-469B-8EA7-E30707FE6D29}.Release|x64.ActiveCfg = Release|x64
+		{21563F9B-D22F-469B-8EA7-E30707FE6D29}.Release|x64.Build.0 = Release|x64
+		{E0ED0FAD-8768-43C1-A190-923B763187AA}.Debug|x64.ActiveCfg = Debug|x64
+		{E0ED0FAD-8768-43C1-A190-923B763187AA}.Debug|x64.Build.0 = Debug|x64
+		{E0ED0FAD-8768-43C1-A190-923B763187AA}.Release|x64.ActiveCfg = Release|x64
+		{E0ED0FAD-8768-43C1-A190-923B763187AA}.Release|x64.Build.0 = Release|x64
+		{4CE56003-7120-44FB-9C3B-C783F91DD57B}.Debug|x64.ActiveCfg = Debug|x64
+		{4CE56003-7120-44FB-9C3B-C783F91DD57B}.Debug|x64.Build.0 = Debug|x64
+		{4CE56003-7120-44FB-9C3B-C783F91DD57B}.Release|x64.ActiveCfg = Release|x64
+		{4CE56003-7120-44FB-9C3B-C783F91DD57B}.Release|x64.Build.0 = Release|x64
+		{D743389E-B547-4574-845B-7F0A630157DD}.Debug|x64.ActiveCfg = Debug|x64
+		{D743389E-B547-4574-845B-7F0A630157DD}.Debug|x64.Build.0 = Debug|x64
+		{D743389E-B547-4574-845B-7F0A630157DD}.Release|x64.ActiveCfg = Release|x64
+		{D743389E-B547-4574-845B-7F0A630157DD}.Release|x64.Build.0 = Release|x64
+		{85295243-FBAA-424A-A67F-24EE2BEDE3B3}.Debug|x64.ActiveCfg = Debug|x64
+		{85295243-FBAA-424A-A67F-24EE2BEDE3B3}.Debug|x64.Build.0 = Debug|x64
+		{85295243-FBAA-424A-A67F-24EE2BEDE3B3}.Release|x64.ActiveCfg = Release|x64
+		{85295243-FBAA-424A-A67F-24EE2BEDE3B3}.Release|x64.Build.0 = Release|x64
+		{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C}.Debug|x64.ActiveCfg = Debug|x64
+		{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C}.Debug|x64.Build.0 = Debug|x64
+		{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C}.Release|x64.ActiveCfg = Release|x64
+		{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C}.Release|x64.Build.0 = Release|x64
+		{A6DB426B-F789-4A3F-B480-84DC0B9964A6}.Debug|x64.ActiveCfg = Debug|x64
+		{A6DB426B-F789-4A3F-B480-84DC0B9964A6}.Debug|x64.Build.0 = Debug|x64
+		{A6DB426B-F789-4A3F-B480-84DC0B9964A6}.Release|x64.ActiveCfg = Release|x64
+		{A6DB426B-F789-4A3F-B480-84DC0B9964A6}.Release|x64.Build.0 = Release|x64
+		{26B6AA1A-6500-41AF-B920-B00C890F752A}.Debug|x64.ActiveCfg = Debug|x64
+		{26B6AA1A-6500-41AF-B920-B00C890F752A}.Debug|x64.Build.0 = Debug|x64
+		{26B6AA1A-6500-41AF-B920-B00C890F752A}.Release|x64.ActiveCfg = Release|x64
+		{26B6AA1A-6500-41AF-B920-B00C890F752A}.Release|x64.Build.0 = Release|x64
+		{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B}.Debug|x64.ActiveCfg = Debug|x64
+		{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B}.Debug|x64.Build.0 = Debug|x64
+		{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B}.Release|x64.ActiveCfg = Release|x64
+		{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B}.Release|x64.Build.0 = Release|x64
+		{BD736F95-D79F-4E5A-931D-A106068684F3}.Debug|x64.ActiveCfg = Debug|x64
+		{BD736F95-D79F-4E5A-931D-A106068684F3}.Debug|x64.Build.0 = Debug|x64
+		{BD736F95-D79F-4E5A-931D-A106068684F3}.Release|x64.ActiveCfg = Release|x64
+		{BD736F95-D79F-4E5A-931D-A106068684F3}.Release|x64.Build.0 = Release|x64
+		{E18A085E-B3EE-4C56-B1E6-1E866A4E2039}.Debug|x64.ActiveCfg = Debug|x64
+		{E18A085E-B3EE-4C56-B1E6-1E866A4E2039}.Debug|x64.Build.0 = Debug|x64
+		{E18A085E-B3EE-4C56-B1E6-1E866A4E2039}.Release|x64.ActiveCfg = Release|x64
+		{E18A085E-B3EE-4C56-B1E6-1E866A4E2039}.Release|x64.Build.0 = Release|x64
+		{58FED998-4AB1-402A-BCED-7977BBDAD99C}.Debug|x64.ActiveCfg = Debug|x64
+		{58FED998-4AB1-402A-BCED-7977BBDAD99C}.Debug|x64.Build.0 = Debug|x64
+		{58FED998-4AB1-402A-BCED-7977BBDAD99C}.Release|x64.ActiveCfg = Release|x64
+		{58FED998-4AB1-402A-BCED-7977BBDAD99C}.Release|x64.Build.0 = Release|x64
+		{B12D454D-ECE9-42A0-A81C-05A264CD8073}.Debug|x64.ActiveCfg = Debug|x64
+		{B12D454D-ECE9-42A0-A81C-05A264CD8073}.Debug|x64.Build.0 = Debug|x64
+		{B12D454D-ECE9-42A0-A81C-05A264CD8073}.Release|x64.ActiveCfg = Release|x64
+		{B12D454D-ECE9-42A0-A81C-05A264CD8073}.Release|x64.Build.0 = Release|x64
+		{8C8AF95D-CA90-422C-AECD-D29BAA4CE321}.Debug|x64.ActiveCfg = Debug|x64
+		{8C8AF95D-CA90-422C-AECD-D29BAA4CE321}.Debug|x64.Build.0 = Debug|x64
+		{8C8AF95D-CA90-422C-AECD-D29BAA4CE321}.Release|x64.ActiveCfg = Release|x64
+		{8C8AF95D-CA90-422C-AECD-D29BAA4CE321}.Release|x64.Build.0 = Release|x64
+		{09D74092-2483-4094-8A83-934B0D0F2B74}.Debug|x64.ActiveCfg = Debug|x64
+		{09D74092-2483-4094-8A83-934B0D0F2B74}.Debug|x64.Build.0 = Debug|x64
+		{09D74092-2483-4094-8A83-934B0D0F2B74}.Release|x64.ActiveCfg = Release|x64
+		{09D74092-2483-4094-8A83-934B0D0F2B74}.Release|x64.Build.0 = Release|x64
+		{987916CF-EC46-48DB-B917-9D40E61054B6}.Debug|x64.ActiveCfg = Debug|x64
+		{987916CF-EC46-48DB-B917-9D40E61054B6}.Debug|x64.Build.0 = Debug|x64
+		{987916CF-EC46-48DB-B917-9D40E61054B6}.Release|x64.ActiveCfg = Release|x64
+		{987916CF-EC46-48DB-B917-9D40E61054B6}.Release|x64.Build.0 = Release|x64
+		{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083}.Debug|x64.ActiveCfg = Debug|x64
+		{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083}.Debug|x64.Build.0 = Debug|x64
+		{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083}.Release|x64.ActiveCfg = Release|x64
+		{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083}.Release|x64.Build.0 = Release|x64
+		{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4}.Debug|x64.ActiveCfg = Debug|x64
+		{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4}.Debug|x64.Build.0 = Debug|x64
+		{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4}.Release|x64.ActiveCfg = Release|x64
+		{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4}.Release|x64.Build.0 = Release|x64
+		{96FD9689-E6BF-4273-9724-BF2F788E0E47}.Debug|x64.ActiveCfg = Debug|x64
+		{96FD9689-E6BF-4273-9724-BF2F788E0E47}.Debug|x64.Build.0 = Debug|x64
+		{96FD9689-E6BF-4273-9724-BF2F788E0E47}.Release|x64.ActiveCfg = Release|x64
+		{96FD9689-E6BF-4273-9724-BF2F788E0E47}.Release|x64.Build.0 = Release|x64
+		{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF}.Debug|x64.ActiveCfg = Debug|x64
+		{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF}.Debug|x64.Build.0 = Debug|x64
+		{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF}.Release|x64.ActiveCfg = Release|x64
+		{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF}.Release|x64.Build.0 = Release|x64
+		{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F}.Debug|x64.ActiveCfg = Debug|x64
+		{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F}.Debug|x64.Build.0 = Debug|x64
+		{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F}.Release|x64.ActiveCfg = Release|x64
+		{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F}.Release|x64.Build.0 = Release|x64
+		{CE18541C-2782-41BE-8571-D8E4D8E006F8}.Debug|x64.ActiveCfg = Debug|x64
+		{CE18541C-2782-41BE-8571-D8E4D8E006F8}.Debug|x64.Build.0 = Debug|x64
+		{CE18541C-2782-41BE-8571-D8E4D8E006F8}.Release|x64.ActiveCfg = Release|x64
+		{CE18541C-2782-41BE-8571-D8E4D8E006F8}.Release|x64.Build.0 = Release|x64
+		{0409DB54-5E3C-4F1E-925C-84A09F195068}.Debug|x64.ActiveCfg = Debug|x64
+		{0409DB54-5E3C-4F1E-925C-84A09F195068}.Debug|x64.Build.0 = Debug|x64
+		{0409DB54-5E3C-4F1E-925C-84A09F195068}.Release|x64.ActiveCfg = Release|x64
+		{0409DB54-5E3C-4F1E-925C-84A09F195068}.Release|x64.Build.0 = Release|x64
+		{C8872E67-24D0-6367-0629-4357628F496A}.Debug|x64.ActiveCfg = Debug|x64
+		{C8872E67-24D0-6367-0629-4357628F496A}.Debug|x64.Build.0 = Debug|x64
+		{C8872E67-24D0-6367-0629-4357628F496A}.Release|x64.ActiveCfg = Release|x64
+		{C8872E67-24D0-6367-0629-4357628F496A}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{97F6DC4C-909B-4034-9ED2-7E3D666D1CC7} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{4E0B58C0-D8E2-4672-8FD7-CFAFDF54A44D} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{E7C67999-1F69-444D-A7A4-AB92B0179F66} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{72B1F917-BE89-44AE-A6F3-B9C1BEE375B9} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{21563F9B-D22F-469B-8EA7-E30707FE6D29} = {05DCA964-3F05-498B-A165-5E72543AA006}
+		{E0ED0FAD-8768-43C1-A190-923B763187AA} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{4CE56003-7120-44FB-9C3B-C783F91DD57B} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{D743389E-B547-4574-845B-7F0A630157DD} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{85295243-FBAA-424A-A67F-24EE2BEDE3B3} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{82684F86-1BF7-45CF-92CA-5C3D03F0AF8C} = {AB0AD8F8-F5B5-4D03-8031-E940DCCBAC29}
+		{A6DB426B-F789-4A3F-B480-84DC0B9964A6} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{26B6AA1A-6500-41AF-B920-B00C890F752A} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{B6E6BA5C-AB66-4C00-8E27-CD0EF009835B} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{BD736F95-D79F-4E5A-931D-A106068684F3} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{E18A085E-B3EE-4C56-B1E6-1E866A4E2039} = {AB0AD8F8-F5B5-4D03-8031-E940DCCBAC29}
+		{58FED998-4AB1-402A-BCED-7977BBDAD99C} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{B12D454D-ECE9-42A0-A81C-05A264CD8073} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{8C8AF95D-CA90-422C-AECD-D29BAA4CE321} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{09D74092-2483-4094-8A83-934B0D0F2B74} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{987916CF-EC46-48DB-B917-9D40E61054B6} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{48ECEA54-A80F-4462-ADEB-B7ACA0DAC083} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{1B79DC0B-333D-48FF-A7FE-2BBF7D8C00C4} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{96FD9689-E6BF-4273-9724-BF2F788E0E47} = {05DCA964-3F05-498B-A165-5E72543AA006}
+		{339B6CC0-33D2-4291-9CAC-6B0A5A901ECF} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{B738FE37-29CA-49A3-B4E4-C038E8CF4C5F} = {305162A2-CB88-4E78-9CE7-56A70916B18C}
+		{CE18541C-2782-41BE-8571-D8E4D8E006F8} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+		{0409DB54-5E3C-4F1E-925C-84A09F195068} = {FE7CE9D2-B36C-45B5-BB76-6B065D1E6BFE}
+		{C8872E67-24D0-6367-0629-4357628F496A} = {36408B2E-33D2-4039-A982-34AEAD265A39}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01290FBE-5FCE-4B6F-80BF-C16E518960FC}
+	EndGlobalSection
+EndGlobal

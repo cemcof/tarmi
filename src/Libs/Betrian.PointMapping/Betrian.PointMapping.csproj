@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+ <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" />
+    <PackageReference Include="OpenCvSharp4.WpfExtensions" />
+     <PackageReference Include="UnitsNet" />
+ </ItemGroup>
+
+ <ItemGroup>
+   <ProjectReference Include="..\Betrian.Imaging.Algorithms\Betrian.Imaging.Algorithms.csproj" />
+   <ProjectReference Include="..\Betrian.Imaging.Common\Betrian.Imaging.Common.csproj" />
+ </ItemGroup>
+
+</Project>

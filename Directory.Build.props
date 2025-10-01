@@ -1,0 +1,64 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>x64</Platforms>
+        <PlatformTarget>x64</PlatformTarget>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+        <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+            None
+        </ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Version>0.99.99</Version>
+        <Version Condition=" $(APP_VERSION) != '' ">$(APP_VERSION)</Version>
+        <Company>Betrian a.s.</Company>
+        <Copyright>Copyright © 2024-$([System.DateTime]::Now.ToString(yyyy)) Betrian a.s.</Copyright>
+        <Authors>Betrian a.s.</Authors>
+    </PropertyGroup>
+
+    <!-- Code quality -->
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <!-- Always add SourceLink support -->
+    <PropertyGroup>
+        <!-- Enables deterministic build -->
+        <ContinuousIntegrationBuild Condition=" '$(CI)' != '' ">true</ContinuousIntegrationBuild>
+        <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <!-- Embed symbols containing Source Link in the main file (exe/dll) -->
+        <DebugType>embedded</DebugType><!-- full: for later production? -->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Always add SourceLink support -->
+        <PackageReference Include="Microsoft.SourceLink.GitLab" PrivateAssets="All" />
+    </ItemGroup>
+
+</Project>

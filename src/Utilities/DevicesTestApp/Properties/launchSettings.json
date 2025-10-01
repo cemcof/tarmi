@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "baslercam grabone": {
+      "commandName": "Project",
+      "commandLineArgs": "baslercam grabone"
+    },
+    "baslercam ls": {
+      "commandName": "Project",
+      "commandLineArgs": "baslercam ls"
+    },
+    "baslercam grabone -i=0": {
+      "commandName": "Project",
+      "commandLineArgs": "baslercam grabone -i=0"
+    },
+    "filter check": {
+      "commandName": "Project",
+      "commandLineArgs": "filter check"
+    },
+    "filter select fluorescence": {
+      "commandName": "Project",
+      "commandLineArgs": "filter select fluorescence"
+    },
+    "filter select reflection": {
+      "commandName": "Project",
+      "commandLineArgs": "filter select reflection"
+    },
+    "filter get": {
+      "commandName": "Project",
+      "commandLineArgs": "filter get"
+    }
+  }
+}

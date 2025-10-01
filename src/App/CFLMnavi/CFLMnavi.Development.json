@@ -1,0 +1,28 @@
+{
+  "SimulationOptions": {
+    "Enabled": true
+  },
+  "LoggingOptions": {
+    "DefaultMinimumLevel": "Debug",
+    "OverrideMinimumLevel": {
+      "Microsoft": "Information",
+      "System": "Information"
+    },
+    "SeqOptions": {
+      "Enabled": true,
+      "Uri": "http://localhost:5341",
+      "ApiKey": ""
+    }
+  },
+  "TelemetryOptions": {
+    "TracingEnabled": true,
+    "TracingOtlpUri": "http://localhost:5341/ingest/otlp/v1/traces"
+  },
+  "CameraOptions": {
+    "CameraName": "Basler Emulation (0815-0000)",
+    "Width": 4096,
+    "Height": 4096,
+    "FieldWidthMicoMeters": 9830.4,
+    "FieldHeightMicoMeters": 9830.4
+  }
+}

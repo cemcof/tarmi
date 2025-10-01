@@ -1,0 +1,191 @@
+﻿<Window x:Class="UIShowcase.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:bwpf="clr-namespace:Betrian.WPF;assembly=Betrian.WPF"
+        xmlns:controls="clr-namespace:Betrian.WPF.CeitecStyles.Controls;assembly=Betrian.WPF.CeitecStyles"
+        xmlns:local="clr-namespace:UIShowcase"
+        mc:Ignorable="d"
+        Title="CFLM UI Showcase" Height="900" Width="1200" d:DesignHeight="NaN">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Orientation="Vertical" Margin="10">
+            <TextBlock Text="Plain TextBlock"/>
+
+            <controls:EditableTextBlock Text="Editable TextBlock" FontSize="16"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <Button Content="BUTTON" ToolTip="Tooltip sample" />
+                <Button Content="BUTTON" Style="{StaticResource HighlightButtonStyle}" Margin="5,0,0,0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <Button Content="BUTTON" />
+                <Button Content="BUTTON" Style="{StaticResource HighlightButtonStyle}" Margin="5,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <ToggleButton Content="Toggle" />
+                <ToggleButton Content="Toggle 2"  Margin="5,0,0,0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <ToggleButton Content="BUTTON" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <ComboBox Width="200" ItemsSource="{Binding ComboBoxList}" SelectedIndex="0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <ComboBox Width="200" ItemsSource="{Binding ComboBoxList}" SelectedIndex="0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBox Text="TextBox" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <TextBox Text="TextBox" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <CheckBox Content="Checkbox" />
+                <CheckBox Content="Checkbox" IsChecked="True" Margin="8, 0, 0, 0" />
+                <CheckBox Content="Checkbox" IsChecked="{x:Null}" Margin="8, 0, 0, 0" />
+
+                <controls:Switch Content="Switch" Margin="8, 0, 0, 0" />
+                <controls:Switch Content="Switch" IsChecked="True" Margin="8, 0, 0, 0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <CheckBox Content="Checkbox" />
+                <CheckBox Content="Checkbox" IsChecked="True" Margin="8, 0, 0, 0" />
+                <CheckBox Content="Checkbox" IsChecked="{x:Null}" Margin="8, 0, 0, 0" />
+
+                <controls:Switch Content="Switch" Margin="8, 0, 0, 0" />
+                <controls:Switch Content="Switch" IsChecked="True" Margin="8, 0, 0, 0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <RadioButton Content="RadioButton1" GroupName="A" IsChecked="True"/>
+                <RadioButton Content="RadioButton2" GroupName="A" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5" IsEnabled="False">
+                <RadioButton Content="RadioButton1" GroupName="B" IsChecked="True"/>
+                <RadioButton Content="RadioButton2" GroupName="B" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <GroupBox Header="GroupBox">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="TextBlock jg jgoi jeigj eiojgoe rjgoie" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="GroupBox">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="TextBlock" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="GroupBox" IsEnabled="False">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="TextBlock" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <ListBox ItemsSource="{Binding ListBoxList}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Menu 1" />
+                            <MenuItem Header="Menu 2" />
+                            <MenuItem Header="Menu 3">
+                                <MenuItem Header="Menu 33" />
+                                <MenuItem Header="Menu 333" />
+                                <MenuItem Header="Menu 3">
+                                    <MenuItem Header="Menu 33" />
+                                    <MenuItem Header="Menu 333" />
+
+                                </MenuItem>
+                            </MenuItem>
+
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <ListBox ItemsSource="{Binding ListBoxList}" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <Slider Name="TestSlider1" Width="600" TickFrequency="0.5" TickPlacement="BottomRight" IsEnabled="True" SelectionStart="3" SelectionEnd="5" IsSelectionRangeEnabled="True"/>
+                <TextBlock Text="{Binding Value, ElementName=TestSlider1}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <Slider Name="TestSlider2" Width="600" TickFrequency="0.5" TickPlacement="BottomRight" IsEnabled="False"/>
+                <TextBlock Text="{Binding Value, ElementName=TestSlider2}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TabControl Margin="5" Width="200" Height="50">
+                    <TabItem Header="Tab1">Tab 1 Content</TabItem>
+                    <TabItem Header="Tab2">Tab 2 Content</TabItem>
+                    <TabItem Header="Tab3" IsEnabled="False">Tab 3 Content</TabItem>
+                </TabControl>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <controls:Badge Severity="Information">Information</controls:Badge>
+                <controls:Badge Severity="Success">Success</controls:Badge>
+                <controls:Badge Severity="Muted">Muted</controls:Badge>
+                <controls:Badge Severity="Warning">Warning</controls:Badge>
+                <controls:Badge Severity="Error">Error</controls:Badge>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <controls:ChannelIndicator Color="Blue" Width="30" Height="30" />
+                <controls:ChannelIndicator Color="Green" Width="30" Height="30" />
+                <controls:ChannelIndicator Color="Red" Width="30" Height="30"/>
+                <controls:ChannelIndicator Color="Magenta" Width="30" Height="30"/>
+            </StackPanel>
+
+            <StackPanel>
+                    <Expander Margin="5" Width="200" Header="One">
+                        Expander 1 content
+                    </Expander>
+                    <Expander Margin="5" Width="200" Header="Two">
+                        Expander 2 content
+                    </Expander>
+                    <Expander Margin="5" Width="200" Header="Three">
+                        Expander 3 content
+                    </Expander>
+                </StackPanel>
+
+
+            <StackPanel>
+                <Border BorderBrush="{StaticResource BackgroundLightBrush}" BorderThickness="1" Width="400" Height="200" HorizontalAlignment="Left" >
+                    <controls:HistogramPolygon Histogram="{Binding Histogram}" />
+                </Border>
+            </StackPanel>
+
+            <StackPanel>
+                <local:IconGallery />
+            </StackPanel>
+
+            <controls:ThreeDotsMenu>
+                <controls:ThreeDotsMenu.DropDown>
+                    <ContextMenu>
+                        <MenuItem Header="Menu 1" />
+                        <MenuItem Header="Menu 2" />
+                        <MenuItem Header="Menu 3"/>
+                    </ContextMenu>
+                </controls:ThreeDotsMenu.DropDown>
+            </controls:ThreeDotsMenu>
+
+            <controls:BottomExpander Height="200">
+                <Border Background="{StaticResource HighlightMutedBrush}" Margin="5" CornerRadius="{StaticResource CornerRadiusThicknessLarge}" Height="200"/>
+                <controls:BottomExpander.SecondaryContent>
+                    <Border Background="{StaticResource HighlightBrush}" Margin="5" CornerRadius="{StaticResource CornerRadiusThicknessLarge}" Height="100"/>
+                </controls:BottomExpander.SecondaryContent>
+            </controls:BottomExpander>
+            
+        </StackPanel>
+    </ScrollViewer>
+</Window>

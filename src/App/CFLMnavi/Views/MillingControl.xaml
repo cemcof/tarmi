@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="Betrian.CflmNavi.App.Views.MillingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Betrian.CflmNavi.App.Views" 
+             xmlns:milling="clr-namespace:Betrian.CflmNavi.App.ViewModels.Milling" 
+             d:DataContext="{d:DesignInstance Type=milling:MillingViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Vertical" Margin="0,5,0,0">
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,20">
+            <Image Source="{StaticResource icon_milling_white}" Width="16"/>
+            <TextBlock Text="Milling" VerticalAlignment="Center" Foreground="White" Margin="5"/>
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding MillingAreas}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{StaticResource BackgroundBrush}" Margin="0,2">
+                        <Grid Margin="4,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="73" />
+                                <ColumnDefinition Width="73"/>
+                                <ColumnDefinition Width="73"/>
+                                <ColumnDefinition Width="73"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding Name}" Grid.ColumnSpan="3" Margin="4,4,0,8" />
+                            <Button Command="{Binding DataContext.RemoveMillingAreaCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Grid.Column="3"  Width="NaN" MinWidth="0" Padding="4" HorizontalAlignment="Right">
+                                <Image Source="{StaticResource icon_trash}" Width="10" />
+                            </Button>
+
+                            <TextBlock Text="Left" Grid.Row="1" Grid.Column="0" Margin="0,2" />
+                            <TextBlock Text="Top" Grid.Row="1" Grid.Column="1" Margin="0,2" />
+                            <TextBlock Text="Right" Grid.Row="1" Grid.Column="2" Margin="0,2" />
+                            <TextBlock Text="Bottom" Grid.Row="1" Grid.Column="3" Margin="0,2" />
+
+                            <TextBlock Text="{Binding Definition.Left, Converter={StaticResource UnitConverter}}" Grid.Row="2" Grid.Column="0" />
+                            <TextBlock Text="{Binding Definition.Top, Converter={StaticResource UnitConverter}}" Grid.Row="2" Grid.Column="1" />
+                            <TextBlock Text="{Binding Definition.Right, Converter={StaticResource UnitConverter}}" Grid.Row="2" Grid.Column="2" />
+                            <TextBlock Text="{Binding Definition.Bottom, Converter={StaticResource UnitConverter}}" Grid.Row="2" Grid.Column="3" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button Command="{Binding AddMillingAreaCommand}" Margin="5" Width="NaN" HorizontalAlignment="Center">
+            <Image Source="{StaticResource button_icon_plus}" Width="16" />
+        </Button>
+
+        <Button 
+            Style="{StaticResource HighlightButtonStyle}" HorizontalAlignment="Stretch"
+            Margin="16, 8" Width="NaN" Content="COPY PATTERNS TO XT"
+            Command="{Binding ImageVM.TransferMillingAreasCommand}"
+        />
+
+        <Button Command="{Binding CloseCommand}"  Margin="5" Content="CLOSE"/>
+    </StackPanel>
+</UserControl>

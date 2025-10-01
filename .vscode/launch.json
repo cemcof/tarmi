@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CFLMNavi Debug",
+            "type": "coreclr",
+            "request": "launch",
+            // "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/App/CFLMnavi/bin/Debug/net8.0-windows10.0.19041/win-x64/CFLMnavi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/App/CFLMnavi/bin/Debug/net8.0-windows10.0.19041/win-x64/",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "env": {
+                // "ASPNETCORE_ENVIRONMENT": "Development",
+                // "DOTNET_ENVIRONMENT": "Development"
+            }
+        }
+    ]
+}

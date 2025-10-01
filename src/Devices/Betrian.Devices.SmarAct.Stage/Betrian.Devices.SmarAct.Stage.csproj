@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="UnitsNet" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\App\CFLMnavi.Configuration\CFLMnavi.Configuration.csproj" />
+      <ProjectReference Include="..\..\Libs\Betrian.App.Infrastructure\Betrian.App.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

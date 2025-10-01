@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\App\CFLMnavi.Configuration\CFLMnavi.Configuration.csproj" />
+    <ProjectReference Include="..\..\Libs\Betrian.Imaging.Common\Betrian.Imaging.Common.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+
+    <PathGeometry Figures="M 0,2 L 8,10 L 16,2" x:Key="downArrow" options:Freeze="True" />
+    <PathGeometry Figures="M 0,10 L 8,2 L 16,10" x:Key="upArrow" options:Freeze="True" />
+    <PathGeometry Figures="M 10,0 L 2,8 L 10,16" x:Key="leftArrow" options:Freeze="True" />
+    <PathGeometry Figures="M 2,0 L 10,8 L 2,16" x:Key="rightArrow" options:Freeze="True" />
+
+</ResourceDictionary>

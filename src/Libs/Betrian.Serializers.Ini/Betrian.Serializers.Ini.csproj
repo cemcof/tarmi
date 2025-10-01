@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SimpleBase" />
+      <PackageReference Include="CommonNet.Extensions" />
+    </ItemGroup>
+
+</Project>

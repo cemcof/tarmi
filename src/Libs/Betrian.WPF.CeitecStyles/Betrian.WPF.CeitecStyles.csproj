@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\NotoSans-Regular.ttf" />
+    <Resource Include="Fonts\Roboto-Bold.ttf" />
+    <Resource Include="Fonts\Roboto-BoldItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Italic.ttf" />
+    <Resource Include="Fonts\Roboto-Medium.ttf" />
+    <Resource Include="Fonts\Roboto-MediumItalic.ttf" />
+    <Resource Include="Fonts\Roboto-Regular.ttf" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ControlStyles/Primitives.xaml"/>
+        <ResourceDictionary Source="ControlStyles/Button.xaml"/>
+        <ResourceDictionary Source="ControlStyles/RoundButton.xaml"/>
+        <ResourceDictionary Source="ControlStyles/ComboBox.xaml"/>
+        <ResourceDictionary Source="ControlStyles/Expander.xaml"/>
+        <ResourceDictionary Source="ControlStyles/ListBox.xaml"/>
+        <ResourceDictionary Source="ControlStyles/ContextMenu.xaml"/>
+        <ResourceDictionary Source="ControlStyles/Slider.xaml"/>
+        <ResourceDictionary Source="ControlStyles/TabControl.xaml"/>
+        <ResourceDictionary Source="ControlStyles/ScrollBar.xaml"/>
+        <ResourceDictionary Source="ControlStyles/CustomPrimitives.xaml" />
+        <ResourceDictionary Source="ControlStyles/Badge.xaml" />
+        <ResourceDictionary Source="Icons.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

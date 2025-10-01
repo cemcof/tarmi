@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" />
+    </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libs\Betrian.WPF.CeitecStyles\Betrian.WPF.CeitecStyles.csproj" />
+    <ProjectReference Include="..\..\Libs\Betrian.WPF\Betrian.WPF.csproj" />
+  </ItemGroup>
+
+</Project>
