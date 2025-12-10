@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libs\Tarmi.Communication.Common\Tarmi.Communication.Common.csproj" />
+  </ItemGroup>
+
+</Project>

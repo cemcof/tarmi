@@ -1,7 +1,7 @@
-﻿using CFlMnavi.Installer.Commands;
+using Tarmi.Installer.Commands;
 using Spectre.Console.Cli;
 
-namespace CFlMnavi.Installer;
+namespace Tarmi.Installer;
 
 public static class Program
 {

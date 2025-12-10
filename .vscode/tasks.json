@@ -6,7 +6,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/App/CFLMnavi/CFLMnavi.csproj"
+                "${workspaceFolder}/src/App/Tarmi/Tarmi.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

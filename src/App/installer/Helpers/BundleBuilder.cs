@@ -1,7 +1,7 @@
-﻿using CFlMnavi.Installer.Commands;
+﻿using Tarmi.Installer.Commands;
 using WixSharp.Bootstrapper;
 
-namespace CFlMnavi.Installer.Helpers;
+namespace Tarmi.Installer.Helpers;
 
 internal static class BundleBuilder
 {
@@ -10,7 +10,7 @@ internal static class BundleBuilder
         var desktopRuntimeInstallerPath = await GetDesktopRuntime(settings);
 
         var bundleFilePathWithoutExt = Path.Combine(settings.OutputDirectory.FullName, $"{SharedData.ProductName}-{settings.Version}");
-        string iconPath = Path.Combine(settings.PublishDirectory.FullName, "icon", "cflmnavi.ico");
+        string iconPath = Path.Combine(settings.PublishDirectory.FullName, "icon", "tarmi.ico");
 
         var bootStrapper = new Bundle()
         {

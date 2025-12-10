@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="UnitsNet" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Devices\Tarmi.TileSet.ImageSimulator.Abstractions\Tarmi.TileSet.ImageSimulator.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
+      <ProjectReference Include="..\Tarmi.VirtualDevices\Tarmi.VirtualDevices.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="fib\default-raw.tiff">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="fib\tileset-raw.tiff">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="sem\default-raw.tiff">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="sem\tileset-raw.tiff">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>

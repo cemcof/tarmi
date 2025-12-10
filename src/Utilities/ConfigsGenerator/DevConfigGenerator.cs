@@ -1,7 +1,7 @@
-﻿using System.Net;
-using CFLMnavi.Configuration;
-using CFLMnavi.Configuration.Application;
-using CFLMnavi.Configuration.Devices;
+using System.Net;
+using Tarmi.Configuration;
+using Tarmi.Configuration.Application;
+using Tarmi.Configuration.Devices;
 using UnitsNet;
 
 namespace ConfigsGenerator;
@@ -23,9 +23,17 @@ internal static class DevConfigGenerator
                 ProjectsDirectory = """c:\ProgramData\Betrian\CFLMnavi""",
                 LinearStageFocus = ProdConfigGenerator.CreateDefaultLinearStageFocus(),
                 LuminescenceAberrations = ProdConfigGenerator.CreateDefaultAberrationSettings(),
-                LuminescenceFilterSwitchDelay = Duration.FromSeconds(3)
+                LuminescenceFilterSwitchDelay = Duration.FromSeconds(3),
+                ConfocalAberrations = ProdConfigGenerator.CreateDefaultConfocalAberrationSettings(),
+                ConfocalFilterSwitchDelay = Duration.FromSeconds(3),
+                ConfocalSettings = ProdConfigGenerator.CreateDefaultConfocalSettings(),
+                PythonConfig = ProdConfigGenerator.CreateDefaultPythonConfiguration(),
             },
-            Microscope = CreateMicroscope()
+            Microscope = CreateMicroscope(),
+            Features = new Features()
+            {
+                EnableConfocalMode = false,
+            }
         };
 
         ConfigSerialization.SaveApplicationConfig(config, filename);
@@ -66,6 +74,28 @@ internal static class DevConfigGenerator
                 Port = 55551,
                 Timeout = Duration.FromSeconds(5),
                 Channel = 2
+            },
+            ThorlabsPinHoleWheel = new()
+            {
+                Port = new() { DeviceName = "COM2", BaudRate = 9600 },
+                PinHoleWheelAlignments = ProdConfigGenerator.CreateDefaultPinHoleWheelAlignments()
+            },
+            ThorlabsFilterWheel = new()
+            {
+                Port = new() { DeviceName = "COM3", BaudRate = 9600 },
+                EmissionFilters = ProdConfigGenerator.CreateDefaultEmissionFilters()
+            },
+            ConfocalConfig = new()
+            {
+                ConfocalCamera = new() 
+                { 
+                    CameraName = "Name",
+                    FieldWidth = Length.FromNanometers(80 * 4096),
+                    FieldHeight = Length.FromNanometers(80 * 4096),
+                    Width = 4096,
+                    Height = 4096
+                },
+                ConfocalLights = ProdConfigGenerator.CreateDefaultConfocalLights()
             }
         };
     }

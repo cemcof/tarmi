@@ -1,0 +1,286 @@
+<appControls:ApplicationModeControlBase
+    x:Class="Tarmi.App.Views.Modes.LM.LeftPanel"
+    x:TypeArguments="viewModels:LuminescenceModeViewModel"
+    xmlns:appControls="clr-namespace:Tarmi.App.WPF.Controls;assembly=Tarmi.App.WPF"
+    xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+    xmlns:localControls="clr-namespace:Tarmi.App.Controls"
+    xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels.Modes.LM"
+    xmlns:controls="clr-namespace:Tarmi.WPF.CeitecStyles.Controls;assembly=Tarmi.WPF.CeitecStyles"
+    xmlns:virtualDevices="clr-namespace:Tarmi.VirtualDevices;assembly=Tarmi.VirtualDevices"
+    xmlns:converters="clr-namespace:Tarmi.App.Converters"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:Tarmi.App.Views.Modes.LM"
+    xmlns:thorlabs="clr-namespace:Tarmi.Devices.Thorlabs.Light;assembly=Tarmi.Devices.Thorlabs.Light"
+    xmlns:filterHandler="clr-namespace:Tarmi.Devices.Arduino.FilterHandler;assembly=Tarmi.Devices.Arduino.FilterHandler"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewModels:LuminescenceModeViewModel}"
+    xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+    Tag="{x:Static appMode:ApplicationMode.LM}"
+    MinWidth="320">
+
+    <UserControl.Resources>
+        <converters:SelectedBinningSizeConverter x:Key="SelectedBinningSizeConverter" />
+        <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
+        <converters:UpperCaseEnumConverter x:Key="UpperCaseEnumConverter" />
+        <converters:BooleanInverseConverter x:Key="BooleanInverseConverter" />
+        <converters:LightColorAndFilterTypeToNameConverter x:Key="LightColorAndFilterTypeToNameConverter"/>
+        <converters:LightColorAndFilterTypeToBrushConverter x:Key="LightColorAndFilterTypeToBrushConverter"/>
+
+        <converters:ChainedValueConverter x:Key="LinearStageIsProtractedUpperCase">
+            <converters:LinearStageIsProtracted />
+            <converters:UpperCaseConverter />
+        </converters:ChainedValueConverter>
+
+        <ObjectDataProvider x:Key="FilterTypeEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="filterHandler:FilterType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="BinningEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="virtualDevices:BinningSize"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <controls:BottomExpander Margin="10,5,5,5" SecondaryContent="{Binding SecondaryPanelContent}">
+        <StackPanel IsEnabled="{Binding IsInitialized}">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10,0,20">
+                <Image Source="{StaticResource light_bulb_white}" Width="15"/>
+                <TextBlock Text="Luminescence Imaging Controls" VerticalAlignment="Center" Foreground="White" Margin="5"/>
+            </StackPanel>
+
+            <Grid VerticalAlignment="Top" Margin="0,0,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Light Configuration" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Source={StaticResource FilterTypeEnum}}" SelectedItem="{Binding FilterType}" Margin="0,8" Width="150" HorizontalAlignment="Right">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource UpperCaseEnumConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+
+                <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,0,0,8" IsEnabled="{Binding LuminescenceImaging.ExposureEditEnabled}">
+                    <TextBlock Text="Exposure" Margin="0,0,0,4"/>
+                    <localControls:LogarithmicSlider SetValueCommand="{Binding LuminescenceImaging.SetExposureCommand}" LogValue="{Binding LuminescenceImaging.Exposure}" LogMaximum="{Binding ExposureTimeRange.Max.Microseconds}" LogMinimum="{Binding ExposureTimeRange.Min.Microseconds}" TickFrequency="{Binding ExposureStep}" SmallChange="{Binding ExposureStep}" RoundLogValue="True" IsSnapToTickEnabled="False" HorizontalAlignment="Stretch" ToolTip="Microseconds"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,8" IsEnabled="{Binding LuminescenceImaging.IntensityEditEnabled}">
+                    <TextBlock Text="Intensity" Margin="0,0,0,4"/>
+                    <localControls:EnhancedSlider SetValueCommand="{Binding LuminescenceImaging.SetIntensityCommand}" Value="{Binding LuminescenceImaging.Intensity}" Maximum="{Binding IntensityRange.Max.Percent}" Minimum="{Binding IntensityRange.Min.Percent}" TickFrequency="{Binding IntensityStep}" SmallChange="{Binding IntensityStep}" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch" ToolTip="Percent"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0,0,0,8">
+                    <TextBlock Text="Gamma" Margin="0,0,0,4"/>
+                    <localControls:EnhancedSlider SetValueCommand="{Binding SetGammaCommand}" Value="{Binding PersistentImagingSettings.ImagingSettings.Gamma}" Maximum="{Binding GammaRange.Max}" Minimum="{Binding GammaRange.Min}" TickFrequency="{Binding GammaStep}" SmallChange="{Binding GammaStep}" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="5" Orientation="Vertical" Margin="0,0,0,12">
+                    <TextBlock Text="Gain" Margin="0,0,0,4"/>
+                    <localControls:EnhancedSlider SetValueCommand="{Binding SetGainCommand}" Value="{Binding PersistentImagingSettings.ImagingSettings.Gain}" Maximum="{Binding GainRange.Max.Decibels}" Minimum="{Binding GainRange.Min.Decibels}" TickFrequency="{Binding GainStep.Decibels}" SmallChange="{Binding GainStep.Decibels}" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch" ToolTip="Decibels"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="6" Orientation="Horizontal">
+                    <TextBlock Text="Binning" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ItemsControl Grid.Row="5" ItemsSource="{Binding BinningSizes}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton Content="{Binding}" GroupName="1" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.SetBinningSizeCommand}" CommandParameter="{Binding}">
+                                    <RadioButton.IsChecked>
+                                        <MultiBinding Converter="{StaticResource SelectedBinningSizeConverter}" Mode="OneWay">
+                                            <Binding Path="DataContext.SelectedBinningSize" RelativeSource="{RelativeSource AncestorType={x:Type UserControl}}"/>
+                                            <Binding Path=""/>
+                                        </MultiBinding>
+                                    </RadioButton.IsChecked>
+                                </RadioButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Histogram" Grid.Row="0"/>
+                <Border Grid.Row="1" Height="120" Margin="0, 4, 0, 6" Background="{StaticResource BackgroundBrush}">
+                    <Grid>
+                        <controls:HistogramPolygon Histogram="{Binding HistogramData}"/>
+                        <controls:DualSlider Minimum="0" Maximum="255" DeadBand="0.01" LowerValue="{Binding LowerBound}" UpperValue="{Binding UpperBound}" Template="{StaticResource HistogramSlider}" IsEnabled="{Binding AutoExposureEnabled, Converter={StaticResource BooleanInverseConverter}}" />
+                    </Grid>
+                </Border>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="RESET HISTOGRAM" Foreground="{StaticResource ForegroundBrush}" Background="{StaticResource BackgroundDarkBrush}" BorderBrush="{StaticResource BackgroundDarkBrush}" Command="{Binding ResetHistogramCommand}" HorizontalAlignment="Left" Height="32" Width="140" />
+                    <ToggleButton Grid.Column="1" Content="AUTO EXPOSURE" IsChecked="{Binding AutoExposureEnabled}" HorizontalAlignment="Right" Height="32" Width="130" />
+                </Grid>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <StackPanel Margin="0,10">
+                <TextBlock Text="Channels configuration"/>
+                <ItemsControl x:Name="Settings" ItemsSource="{Binding LuminescenceImaging.LightSettings}" HorizontalAlignment="Stretch" Margin="0,10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:LightSettingsViewModel}">
+                            <CheckBox IsChecked="{Binding IsSelected}">
+                                <Expander Width="275">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <controls:ChannelIndicator Diameter="16">
+                                                <controls:ChannelIndicator.Color>
+                                                    <MultiBinding Converter="{StaticResource LightColorAndFilterTypeToBrushConverter}">
+                                                        <Binding Path="Color"/>
+                                                        <Binding ElementName="Settings" Path="DataContext.FilterType"/>
+                                                    </MultiBinding>
+                                                </controls:ChannelIndicator.Color>
+                                            </controls:ChannelIndicator>
+                                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource LightColorAndFilterTypeToNameConverter}">
+                                                        <Binding Path="Color"/>
+                                                        <Binding ElementName="Settings" Path="DataContext.FilterType"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="5"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Exposure" VerticalAlignment="Center" Grid.Row="0"/>
+                                        <localControls:LogarithmicSlider LogValue="{Binding ImagingSettings.Exposure}" SetValueCommand="{Binding NotifyExposureUpdateCommand}" LogMaximum="{Binding ExposureTimeRange.Max.Microseconds}" LogMinimum="{Binding ExposureTimeRange.Min.Microseconds}" TickFrequency="{Binding ExposureStep}" SmallChange="{Binding ExposureStep}" RoundLogValue="True" IsSnapToTickEnabled="False" HorizontalAlignment="Stretch"
+                                                                         Grid.Row="0" Grid.Column="2" ToolTip="Microseconds"/>
+                                        <TextBlock Text="Intensity" VerticalAlignment="Center" Grid.Row="2"/>
+                                        <localControls:EnhancedSlider Value="{Binding ImagingSettings.Intensity}" SetValueCommand="{Binding NotifyIntensityUpdateCommand}" Minimum="{Binding IntensityRange.Min.Percent}" Maximum="{Binding IntensityRange.Max.Percent}" SmallChange="{Binding IntensityStep}" TickFrequency="{Binding IntensityStep}"
+                                                                      Grid.Row="2" Grid.Column="2" ToolTip="Percent"/>
+                                    </Grid>
+                                </Expander>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,15" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Focus Step Size" Margin="0,0,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <ComboBox ItemsSource="{Binding AvailableFocusSteps}" Text="Step" SelectedItem="{Binding FocusStep}" Width="90" Height="32" Margin="0,0,8,0" />
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding FocusIncrementManualCommand}" Content="+" Height="24" Width="24" Margin="0,0,8,0"/>
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding FocusDecrementManualCommand}" Content="-" Height="24" Width="24" Margin="0,0,8,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding AutoFocusCommand}" Width="140" Height="36">
+                            <ContentPresenter>
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{StaticResource icon_auto_focus}" Width="24" Margin="0,0,8,0"/>
+                                            <TextBlock Text="AUTO FOCUS" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Tilt"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding IncrementTiltCommand}" Content="+" Height="24" Width="24" Margin="0,0,8,0"/>
+                            <TextBox Margin="0,0,8,0" Text="{Binding StageTilt}" Width="50" VerticalAlignment="Center" Padding="0,0,0,0" ToolTip="Degrees"/>
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding DecrementTiltCommand}" Content="-" Height="24" Width="24"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding AutoTiltCommand}" Width="140" Height="32">
+                            <ContentPresenter>
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{StaticResource icon_tilt_auto_white}" Width="20" Margin="0,0,8,0" />
+                                            <TextBlock Text="AUTO TILT" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <StackPanel Orientation="Vertical" Margin="0,10">
+                <TextBlock Text="Objective Control"/>
+                <Button Content="{Binding IsProtracted, Converter={StaticResource LinearStageIsProtractedUpperCase}}" Command="{Binding ProtractRetractCommand}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,8,0,0" Height="32"/>
+            </StackPanel>
+        </StackPanel>
+    </controls:BottomExpander>
+</appControls:ApplicationModeControlBase>

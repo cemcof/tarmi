@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Betrian.Devices.Thermofisher.Instrument.ObjectModel;
+using Tarmi.Devices.Thermofisher.Instrument.ObjectModel;
 using Dumpify;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -20,7 +20,7 @@ internal sealed class SemInfoCommand : Command<SemInfoCommand.Settings>
         _beam = beam;
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

@@ -1,8 +1,8 @@
-﻿using System.Net;
-using Betrian.Devices.SmarAct.Stage;
-using Betrian.Devices.SmarAct.Stage.Implementation;
-using CFLMnavi.Configuration;
-using CFLMnavi.Configuration.Devices;
+using System.Net;
+using Tarmi.Devices.SmarAct.Stage;
+using Tarmi.Devices.SmarAct.Stage.Implementation;
+using Tarmi.Configuration;
+using Tarmi.Configuration.Devices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;

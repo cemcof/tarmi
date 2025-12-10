@@ -1,7 +1,7 @@
-﻿using CFlMnavi.Installer.Commands;
+﻿using Tarmi.Installer.Commands;
 using WixSharp;
 
-namespace CFlMnavi.Installer.Helpers;
+namespace Tarmi.Installer.Helpers;
 
 internal static class MsiBuilder
 {
@@ -11,7 +11,7 @@ internal static class MsiBuilder
     public static string Build(IMsiCommandSettingsAccessor settings)
     {
         string msiFileNameWithoutExt = $"{SharedData.ProductName}-{settings.Version}";
-        string iconPath = Path.Combine(settings.PublishDirectory.FullName, "icon", "cflmnavi.ico");
+        string iconPath = Path.Combine(settings.PublishDirectory.FullName, "icon", "tarmi.ico");
 
         var project = CreateProject(settings.PublishDirectory.FullName)
             .SetProjectInfo(settings.Version)

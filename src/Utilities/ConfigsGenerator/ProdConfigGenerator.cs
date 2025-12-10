@@ -1,8 +1,9 @@
 ﻿using System.Net;
-using CFLMnavi.Configuration;
-using CFLMnavi.Configuration.Alignments;
-using CFLMnavi.Configuration.Application;
-using CFLMnavi.Configuration.Devices;
+using Tarmi.Configuration;
+using Tarmi.Configuration.Alignments;
+using Tarmi.Configuration.Application;
+using Tarmi.Configuration.Devices;
+using Tarmi.Models;
 using UnitsNet;
 
 internal static class ProdConfigGenerator
@@ -22,9 +23,17 @@ internal static class ProdConfigGenerator
                 ProjectsDirectory = """d:\Betrian\Projects""",
                 LinearStageFocus = CreateDefaultLinearStageFocus(),
                 LuminescenceAberrations = CreateDefaultAberrationSettings(),
-                LuminescenceFilterSwitchDelay = Duration.FromSeconds(3)
+                LuminescenceFilterSwitchDelay = Duration.FromSeconds(3),
+                ConfocalAberrations = CreateDefaultConfocalAberrationSettings(),
+                ConfocalFilterSwitchDelay = Duration.FromSeconds(3),
+                ConfocalSettings = CreateDefaultConfocalSettings(),
+                PythonConfig = CreateDefaultPythonConfiguration(),
             },
             Microscope = CreateMicroscope(),
+            Features = new Features()
+            {
+                EnableConfocalMode = false,
+            }
         };
 
         ConfigSerialization.SaveApplicationConfig(config, filename);
@@ -51,6 +60,27 @@ internal static class ProdConfigGenerator
         };
     }
 
+    public static LuminescenceAberrations CreateDefaultConfocalAberrationSettings()
+    {
+        return new LuminescenceAberrations()
+        {
+            FluorescenceAberrations = new()
+            {
+                { "COLOR1", Length.FromMicrometers(0) },
+                { "COLOR2", Length.FromMicrometers(0) },
+                { "COLOR3", Length.FromMicrometers(0) },
+                { "COLOR4", Length.FromMicrometers(0) },
+            },
+            ReflectionAberrations = new()
+            {
+                { "COLOR1", Length.FromMicrometers(0) },
+                { "COLOR2", Length.FromMicrometers(0) },
+                { "COLOR3", Length.FromMicrometers(0) },
+                { "COLOR4", Length.FromMicrometers(0) },
+            }
+        };
+    }
+
     public static LinearStageFocus CreateDefaultLinearStageFocus()
     {
         return new LinearStageFocus
@@ -68,6 +98,53 @@ internal static class ProdConfigGenerator
                 Length.FromMicrometers(100),
                 Length.FromMicrometers(200)
             ]
+        };
+    }
+
+    public static ConfocalSettings CreateDefaultConfocalSettings()
+    {
+        return new ConfocalSettings
+        {
+            PixelSizes = [
+                Length.FromNanometers(25),
+                Length.FromNanometers(30),
+                Length.FromNanometers(35),
+                Length.FromNanometers(40),
+                Length.FromNanometers(45),
+                Length.FromNanometers(50),
+                Length.FromNanometers(60),
+                Length.FromNanometers(70),
+                Length.FromNanometers(80),
+                Length.FromNanometers(90),
+                Length.FromNanometers(100),
+                Length.FromNanometers(125),
+                Length.FromNanometers(200),
+                Length.FromNanometers(300),
+                Length.FromNanometers(1000),
+                Length.FromNanometers(2000),
+            ],
+            ADCRanges = [
+                ElectricPotential.FromVolts(0.1),
+                ElectricPotential.FromVolts(0.2),
+                ElectricPotential.FromVolts(0.5),
+                ElectricPotential.FromVolts(1.0),
+            ],
+            DwellRanges = [
+                Duration.FromNanoseconds(0.1),
+                Duration.FromNanoseconds(0.2),
+                Duration.FromNanoseconds(0.3)
+            ],
+            GainRanges = new RangeDescriptor<Level>() { Min = Level.Zero, Max = Level.FromDecibels(48) },
+        };
+    }
+
+    public static PythonConfig CreateDefaultPythonConfiguration()
+    {
+        return new PythonConfig
+        {
+            ExecutablePath = @"C:\Program Files\Python\Python313\python.exe",
+            ScriptPath = "confocalScript.py",
+            ScriptTuningPath = "confocalScriptTuning.py",
         };
     }
 
@@ -120,6 +197,54 @@ internal static class ProdConfigGenerator
         };
     }
 
+    public static PinHoleWheelAlignments CreateDefaultPinHoleWheelAlignments()
+    {
+        return new()
+        {
+            PinHoleAlignments =
+            [
+                new() { PinHoleSize = Length.FromNanometers(25), Alignment = Length.FromNanometers(6732) },
+                new() { PinHoleSize = Length.FromNanometers(30), Alignment = Length.FromNanometers(7232) },
+                new() { PinHoleSize = Length.FromNanometers(35), Alignment = Length.FromNanometers(7732) },
+                new() { PinHoleSize = Length.FromNanometers(40), Alignment = Length.FromNanometers(8232) },
+                new() { PinHoleSize = Length.FromNanometers(45), Alignment = Length.FromNanometers(9232) },
+                new() { PinHoleSize = Length.FromNanometers(50), Alignment = Length.FromNanometers(9732) },
+                new() { PinHoleSize = Length.FromNanometers(60), Alignment = Length.FromNanometers(232) },
+                new() { PinHoleSize = Length.FromNanometers(70), Alignment = Length.FromNanometers(732) },
+                new() { PinHoleSize = Length.FromNanometers(80), Alignment = Length.FromNanometers(1732) },
+                new() { PinHoleSize = Length.FromNanometers(90), Alignment = Length.FromNanometers(2232) },
+                new() { PinHoleSize = Length.FromNanometers(100), Alignment = Length.FromNanometers(2732) },
+                new() { PinHoleSize = Length.FromNanometers(125), Alignment = Length.FromNanometers(3232) },
+                new() { PinHoleSize = Length.FromNanometers(200), Alignment = Length.FromNanometers(4232) },
+                new() { PinHoleSize = Length.FromNanometers(300), Alignment = Length.FromNanometers(4732) },
+                new() { PinHoleSize = Length.FromMillimeters(1), Alignment = Length.FromNanometers(5232) },
+                new() { PinHoleSize = Length.FromMillimeters(2), Alignment = Length.FromNanometers(5732) },
+            ]
+        };
+    }
+
+    public static EmissionFilters CreateDefaultEmissionFilters()
+    {
+        return new()
+        {
+            Filter1 = new EmissionFilter { FilterColor = Length.FromNanometers(460), LaserColor = Length.FromNanometers(405) },
+            Filter2 = new EmissionFilter { FilterColor = Length.FromNanometers(535), LaserColor = Length.FromNanometers(488) },
+            Filter3 = new EmissionFilter { FilterColor = Length.FromNanometers(600), LaserColor = Length.FromNanometers(561) },
+            Filter4 = new EmissionFilter { FilterColor = Length.FromNanometers(705), LaserColor = Length.FromNanometers(640) }
+        };
+    }
+
+    public static ConfocalLights CreateDefaultConfocalLights()
+    {
+        return new()
+        {
+            ConfocalLight1 = new ConfocalLight { Wavelength = Length.FromNanometers(405), LightColor = ConfocalLightColor.COLOR1 },
+            ConfocalLight2 = new ConfocalLight { Wavelength = Length.FromNanometers(488), LightColor = ConfocalLightColor.COLOR2 },
+            ConfocalLight3 = new ConfocalLight { Wavelength = Length.FromNanometers(561), LightColor = ConfocalLightColor.COLOR3 },
+            ConfocalLight4 = new ConfocalLight { Wavelength = Length.FromNanometers(640), LightColor = ConfocalLightColor.COLOR4 }
+        };
+    }
+
     public static InstrumentAlignment CreateDefaultInstrumentAlignment()
     {
         return new()
@@ -158,6 +283,15 @@ internal static class ProdConfigGenerator
                 OffsetRotation = Angle.FromDegrees(0),
                 // OffsetRotation = Angle.FromDegrees(110),
                 OffsetTilt = Angle.FromDegrees(0)
+            },
+            Confocal = new()
+            {
+                OffsetX = Length.FromMillimeters(51.880),
+                OffsetY = Length.FromMeters(0),
+                OffsetRotation = Angle.FromDegrees(0),
+                // Hydra 2
+                // OffsetRotation = Angle.FromDegrees(110),
+                OffsetTilt = Angle.FromDegrees(0.4),
             },
             LinearStage = new()
             {
@@ -221,6 +355,28 @@ internal static class ProdConfigGenerator
                 Port = 55551,
                 Timeout = Duration.FromSeconds(5),
                 Channel = 2
+            },
+            ThorlabsPinHoleWheel = new()
+            {
+                Port = new() { DeviceName = "COM2", BaudRate = 9600 },
+                PinHoleWheelAlignments = CreateDefaultPinHoleWheelAlignments()
+            },
+            ThorlabsFilterWheel = new()
+            {
+                Port = new() { DeviceName = "COM3", BaudRate = 9600 },
+                EmissionFilters = CreateDefaultEmissionFilters()
+            },
+            ConfocalConfig = new()
+            {
+                ConfocalCamera = new()
+                {
+                    CameraName = "Name",
+                    FieldWidth = Length.FromNanometers(80 * 4096),
+                    FieldHeight = Length.FromNanometers(80 * 4096),
+                    Width = 4096,
+                    Height = 4096
+                },
+                ConfocalLights = CreateDefaultConfocalLights()
             }
         };
     }

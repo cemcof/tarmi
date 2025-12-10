@@ -1,12 +1,12 @@
-﻿using CFlMnavi.Installer.Helpers;
+﻿using Tarmi.Installer.Helpers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace CFlMnavi.Installer.Commands;
+namespace Tarmi.Installer.Commands;
 
 internal sealed class MsiCommand : Command<MsiCommandSettings>
 {
-    public override int Execute(CommandContext context, MsiCommandSettings settings)
+    public override int Execute(CommandContext context, MsiCommandSettings settings, CancellationToken cancellationToken)
     {
         try
         {

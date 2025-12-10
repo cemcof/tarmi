@@ -1,8 +1,8 @@
-﻿using CFlMnavi.Installer.Helpers;
+﻿using Tarmi.Installer.Helpers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace CFlMnavi.Installer.Commands;
+namespace Tarmi.Installer.Commands;
 
 internal sealed class BundleCommand : AsyncCommand<BundleCommandSettings>
 {
@@ -23,7 +23,7 @@ internal sealed class BundleCommand : AsyncCommand<BundleCommandSettings>
         return ValidationResult.Error("Runtime installer file not found.");
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, BundleCommandSettings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, BundleCommandSettings settings, CancellationToken cancellationToken)
     {
         try
         {

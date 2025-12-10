@@ -1,0 +1,94 @@
+<bwpf:DarkDialog x:Class="Tarmi.App.Views.ImageSelectionDialog"
+                 x:TypeArguments="viewModels:ImageSelectionDialogViewModel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:Tarmi.App.Views"
+                 xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels.ROIs"
+                 xmlns:converters="clr-namespace:Tarmi.App.Converters"
+                 xmlns:rois="clr-namespace:Tarmi.App.ViewModels.ROIs"
+                 mc:Ignorable="d"
+                 Title="ImageSelectionDialog"
+                 SizeToContent="WidthAndHeight"
+                 WindowStartupLocation="CenterScreen"
+                 WindowStyle="None"
+                 d:DataContext="{d:DesignInstance Type=viewModels:ImageSelectionDialogViewModel}">
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
+    <Window.Resources>
+        <converters:ImageAttributesConverter x:Key="ImageAttributesConverter"/>
+
+        <DataTemplate DataType="{x:Type rois:TileSetVirtualChildVM}">
+            <StackPanel Orientation="Horizontal">
+                <ItemsControl ItemsSource="{Binding Attributes, Converter={StaticResource ImageAttributesConverter}}" Margin="4,0,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="2,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type rois:TileSet3DVirtualChildVM}">
+            <StackPanel Orientation="Horizontal">
+                <ItemsControl ItemsSource="{Binding Attributes, Converter={StaticResource ImageAttributesConverter}}" Margin="4,0,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="2,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type rois:ZStackVirtualChildVM}">
+            <StackPanel Orientation="Horizontal">
+                <ItemsControl ItemsSource="{Binding Attributes, Converter={StaticResource ImageAttributesConverter}}" Margin="4,0,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="2,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type rois:SingleImageChildVM}">
+            <StackPanel Orientation="Horizontal">
+                <ItemsControl ItemsSource="{Binding Attributes, Converter={StaticResource ImageAttributesConverter}}" Margin="4,0,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="2,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <StackPanel Margin="20">
+        <Label Content="Binding fiducial points of">
+        </Label>
+        <Border Margin="5" Padding="10 0">
+            <ContentPresenter Content="{Binding BindingImage}"/>
+        </Border>
+        <Label Content="Binding to"/>
+        <ItemsControl ItemsSource="{Binding Images}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Margin="5, 2.5" Width="Auto" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.SelectCommand}" CommandParameter="{Binding .}">
+                        <ContentPresenter Content="{TemplateBinding DataContext}" Width="300"/>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Margin="0 2.5" DockPanel.Dock="Bottom" Content="Cancel" Command="{Binding CancelCommand}"/>
+    </StackPanel>
+</bwpf:DarkDialog>

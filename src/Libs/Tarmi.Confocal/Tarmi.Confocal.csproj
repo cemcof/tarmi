@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CliWrap" />
+  </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\App\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+        <ProjectReference Include="..\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
+        <ProjectReference Include="..\Tarmi.Models\Tarmi.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="confocalScript.py">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="confocalScriptTuning.py">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="fluoConf.tif">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="reflConf.tif">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+</Project>

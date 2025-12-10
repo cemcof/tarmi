@@ -1,0 +1,187 @@
+<appControls:ApplicationModeControlBase
+    x:Class="Tarmi.App.Views.Modes.FIB.MainArea"
+    x:TypeArguments="fib:IonBeamModeViewModel"
+    xmlns:appControls="clr-namespace:Tarmi.App.WPF.Controls;assembly=Tarmi.App.WPF"
+    xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Tarmi.App.Views.Modes.FIB"
+    xmlns:localControls="clr-namespace:Tarmi.App.Controls"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800"
+    xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+    xmlns:fib="clr-namespace:Tarmi.App.ViewModels.Modes.FIB"
+    d:DataContext="{d:DesignInstance Type=fib:IonBeamModeViewModel}"
+    Tag="{x:Static appMode:ApplicationMode.FIB}"
+ >
+
+    <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </Grid.Resources>
+        <UniformGrid Rows="1">
+            <localControls:ImageViewerWithScaleBar PreviewMouseWheel="ImageViewerWithScaleBar_PreviewMouseWheel" ImageWithMetadata="{Binding ImageWithMetadata}" Scale="{Binding ImageViewerVM.Scale}" ImageScale="{Binding ImageViewerVM.ImageScale, Mode=OneWayToSource}" IsScaleBarVisible="{Binding IsScaleBarVisible}">
+                <Grid>
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ImageOverlayToggles.IsCenterCrossVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False">
+                        <Line X1="0" X2="40" Y1="20" Y2="20" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        <Line X1="20" X2="20" Y1="0" Y2="40" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Grid>
+
+                    <localControls:ClickArea
+                        Background="Transparent"
+                        Click="{Binding StageMoveClickCommand}"
+                        Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"
+                        Visibility="{Binding IsGrabbingImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    />
+                    <ItemsControl ItemsSource="{Binding RoiControl.ROIPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding FocusPointControl.AvailableFocusPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding PrimaryFiducialPointControl.Fiducials}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.Resources>
+                            <bwpf:BindingProxy x:Key="RemoveFiducialCommand" Value="{Binding PrimaryFiducialPointControl.RemoveFiducialCommand}"/>
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Header="Remove fiducial"
+                                                      Command="{Binding Path=Value, Source={StaticResource RemoveFiducialCommand}}"
+                                                      CommandParameter="{Binding .}"/>
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding SecondaryPanelContent.DataContext.MillingAreasOverlay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas>
+                                    <Canvas.RenderTransform>
+                                        <ScaleTransform ScaleX="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"
+                                                        ScaleY="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}" />
+                                    </Canvas.RenderTransform>
+                                </Canvas>
+                                <!--<localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+                </Grid>
+            </localControls:ImageViewerWithScaleBar>
+
+            <localControls:ImageViewerWithScaleBar Visibility="{Binding ShowSecondaryImage, Converter={StaticResource BooleanToVisibilityConverter}}" ImageWithMetadata="{Binding SecondaryImageWithMetadata}" IsScaleBarVisible="{Binding IsScaleBarVisible}">
+                <Grid>
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ImageOverlayToggles.IsCenterCrossVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False">
+                        <Line X1="0" X2="40" Y1="20" Y2="20" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        <Line X1="20" X2="20" Y1="0" Y2="40" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding RoiControl.SecondaryROIPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+
+                    <ItemsControl ItemsSource="{Binding SecondaryFiducialPointControl.Fiducials}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsControl.Resources>
+                            <bwpf:BindingProxy x:Key="RemoveFiducialCommand" Value="{Binding SecondaryFiducialPointControl.RemoveFiducialCommand}"/>
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Path=Y, Mode=TwoWay}" />
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu Visibility="Collapsed">
+                                            <MenuItem Header="Remove fiducial"
+                                                      Command="{Binding Path=Value, Source={StaticResource RemoveFiducialCommand}}"
+                                                      CommandParameter="{Binding .}"/>
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+                </Grid>
+            </localControls:ImageViewerWithScaleBar>
+            <UniformGrid.Style>
+                <Style TargetType="{x:Type UniformGrid}">
+                    <Setter Property="Columns" Value="1"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowSecondaryImage}" Value="True">
+                            <Setter Property="Columns" Value="2"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </UniformGrid.Style>
+        </UniformGrid>
+        <Border Visibility="{Binding ManualTiltEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#55000000" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="20,20,0,0" Width="50">
+            <StackPanel Margin="4">
+                <TextBlock Text="Tilt" Foreground="{StaticResource ForegroundLightBrush}" HorizontalAlignment="Center" />
+                <localControls:RelativeSlider Move="{Binding TiltManuallyCommand}" x:Name="relativeSliderManualTilt"/>
+            </StackPanel>
+        </Border>
+
+        <Border Visibility="{Binding ManualFocusEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#55000000" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="20,20,0,0" Width="50">
+            <StackPanel Margin="4">
+                <TextBlock Text="Focus" Foreground="{StaticResource ForegroundLightBrush}" HorizontalAlignment="Center" />
+                <localControls:RelativeSlider Move="{Binding FocusManuallyCommand}" x:Name="relativeSliderManualFocus"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</appControls:ApplicationModeControlBase>

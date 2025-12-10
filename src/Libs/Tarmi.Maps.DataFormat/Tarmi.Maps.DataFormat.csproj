@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OpenCvSharp4" />
+        <PackageReference Include="OpenCvSharp4.runtime.win" />
+        <PackageReference Include="OpenCvSharp4.WpfExtensions" />
+        <PackageReference Include="UnitsNet" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\App\Tarmi.Projects\Tarmi.Projects.csproj" />
+    </ItemGroup>
+
+</Project>

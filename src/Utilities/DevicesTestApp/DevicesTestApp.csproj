@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Devices\Betrian.Devices.Arduino.FilterHandler\Betrian.Devices.Arduino.FilterHandler.csproj" />
-    <ProjectReference Include="..\..\Devices\Betrian.Devices.Basler.Camera\Betrian.Devices.Basler.Camera.csproj" />
-    <ProjectReference Include="..\..\Devices\Betrian.Devices.Thermofisher.Instrument\Betrian.Devices.Thermofisher.Instrument.csproj" />
-    <ProjectReference Include="..\..\Libs\Betrian.Communication.Common\Betrian.Communication.Common.csproj" />
+    <ProjectReference Include="..\..\Devices\Tarmi.Devices.Arduino.FilterHandler\Tarmi.Devices.Arduino.FilterHandler.csproj" />
+    <ProjectReference Include="..\..\Devices\Tarmi.Devices.Basler.Camera\Tarmi.Devices.Basler.Camera.csproj" />
+    <ProjectReference Include="..\..\Devices\Tarmi.Devices.Thermofisher.Instrument\Tarmi.Devices.Thermofisher.Instrument.csproj" />
+    <ProjectReference Include="..\..\Libs\Tarmi.Communication.Common\Tarmi.Communication.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

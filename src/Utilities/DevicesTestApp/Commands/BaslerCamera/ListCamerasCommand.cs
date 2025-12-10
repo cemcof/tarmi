@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Betrian.Devices.Basler.Camera;
+using Tarmi.Devices.Basler.Camera;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -19,7 +19,7 @@ internal sealed class ListCamerasCommand : Command<ListCamerasCommand.Settings>
         _cameraDiscoveryService = cameraDiscoveryService;
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

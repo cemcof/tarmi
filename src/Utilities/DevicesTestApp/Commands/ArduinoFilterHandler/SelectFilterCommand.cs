@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Betrian.Devices.Arduino.FilterHandler;
+using Tarmi.Devices.Arduino.FilterHandler;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -26,7 +26,7 @@ internal class SelectFilterCommand : AsyncCommand<SelectFilterCommand.Settings>
         _filterHandlerFactory = filterHandlerFactory;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

@@ -1,6 +1,6 @@
-﻿using Spectre.Console;
+using Spectre.Console;
 
-namespace CFlMnavi.Installer.Helpers;
+namespace Tarmi.Installer.Helpers;
 
 internal static class RuntimesDownloader
 {

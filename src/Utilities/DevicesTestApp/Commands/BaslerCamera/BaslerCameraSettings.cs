@@ -1,4 +1,4 @@
-﻿using Spectre.Console.Cli;
+using Spectre.Console.Cli;
 
 namespace DevicesTestApp.Commands.BaslerCamera;
 

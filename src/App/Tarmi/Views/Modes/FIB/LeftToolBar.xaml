@@ -1,0 +1,41 @@
+<appControls:ApplicationModeControlBase
+    x:Class="Tarmi.App.Views.Modes.FIB.LeftToolBar"
+    x:TypeArguments="viewModels:IonBeamModeViewModel"
+    xmlns:appControls="clr-namespace:Tarmi.App.WPF.Controls;assembly=Tarmi.App.WPF"
+    xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+    xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels.Modes.FIB"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Tarmi.App.Views.Modes.FIB"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="64"
+    xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+    xmlns:fib="clr-namespace:Tarmi.App.ViewModels.Modes.FIB"
+    d:DataContext="{d:DesignInstance Type=fib:IonBeamModeViewModel}"
+    Tag="{x:Static appMode:ApplicationMode.FIB}">
+
+    <DockPanel Margin="0, 8, 0, 0">
+        <StackPanel DockPanel.Dock="Top">
+            <ToggleButton IsChecked="{Binding ManualFocusEnabled}" Width="auto" Height="45" ToolTip="Manual focus">
+                <Image Source="{StaticResource icon_manual_focus}" Width="20"/>
+            </ToggleButton>
+            <Button Command="{Binding AutoFocusCommand}" Width="auto" Height="45" ToolTip="Auto focus">
+                <Image Source="{StaticResource icon_auto_focus}" Width="20"/>
+            </Button>
+            <ToggleButton IsChecked="{Binding ManualTiltEnabled}" Width="auto" Height="45" ToolTip="Manual tilt">
+                <Image Source="{StaticResource icon_tilt_manual}" Width="20"/>
+            </ToggleButton>
+            <Button Command="{Binding AutoTiltCommand}" Width="auto" Height="45" ToolTip="Auto tilt">
+                <Image Source="{StaticResource icon_tilt_auto_white}" Width="20"/>
+            </Button>
+            <Separator/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <Button Command="{Binding CaptureScreenshotCommand}" Width="auto" Height="45" ToolTip="Save image to Desktop">
+                <Image Source="{StaticResource icon_camera}" Width="20"/>
+            </Button>
+        </StackPanel>
+    </DockPanel>
+</appControls:ApplicationModeControlBase>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="UnitsNet" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\App\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.App.Infrastructure\Tarmi.App.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

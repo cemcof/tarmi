@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="simulation\ion\default.tif" />
+      <None Remove="simulation\sem\default.tif" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="simulation\ion\default.tif">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="simulation\sem\default.tif">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.Server.BrickConnector.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.ViewServer.gen.ViewServer.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.Common.gen.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.Imaging.gen.CompositeImage.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.ViewServer.gen.SDBPatternEx.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.Imaging.gen.Common.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.Imaging.gen.RawImage.dll" />
+        <Reference Include="..\..\..\extlibs\OM\17.22\Fei.XT.Instrument.gen.dll" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AsyncAwaitBestPractices" />
+        <PackageReference Include="CommonNet.DependencyInjection" />
+        <PackageReference Include="CommonNet.Extensions" />
+        <PackageReference Include="CommonNet.Logging" />
+        <PackageReference Include="CommunityToolkit.Diagnostics" />
+        <PackageReference Include="Microsoft.Diagnostics.Runtime" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+        <PackageReference Include="OpenCvSharp4" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="UnitsNet" />
+        <PackageReference Include="UUIDNext" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\App\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.App.Infrastructure\Tarmi.App.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Algorithms\Tarmi.Imaging.Algorithms.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
+      <ProjectReference Include="..\..\Libs\Tarmi.Models\Tarmi.Models.csproj" />
+      <ProjectReference Include="..\Tarmi.TileSet.ImageSimulator.Abstractions\Tarmi.TileSet.ImageSimulator.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

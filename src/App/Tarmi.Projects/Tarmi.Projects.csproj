@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="UnitsNet" />
+        <PackageReference Include="UUIDNext" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libs\Tarmi.App.Infrastructure\Tarmi.App.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
+        <ProjectReference Include="..\..\Libs\Tarmi.Models\Tarmi.Models.csproj" />
+        <ProjectReference Include="..\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+    </ItemGroup>
+
+</Project>

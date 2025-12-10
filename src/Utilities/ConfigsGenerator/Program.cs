@@ -1,4 +1,4 @@
-﻿namespace ConfigsGenerator;
+namespace ConfigsGenerator;
 
 internal class Program
 {

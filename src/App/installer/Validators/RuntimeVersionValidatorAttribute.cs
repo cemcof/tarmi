@@ -1,7 +1,7 @@
-﻿using Spectre.Console;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace CFlMnavi.Installer.Validators;
+namespace Tarmi.Installer.Validators;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 internal sealed class RuntimeVersionValidatorAttribute : ParameterValidationAttribute

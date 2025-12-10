@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
-using CFlMnavi.Installer.Validators;
+using System.ComponentModel;
+using Tarmi.Installer.Validators;
 using Spectre.Console.Cli;
 
-namespace CFlMnavi.Installer.Commands;
+namespace Tarmi.Installer.Commands;
 
 internal interface IBundleCommandSettingsAccessor : IMsiCommandSettingsAccessor
 {

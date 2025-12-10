@@ -1,10 +1,10 @@
-﻿<Window x:Class="UIShowcase.MainWindow"
+<Window x:Class="UIShowcase.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:bwpf="clr-namespace:Betrian.WPF;assembly=Betrian.WPF"
-        xmlns:controls="clr-namespace:Betrian.WPF.CeitecStyles.Controls;assembly=Betrian.WPF.CeitecStyles"
+        xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+        xmlns:controls="clr-namespace:Tarmi.WPF.CeitecStyles.Controls;assembly=Tarmi.WPF.CeitecStyles"
         xmlns:local="clr-namespace:UIShowcase"
         mc:Ignorable="d"
         Title="CFLM UI Showcase" Height="900" Width="1200" d:DesignHeight="NaN">

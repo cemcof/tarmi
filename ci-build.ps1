@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop";
 
 $Env:CI='1'
-$Env:APP_VERSION='1.4.55'
+$Env:APP_VERSION='1.6.64'
 $Env:CONFIGURATION='Release'
 
 $version=$Env:APP_VERSION
@@ -14,16 +14,16 @@ function Ensure-Directory([String] $path)
     [System.IO.Directory]::CreateDirectory($path)
 }
 
-dotnet tool install --global wix --version 6.0.0
+dotnet tool install --global wix --version 6.0.2
 wix extension -g add WixToolset.Util.wixext
 wix extension -g add WixToolset.UI.wixext
 
 $projects = @(
     ('src\App\installer\installer.csproj', 'installer'),
-    ('src\App\CFLMnavi\CFLMnavi.csproj', 'CFLMnavi')
+    ('src\App\Tarmi\Tarmi.csproj', 'Tarmi')
 )
 
-dotnet restore --configfile .\nuget.config -r "${rid}" .\CFLMnavi.sln
+dotnet restore --configfile .\nuget.config -r "${rid}" .\Tarmi.sln
 
 Ensure-Directory($outputDir)
 foreach ($projectDef in $projects) {
@@ -35,8 +35,8 @@ foreach ($projectDef in $projects) {
 }
 
 # build msi and bundle
-& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -r=8 -i="${outputDir}\CFLMnavi"
-#& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -d="${outputDir}\windowsdesktop-runtime-win-x64.exe" -i="${outputDir}\CFLMnavi"
+& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -r=10 -i="${outputDir}\Tarmi"
+#& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -d="${outputDir}\windowsdesktop-runtime-win-x64.exe" -i="${outputDir}\Tarmi"
 
 $configuration='Debug'
 $outputDir = "${PSScriptRoot}\publish\${configuration}"
@@ -51,5 +51,5 @@ foreach ($projectDef in $projects) {
 }
 
 # build msi and bundle
-& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -r=8 -i="${outputDir}\CFLMnavi"
-#& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -d="${outputDir}\windowsdesktop-runtime-win-x64.exe" -i="${outputDir}\CFLMnavi"
+& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -r=10 -i="${outputDir}\Tarmi"
+#& "${outputDir}\installer\installer.exe" bundle build -v="${version}" -o="${outputDir}" -d="${outputDir}\windowsdesktop-runtime-win-x64.exe" -i="${outputDir}\Tarmi"

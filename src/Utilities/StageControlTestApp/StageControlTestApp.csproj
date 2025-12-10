@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Devices\Betrian.Devices.SmarAct.Stage\Betrian.Devices.SmarAct.Stage.csproj" />
+    <ProjectReference Include="..\..\Devices\Tarmi.Devices.SmarAct.Stage\Tarmi.Devices.SmarAct.Stage.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <Platform>x64</Platform>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommonNet.DependencyInjection" />
+        <PackageReference Include="CommonNet.Extensions" />
+        <PackageReference Include="CommonNet.Logging" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+        <PackageReference Include="OpenCvSharp4" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="Basler.Pylon.NET.x64" />
+        <PackageReference Include="UnitsNet" />
+        <PackageReference Include="UUIDNext" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../../Libs/Tarmi.Imaging.Common/Tarmi.Imaging.Common.csproj" />
+        <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Algorithms\Tarmi.Imaging.Algorithms.csproj" />
+    </ItemGroup>
+
+</Project>

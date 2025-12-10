@@ -1,0 +1,17 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+>
+
+    <system:Double x:Key="CornerRadius">2</system:Double>
+    <system:Double x:Key="CornerRadiusLarge">8</system:Double>
+
+
+    <CornerRadius x:Key="CornerRadiusThickness" TopLeft="{StaticResource CornerRadius}" TopRight="{StaticResource CornerRadius}" BottomLeft="{StaticResource CornerRadius}" BottomRight="{StaticResource CornerRadius}" />
+    <CornerRadius x:Key="CornerRadiusThicknessLarge" TopLeft="{StaticResource CornerRadiusLarge}" TopRight="{StaticResource CornerRadiusLarge}" BottomLeft="{StaticResource CornerRadiusLarge}" BottomRight="{StaticResource CornerRadiusLarge}" />
+
+    <Thickness x:Key="BorderThickness" Left="1" Top="1" Right="1" Bottom="1" />
+    <Thickness x:Key="DoubleBorderThickness" Left="2" Top="2" Right="2" Bottom="2" />
+
+</ResourceDictionary>

@@ -1,0 +1,277 @@
+﻿<appControls:ApplicationModeControlBase
+    x:Class="Tarmi.App.Views.Modes.Confocal.LeftPanel"
+    x:TypeArguments="viewModels:ConfocalModeViewModel"
+    xmlns:appControls="clr-namespace:Tarmi.App.WPF.Controls;assembly=Tarmi.App.WPF"
+    xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+    xmlns:localControls="clr-namespace:Tarmi.App.Controls"
+    xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels.Modes.Confocal"
+    xmlns:controls="clr-namespace:Tarmi.WPF.CeitecStyles.Controls;assembly=Tarmi.WPF.CeitecStyles"
+    xmlns:virtualDevices="clr-namespace:Tarmi.VirtualDevices;assembly=Tarmi.VirtualDevices"
+    xmlns:converters="clr-namespace:Tarmi.App.Converters"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:Tarmi.App.Views.Modes.Confocal"
+    xmlns:thorlabs="clr-namespace:Tarmi.Devices.Thorlabs.PinHoleWheel;assembly=Tarmi.Devices.Thorlabs.PinHoleWheel"
+    xmlns:confocal="clr-namespace:Tarmi.Confocal;assembly=Tarmi.Confocal"
+    xmlns:filterHandler="clr-namespace:Tarmi.Devices.Arduino.FilterHandler;assembly=Tarmi.Devices.Arduino.FilterHandler"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewModels:ConfocalModeViewModel}"
+    xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+    Tag="{x:Static appMode:ApplicationMode.Confocal}"
+    MinWidth="320">
+
+    <UserControl.Resources>
+        <converters:UpperCaseConverter x:Key="UpperCaseConverter" />
+        <converters:UpperCaseEnumConverter x:Key="UpperCaseEnumConverter" />
+        <converters:UnitConverter x:Key="UnitConverter"/>
+
+        <converters:ChainedValueConverter x:Key="LinearStageIsProtractedUpperCase">
+            <converters:LinearStageIsProtracted />
+            <converters:UpperCaseConverter />
+        </converters:ChainedValueConverter>
+
+        <ObjectDataProvider x:Key="FilterTypeEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="filterHandler:FilterType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <controls:BottomExpander Margin="10,5,5,5" SecondaryContent="{Binding SecondaryPanelContent}">
+        <StackPanel IsEnabled="{Binding IsInitialized}">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,10,0,20">
+                <Image Source="{StaticResource icon_confocal1_white}" Width="15"/>
+                <TextBlock Text="Confocal Imaging Controls" VerticalAlignment="Center" Foreground="White" Margin="5"/>
+            </StackPanel>
+
+            <Grid VerticalAlignment="Top" Margin="0,0,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Light Configuration" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Source={StaticResource FilterTypeEnum}}" SelectedItem="{Binding FilterType}" Margin="0,8" Width="150" HorizontalAlignment="Right">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource UpperCaseEnumConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Laser Color" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding LaserColors}" SelectedItem="{Binding LaserColor}" Margin="0,8" Width="150" HorizontalAlignment="Right"/>
+                </Grid>
+
+                <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,0,0,8" IsEnabled="True">
+                    <TextBlock Text="Intensity" Margin="0,0,0,4"/>
+                    <localControls:EnhancedSlider SetValueCommand="{Binding SetIntensityCommand}" Value="{Binding Intensity}" Maximum="{Binding IntensityRange.Max.Percent}" Minimum="{Binding IntensityRange.Min.Percent}" TickFrequency="{Binding IntensityStep}" SmallChange="{Binding IntensityStep}" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch" ToolTip="Percent"/>
+                </StackPanel>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Pinhole size" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding PinHoleWheelPositions}" Text="Position" SelectedItem="{Binding PinHoleWheelPosition}" Width="150" Height="32" Margin="0,8" HorizontalAlignment="Right" />
+                </Grid>
+
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Dwell" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableDwellRanges}" SelectedItem="{Binding Dwell}" Margin="0,8" Width="150" Height="32" HorizontalAlignment="Right">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource UnitConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <StackPanel Orientation="Vertical" Margin="0,10">
+                <TextBlock Text="Field of view" Margin="0,0,0,4"/>
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Width" Margin="0,4" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" Margin="0,4" Text="{Binding FieldWidth, Mode=TwoWay, Converter={StaticResource UnitConverter}}" Width="120" Height="32" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Height" Margin="0,4" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" Margin="0,4" Text="{Binding FieldHeight, Mode=TwoWay, Converter={StaticResource UnitConverter}}" Width="120" Height="32" HorizontalAlignment="Center"/>
+                    <ToggleButton Grid.Column="2" Grid.Row="1" Command="{Binding FieldSelectionCommand}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="5,4,0,0" Width="32" Height="32" ToolTip="Field selection" >
+                        <Image Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding (ToggleButton.IsChecked), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Mode=OneWay}" Value="false">
+                                            <Setter Property="Source" Value="{StaticResource icon_area_selection_white}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding (ToggleButton.IsChecked), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Mode=OneWay}" Value="true">
+                                            <Setter Property="Source" Value="{StaticResource icon_area_selection_green}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </ToggleButton>
+                </Grid>
+
+            </StackPanel>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Pixel size:" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding AvailablePixelSizes}" SelectedItem="{Binding PixelSize}" Width="150" Height="32" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Margin="0,5">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource UnitConverter}}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Text="Resolution:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Resolution}" Grid.Column="1" Grid.Row="1" Margin="0,5"/>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,12">
+                    <TextBlock Text="Gain" Margin="0,0,0,4"/>
+                    <localControls:EnhancedSlider SetValueCommand="{Binding SetGainCommand}" Value="{Binding Gain}" Maximum="{Binding GainRange.Max.Decibels}" Minimum="{Binding GainRange.Min.Decibels}" TickFrequency="{Binding GainStep.Decibels}" SmallChange="{Binding GainStep.Decibels}" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch" ToolTip="Decibels"/>
+                </StackPanel>
+
+                <Grid Grid.Row="1" Margin="0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="ADC range" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ComboBox ItemsSource="{Binding AvailableADCRanges}" Text="Volt" SelectedItem="{Binding ADC}" Width="150" Height="32" Grid.Column="1" HorizontalAlignment="Right" />
+                </Grid>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,15" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Focus Step Size" Margin="0,0,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <ComboBox ItemsSource="{Binding AvailableFocusSteps}" Text="Step" SelectedItem="{Binding FocusStep}" Width="90" Height="32" Margin="0,0,8,0" />
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding FocusIncrementManualCommand}" Content="+" Height="24" Width="24" Margin="0,0,8,0"/>
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding FocusDecrementManualCommand}" Content="-" Height="24" Width="24" Margin="0,0,8,0"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding AutoFocusCommand}" Width="140" Height="36">
+                            <ContentPresenter>
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{StaticResource icon_auto_focus}" Width="24" Margin="0,0,8,0"/>
+                                            <TextBlock Text="AUTO FOCUS" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Tilt"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding IncrementTiltCommand}" Content="+" Height="24" Width="24" Margin="0,0,8,0"/>
+                            <TextBox Margin="0,0,8,0" Text="{Binding StageTilt}" Width="50" VerticalAlignment="Center" Padding="0,0,0,0" ToolTip="Degrees"/>
+                            <Button Style="{StaticResource RoundButton}" Command="{Binding DecrementTiltCommand}" Content="-" Height="24" Width="24"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding AutoTiltCommand}" Width="140" Height="32">
+                            <ContentPresenter>
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{StaticResource icon_tilt_auto_white}" Width="20" Margin="0,0,8,0" />
+                                            <TextBlock Text="AUTO TILT" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Separator Background="{StaticResource BackgroundLightBrush}"/>
+
+            <StackPanel Orientation="Vertical" Margin="0,10">
+                <TextBlock Text="Objective Control"/>
+                <Button Content="{Binding IsProtracted, Converter={StaticResource LinearStageIsProtractedUpperCase}}" Command="{Binding ProtractRetractCommand}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,8,0,0" Height="32"/>
+            </StackPanel>
+        </StackPanel>
+    </controls:BottomExpander>
+</appControls:ApplicationModeControlBase>

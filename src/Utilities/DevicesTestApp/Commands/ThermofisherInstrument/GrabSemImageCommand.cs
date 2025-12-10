@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Betrian.Devices.Thermofisher.Instrument.ObjectModel;
+using Tarmi.Devices.Thermofisher.Instrument.ObjectModel;
 using Dumpify;
 using OpenCvSharp;
 using Spectre.Console;
@@ -21,7 +21,7 @@ internal class GrabSemImageCommand : Command<GrabSemImageCommand.Settings>
         _imageSource = imageSource;
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

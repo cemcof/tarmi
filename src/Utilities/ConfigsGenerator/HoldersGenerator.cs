@@ -1,5 +1,5 @@
-﻿using CFLMnavi.Configuration;
-using CFLMnavi.Configuration.Holders;
+﻿using Tarmi.Configuration;
+using Tarmi.Configuration.Holders;
 using UnitsNet;
 
 internal static class HoldersConfigGenerator
@@ -59,8 +59,16 @@ internal static class HoldersConfigGenerator
                 Rotation = Angle.FromDegrees(0),
                 Tilt = Angle.FromDegrees(25.4) // 25 expected, delta?
             },
+            ConfocalModePlanePoint = new()
+            {
+                X = Length.FromMeters(0.0488916),
+                Y = Length.FromMeters(-0.0025213),
+                Z = Length.FromMeters(0.0312001),
+                Rotation = Angle.FromDegrees(0),
+                Tilt = Angle.FromDegrees(25.4) // 25 expected, delta?
+            },
             SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Betrian.Models.AngleRangeDescriptor()
+            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
             {
                 Min = Angle.FromDegrees(-2),
                 Max = Angle.FromDegrees(2)
@@ -139,8 +147,16 @@ internal static class HoldersConfigGenerator
                 Rotation = Angle.FromDegrees(0),
                 Tilt = Angle.FromDegrees(17.4)
             },
+            ConfocalModePlanePoint = new()
+            {
+                X = Length.FromMillimeters(54.533),
+                Y = Length.FromMillimeters(-2.215),
+                Z = Length.FromMillimeters(31.442),
+                Rotation = Angle.FromDegrees(0),
+                Tilt = Angle.FromDegrees(17.0)
+            },
             SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Betrian.Models.AngleRangeDescriptor()
+            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
             {
                 Min = Angle.FromDegrees(-2),
                 Max = Angle.FromDegrees(2)
@@ -212,8 +228,17 @@ internal static class HoldersConfigGenerator
                 Rotation = Angle.FromDegrees(0),
                 Tilt = Angle.FromDegrees(17.4)
             },
+            ConfocalModePlanePoint = new()
+            {
+                // !!!
+                X = Length.FromMillimeters(48.9606),
+                Y = Length.FromMillimeters(-2.5584),
+                Z = Length.FromMillimeters(31.2006),
+                Rotation = Angle.FromDegrees(0),
+                Tilt = Angle.FromDegrees(17.4)
+            },
             SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Betrian.Models.AngleRangeDescriptor()
+            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
             {
                 Min = Angle.FromDegrees(-2),
                 Max = Angle.FromDegrees(2)
@@ -280,8 +305,17 @@ internal static class HoldersConfigGenerator
                 Rotation = Angle.FromDegrees(0),
                 Tilt = Angle.FromDegrees(17.4)
             },
+            ConfocalModePlanePoint = new()
+            {
+                // TODO: update based on the actual values
+                X = Length.FromMeters(0),
+                Y = Length.FromMeters(0),
+                Z = Length.FromMeters(0.031950457),
+                Rotation = Angle.FromDegrees(0),
+                Tilt = Angle.FromDegrees(50) - Angle.FromDegrees(35)
+            },
             SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Betrian.Models.AngleRangeDescriptor()
+            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
             {
                 Min = Angle.FromDegrees(-2),
                 Max = Angle.FromDegrees(2)
@@ -348,8 +382,17 @@ internal static class HoldersConfigGenerator
                 Rotation = Angle.FromDegrees(0),
                 Tilt = Angle.FromDegrees(17.4)
             },
+            ConfocalModePlanePoint = new()
+            {
+                // TODO: update based on the actual values
+                X = Length.FromMeters(0),
+                Y = Length.FromMeters(0),
+                Z = Length.FromMeters(0.031774402),
+                Rotation = Angle.FromDegrees(0),
+                Tilt = Angle.FromDegrees(50) - Angle.FromDegrees(35)
+            },
             SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Betrian.Models.AngleRangeDescriptor()
+            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
             {
                 Min = Angle.FromDegrees(-2),
                 Max = Angle.FromDegrees(2)

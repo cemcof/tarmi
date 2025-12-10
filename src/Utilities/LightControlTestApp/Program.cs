@@ -1,6 +1,6 @@
-﻿using Betrian.Communication.Common.Serial;
-using Betrian.Devices.Thorlabs.Light;
-using CFLMnavi.Configuration;
+using Tarmi.Communication.Common.Serial;
+using Tarmi.Devices.Thorlabs.Light;
+using Tarmi.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 using UnitsNet;
@@ -82,9 +82,9 @@ internal class Program
         {
             Microscope = appConfig.Microscope with
             {
-                Thorlabs4100 = new CFLMnavi.Configuration.Devices.Thorlabs4100
+                Thorlabs4100 = new Tarmi.Configuration.Devices.Thorlabs4100
                 {
-                    Port = new CFLMnavi.Configuration.Devices.SerialPort
+                    Port = new Tarmi.Configuration.Devices.SerialPort
                     {
                         DeviceName = "COM4",
                         BaudRate = 115200

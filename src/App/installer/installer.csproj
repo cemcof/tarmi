@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CFlMnavi.Installer</RootNamespace>
+    <RootNamespace>Tarmi.Installer</RootNamespace>
     <Platform>x64</Platform>
     <Nullable>disable</Nullable>
   </PropertyGroup>

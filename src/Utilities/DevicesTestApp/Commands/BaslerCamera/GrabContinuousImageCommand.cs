@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using Betrian.Devices.Basler.Camera;
+using Tarmi.Devices.Basler.Camera;
 using Dumpify;
 using OpenCvSharp;
 using Spectre.Console;
@@ -32,7 +32,7 @@ internal sealed class GrabContinuousImageCommand : AsyncCommand<GrabContinuousIm
         _imageGraberFactory = imageGraberFactory;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

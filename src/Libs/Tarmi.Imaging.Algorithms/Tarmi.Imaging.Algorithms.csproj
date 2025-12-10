@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Diagnostics" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="OpenCvSharp4" />
+        <PackageReference Include="OpenCvSharp4.runtime.win" />
+        <PackageReference Include="OpenCvSharp4.WpfExtensions" />
+        <PackageReference Include="System.Reactive" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Tarmi.App.Infrastructure\Tarmi.App.Infrastructure.csproj" />
+      <ProjectReference Include="..\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
+      <ProjectReference Include="..\Tarmi.Models\Tarmi.Models.csproj" />
+    </ItemGroup>
+
+</Project>

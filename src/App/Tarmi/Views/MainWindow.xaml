@@ -1,0 +1,110 @@
+<bwpf:DarkWindow x:Class="Tarmi.App.Views.MainWindow"
+                 x:TypeArguments="viewModels:MainWindowViewModel"
+                 xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+                 xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:Tarmi.App.Views"
+                 xmlns:controls="clr-namespace:Tarmi.WPF.CeitecStyles.Controls;assembly=Tarmi.WPF.CeitecStyles"
+                 xmlns:localControls ="clr-namespace:Tarmi.App.Controls"
+                 xmlns:semMode="clr-namespace:Tarmi.App.Views.Modes.SEM"
+                 xmlns:lmMode="clr-namespace:Tarmi.App.Views.Modes.LM"
+                 xmlns:fibMode="clr-namespace:Tarmi.App.Views.Modes.FIB"
+                 xmlns:confocalMode ="clr-namespace:Tarmi.App.Views.Modes.Confocal"
+                 xmlns:viewerMode="clr-namespace:Tarmi.App.Views.Modes.Viewer"
+                 xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+                 d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel}"
+                 mc:Ignorable="d" d:Style="{StaticResource DarkWindowStyle}"
+                 Title="{Binding WindowTitle, Mode=OneWay}" MinHeight="900" MinWidth="1400" WindowState="Maximized"
+>
+    <Grid>
+        <DockPanel>
+            <Expander x:Name="leftPanel" DockPanel.Dock="Left" ExpandDirection="Right" IsExpanded="True" Style="{StaticResource headerLessExpander}">
+                <DockPanel Margin="4, 4, -8, 0">
+                    <Border DockPanel.Dock="Top" BorderThickness="0, 0, 0, 1" BorderBrush="{StaticResource ForegroundLightBrush}">
+                        <DockPanel Margin="4">
+                            <TextBlock Text="View mode" VerticalAlignment="Center" Margin="0, 0, 8, 0"/>
+                            <ComboBox ItemsSource="{Binding ApplicationModes}" SelectedItem="{Binding Mode}" HorizontalAlignment="Right" Margin="0,0,12,0" />
+                        </DockPanel>
+                    </Border>
+                        <Border Width="320">
+                            <localControls:ModeSelector Mode="{Binding Mode}">
+                                <semMode:LeftPanel />
+                                <lmMode:LeftPanel />
+                                <fibMode:LeftPanel />
+                                <viewerMode:LeftPanel />
+                                <confocalMode:LeftPanel />
+                            </localControls:ModeSelector>
+                        </Border>
+                </DockPanel>
+            </Expander>
+
+            <Expander x:Name="rightPanel" DockPanel.Dock="Right" ExpandDirection="Left" IsExpanded="True" Style="{StaticResource headerLessExpander}">
+                <Border Width="320" Margin="-8, 5, 0, 0">
+                    <localControls:ModeSelector Mode="{Binding Mode}">
+                        <semMode:RightPanel />
+                        <lmMode:RightPanel />
+                        <fibMode:RightPanel />
+                        <viewerMode:RightPanel />
+                        <confocalMode:RightPanel />
+                    </localControls:ModeSelector>
+                </Border>
+            </Expander>
+
+            <Grid>
+                <DockPanel x:Name="middleArea" Margin="-30,-2,-30,0">
+                    <DockPanel x:Name="topPanel" DockPanel.Dock="Top" Height="48">
+                        <localControls:ModeSelector Mode="{Binding Mode}">
+                            <semMode:MiddleToolBar />
+                            <lmMode:MiddleToolBar />
+                            <fibMode:MiddleToolBar />
+                            <viewerMode:MiddleToolBar />
+                            <confocalMode:MiddleToolBar />
+                        </localControls:ModeSelector>
+                    </DockPanel>
+
+                    <Border x:Name="leftToolBar" DockPanel.Dock="Left" Width="48" Background="{StaticResource BackgroundLightBrush}" CornerRadius="0, 8, 0, 0">
+                        <localControls:ModeSelector Mode="{Binding Mode}">
+                            <semMode:LeftToolBar />
+                            <lmMode:LeftToolBar />
+                            <fibMode:LeftToolBar />
+                            <viewerMode:LeftToolBar />
+                            <confocalMode:LeftToolBar />
+                        </localControls:ModeSelector>
+                    </Border>
+
+                    <Border x:Name="rightToolBar" DockPanel.Dock="Right" Width="48" Background="{StaticResource BackgroundLightBrush}" CornerRadius="8, 0, 0, 0">
+                        <localControls:ModeSelector Mode="{Binding Mode}">
+                            <semMode:RightToolBar />
+                            <lmMode:RightToolBar />
+                            <fibMode:RightToolBar />
+                            <viewerMode:RightToolBar />
+                            <confocalMode:RightToolBar />
+                        </localControls:ModeSelector>
+                    </Border>
+
+                    <ContentControl x:Name="imageArea">
+                        <localControls:ModeSelector Mode="{Binding Mode}">
+                            <semMode:MainArea />
+                            <lmMode:MainArea />
+                            <fibMode:MainArea />
+                            <viewerMode:MainArea />
+                            <confocalMode:MainArea />
+                        </localControls:ModeSelector>
+                    </ContentControl>
+                </DockPanel>
+
+                <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="50" CornerRadius="4,4,0,0" Margin="25,0" Visibility="{Binding InputDisabledWithMessage, Converter={StaticResource BooleanToVisibilityConverter}}" >
+                    <Border.Background>
+                        <SolidColorBrush Color="{StaticResource HighlightMutedColor}" Opacity="0.95" />
+                    </Border.Background>
+                    <TextBlock Text="{Binding BusyMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+                </Border>
+            </Grid>
+        </DockPanel>
+
+        <Border Background="Transparent" Visibility="{Binding InputDisabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
+</bwpf:DarkWindow>

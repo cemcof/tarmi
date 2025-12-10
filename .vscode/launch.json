@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "CFLMNavi Debug",
+            "name": "Tarmi Debug",
             "type": "coreclr",
             "request": "launch",
             // "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/App/CFLMnavi/bin/Debug/net8.0-windows10.0.19041/win-x64/CFLMnavi.dll",
+            "program": "${workspaceFolder}/src/App/Tarmi/bin/Debug/net8.0-windows10.0.19041/win-x64/Tarmi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/App/CFLMnavi/bin/Debug/net8.0-windows10.0.19041/win-x64/",
+            "cwd": "${workspaceFolder}/src/App/Tarmi/bin/Debug/net8.0-windows10.0.19041/win-x64/",
             "stopAtEntry": false,
             "console": "internalConsole",
             "env": {

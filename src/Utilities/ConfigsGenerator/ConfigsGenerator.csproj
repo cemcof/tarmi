@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\App\CFLMnavi.Configuration\CFLMnavi.Configuration.csproj" />
-    <ProjectReference Include="..\..\Libs\Betrian.Imaging.Common\Betrian.Imaging.Common.csproj" />
+    <ProjectReference Include="..\..\App\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+    <ProjectReference Include="..\..\Libs\Tarmi.Imaging.Common\Tarmi.Imaging.Common.csproj" />
   </ItemGroup>
 
 </Project>

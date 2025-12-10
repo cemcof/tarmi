@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Betrian.Devices.Basler.Camera;
+using Tarmi.Devices.Basler.Camera;
 using Dumpify;
 using OpenCvSharp;
 using Spectre.Console;
@@ -26,7 +26,7 @@ internal sealed class GrabSingleImageCommand : Command<GrabSingleImageCommand.Se
         _imageGraberFactory = imageGraberFactory;
     }
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

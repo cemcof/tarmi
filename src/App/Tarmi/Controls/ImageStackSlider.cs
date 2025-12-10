@@ -1,0 +1,16 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+using Tarmi.WPF.CeitecStyles.Controls;
+
+namespace Tarmi.App.Controls;
+
+public class ImageStackSlider : ScrollSlider
+{
+    public static readonly DependencyProperty LabelProperty = DependencyProperty.Register(nameof(Label), typeof(string), typeof(ImageStackSlider), new PropertyMetadata(string.Empty));
+
+    public string Label
+    {
+        get => (string)GetValue(LabelProperty);
+        set => SetValue(LabelProperty, value);
+    }
+}

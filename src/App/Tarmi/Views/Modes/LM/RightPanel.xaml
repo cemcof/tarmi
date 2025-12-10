@@ -1,0 +1,43 @@
+<appControls:ApplicationModeControlBase
+    x:Class="Tarmi.App.Views.Modes.LM.RightPanel"
+    x:TypeArguments="viewModels:LuminescenceModeViewModel"
+    xmlns:appControls="clr-namespace:Tarmi.App.WPF.Controls;assembly=Tarmi.App.WPF"
+    xmlns:bwpf="clr-namespace:Tarmi.WPF;assembly=Tarmi.WPF"
+    xmlns:viewModels="clr-namespace:Tarmi.App.ViewModels.Modes.LM"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Tarmi.App.Views.Modes.LM"
+    xmlns:modes="clr-namespace:Tarmi.App.Views.Modes"
+    xmlns:views="clr-namespace:Tarmi.App.Views"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="500"
+    xmlns:appMode="clr-namespace:Tarmi.App.WPF;assembly=Tarmi.App.WPF"
+    d:DataContext="{d:DesignInstance Type=viewModels:LuminescenceModeViewModel}"
+    Tag="{x:Static appMode:ApplicationMode.LM}"
+>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="580" />
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="ROI">
+                <views:ROIs ViewModel="{Binding RoiControl}"/>
+            </TabItem>
+        </TabControl>
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedLowerRightPanelTab}">
+            <TabItem Header="Stage">
+                <views:StageTabUserControl DataContext="{Binding}"/>
+            </TabItem>
+            <TabItem Header="Tileset">
+                <modes:TileSetGrabbingUserControl DataContext="{Binding TileSetGrabbing}"/>
+            </TabItem>
+            <TabItem Header="Z-Stack">
+                <modes:ZStackGrabbingUserControl DataContext="{Binding ZStackGrabbing, Mode=OneWay}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</appControls:ApplicationModeControlBase>

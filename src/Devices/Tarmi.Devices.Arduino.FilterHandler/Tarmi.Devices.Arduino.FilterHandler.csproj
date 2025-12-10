@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libs\Tarmi.Communication.Common\Tarmi.Communication.Common.csproj" />
+    <ProjectReference Include="..\..\App\Tarmi.Configuration\Tarmi.Configuration.csproj" />
+  </ItemGroup>
+
+</Project>

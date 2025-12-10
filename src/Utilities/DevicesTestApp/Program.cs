@@ -1,6 +1,6 @@
-﻿using Betrian.Communication.Common.Serial;
-using Betrian.Devices.Arduino.FilterHandler;
-using Betrian.Devices.Thermofisher.Instrument;
+using Tarmi.Communication.Common.Serial;
+using Tarmi.Devices.Arduino.FilterHandler;
+using Tarmi.Devices.Thermofisher.Instrument;
 using DevicesTestApp.Commands.ArduinoFilterHandler;
 using DevicesTestApp.Commands.BaslerCamera;
 using DevicesTestApp.Commands.ThermofisherInstrument;
