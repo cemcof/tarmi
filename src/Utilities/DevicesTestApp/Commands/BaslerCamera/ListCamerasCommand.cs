@@ -19,7 +19,7 @@ internal sealed class ListCamerasCommand : Command<ListCamerasCommand.Settings>
         _cameraDiscoveryService = cameraDiscoveryService;
     }
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

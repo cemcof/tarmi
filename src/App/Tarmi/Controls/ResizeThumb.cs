@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Security.Cryptography.Xml;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -32,44 +33,50 @@ public class ResizeThumb : Thumb
 
     private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
     {
-        if (DataContext is FrameworkElement item && CanvasHelper.GetDirectCanvasChild(item) is UIElement canvasChild)
+        if (DataContext is DependencyObject item && UIHelper.FindAncestor<TransformCanvas>(item) is TransformCanvas canvas && UIHelper.TryGetScaleAwareItem(UIHelper.GetDirectCanvasChild(item), out IScaleAwareItem? scaleAwareItem))
         {
-            double deltaVertical;
-            switch (VerticalAlignment)
-            {
-                case VerticalAlignment.Bottom:
-                    deltaVertical = Math.Min(-e.VerticalChange, item.Height - item.MinHeight);
-                    item.Height -= deltaVertical;
-                    break;
+            double offsetHorizontal = 0;
+            double offsetVertical = 0;
+            double deltaHorizontal = 0;
+            double deltaVertical = 0;
+            double deltaX = e.HorizontalChange;
+            double deltaY = e.VerticalChange;
 
-                case VerticalAlignment.Top:
-                    deltaVertical = Math.Min(e.VerticalChange, item.Height - item.MinHeight);
-                    Canvas.SetTop(canvasChild, Canvas.GetTop(canvasChild) + deltaVertical);
-                    item.Height -= deltaVertical;
-                    break;
 
-                default:
-                    break;
-            }
 
-            double deltaHorizontal;
             switch (HorizontalAlignment)
             {
                 case HorizontalAlignment.Left:
-                    deltaHorizontal = Math.Min(e.HorizontalChange, item.Width - item.MinWidth);
-                    Canvas.SetLeft(canvasChild, Canvas.GetLeft(canvasChild) + deltaHorizontal);
-                    item.Width -= deltaHorizontal;
+                    deltaHorizontal = -deltaX;
+                    offsetHorizontal = deltaX;
                     break;
 
                 case HorizontalAlignment.Right:
-                    deltaHorizontal = Math.Min(-e.HorizontalChange, item.Width - item.MinWidth);
-                    item.Width -= deltaHorizontal;
+                    deltaHorizontal = deltaX;
                     break;
 
                 default:
                     break;
             }
 
+            switch (VerticalAlignment)
+            {
+                case VerticalAlignment.Bottom:
+                    deltaVertical = deltaY;
+                    break;
+
+                case VerticalAlignment.Top:
+                    deltaVertical = -deltaY;
+                    offsetVertical = deltaY;
+                    break;
+
+                default:
+                    break;
+            }
+            scaleAwareItem.Move(offsetHorizontal, offsetVertical);
+            scaleAwareItem.Resize(deltaHorizontal, deltaVertical);
+            canvas.InvalidateMeasure();
+            
             e.Handled = true;
         }
     }

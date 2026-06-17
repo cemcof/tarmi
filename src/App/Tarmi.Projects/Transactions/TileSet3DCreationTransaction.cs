@@ -48,6 +48,7 @@ public class TileSet3DCreationTransaction : IDisposable
 
     private TiffMetadata CreateOrUpdateStitchedImageTiffMetadata(TiffMetadata metadata, bool isThumbnail)
     {
+        _ = isThumbnail; // currently not used, but could be in the future
         return metadata with
         {
             Software = CreateSoftwareName(),

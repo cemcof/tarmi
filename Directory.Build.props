@@ -39,6 +39,10 @@
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <Deterministic>false</Deterministic>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="analyzers" />
+      <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="analyzers" />
+    </ItemGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>

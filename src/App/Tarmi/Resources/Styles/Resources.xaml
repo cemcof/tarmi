@@ -146,26 +146,43 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type localControls:ImageViewerWithScaleBar}">
+    <Style TargetType="{x:Type localControls:ImageControl}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type localControls:ImageViewerWithScaleBar}">
-                    <Grid UseLayoutRounding="False">
-                        <localControls:ScrollDragZoomControl x:Name="PART_Scroll" Scale="{Binding Scale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}">
-                            <Grid UseLayoutRounding="False">
-                                <Image x:Name="PART_Image" Source="{Binding Image,RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}" />
+                <ControlTemplate TargetType="ContentControl">
+                    <Grid x:Name="PART_Grid" ClipToBounds="True" UseLayoutRounding="False" Background="Transparent">
+                        <Grid x:Name="PART_Content">
+                            <Image Source="{Binding ImageSource, RelativeSource={RelativeSource AncestorType=localControls:ImageControl}}" Stretch="Uniform" x:Name="PART_Image" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Image.RenderTransform>
+                                    <MatrixTransform x:Name="PART_Transform" />
+                                </Image.RenderTransform>
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor" />
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Grid>
 
-                                <ContentControl Content="{Binding Content, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"
-                                                UseLayoutRounding="False" Width="{Binding ActualWidth, ElementName=PART_Image}" Height="{Binding ActualHeight, ElementName=PART_Image}" />
+                        <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"
+                                                       Visibility="{Binding IsCenterCrossVisible, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid IsHitTestVisible="False" Margin="-20,-20" Canvas.Left="{Binding Source.Width, ElementName=PART_Image, Converter={StaticResource multiplyConverter}, ConverterParameter=0.5}"
+                                   Canvas.Top="{Binding Source.Height, ElementName=PART_Image, Converter={StaticResource multiplyConverter}, ConverterParameter=0.5}">
+                                <Line X1="0" X2="40" Y1="20" Y2="20" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                <Line X1="20" X2="20" Y1="0" Y2="40" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                             </Grid>
-                        </localControls:ScrollDragZoomControl>
+                        </localControls:TransformCanvas>
+
+                        <ContentControl Content="{Binding Content, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"
+                        UseLayoutRounding="False" />
 
                         <localControls:ScaleBar x:Name="PART_ScaleBar" Height="40" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="{StaticResource BackgroundLightBrush}" Foreground="{StaticResource ForegroundBrush}" Margin="10"
-                                                BarParts="10" MaxBarsPixelLength="{Binding ActualWidth, ElementName=PART_Scroll, Converter={StaticResource multiplyConverter}, ConverterParameter=0.6}">
+                        BarParts="10" MaxBarsPixelLength="{Binding ActualWidth, ElementName=PART_Grid, Converter={StaticResource multiplyConverter}, ConverterParameter=0.6}"
+                                                Visibility="{Binding IsScaleBarVisible, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <localControls:ScaleBar.ZoomScale>
                                 <MultiBinding Converter="{StaticResource multiplyConverter}">
-                                    <Binding Path="ImageScale" RelativeSource="{RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}"/>
-                                    <Binding Path="Scale" ElementName="PART_Scroll"/>
+                                    <Binding Path="Transform.M11" RelativeSource="{RelativeSource AncestorType={x:Type localControls:ImageControl}}"/>
+                                    <Binding Path="Zoom" RelativeSource="{RelativeSource AncestorType={x:Type localControls:ImageControl}}"/>
                                 </MultiBinding>
                             </localControls:ScaleBar.ZoomScale>
                         </localControls:ScaleBar>
@@ -260,7 +277,7 @@
 
                             <Rectangle Opacity="0.8" Fill="{StaticResource BackgroundLightBrush}" Width="60" HorizontalAlignment="Center" Canvas.Left="20" Height="250" Margin="0,0,0,4" Canvas.Bottom="{Binding (Canvas.Bottom), ElementName=PART_UpperThumb}"/>
                             <Rectangle Opacity="0.8" Fill="{StaticResource BackgroundLightBrush}" Width="60" HorizontalAlignment="Center" Canvas.Left="20" Height="250" Margin="0,0,0,-246" Canvas.Bottom="{Binding (Canvas.Bottom), ElementName=PART_LowerThumb}"/>
-                            
+
                             <Thumb x:Name="PART_LowerThumb" Focusable="False" OverridesDefaultStyle="True" HorizontalAlignment="Stretch" Width="{Binding ActualWidth ,ElementName=PART_Canvas}" Cursor="SizeNS">
                                 <Thumb.Template>
                                     <ControlTemplate TargetType="{x:Type Thumb}">
@@ -475,7 +492,7 @@
         <Ellipse x:Name="grip" Fill="{StaticResource ForegroundDarkBrush}" Stroke="{StaticResource  BackgroundDarkBrush}" StrokeThickness="2" Width="16" Height="16"
              HorizontalAlignment="Center" UseLayoutRounding="True" VerticalAlignment="Center"/>
     </ControlTemplate>
-    
+
     <ControlTemplate TargetType="{x:Type localControls:ImageStackSlider}" x:Key="imageStackSliderTemplate">
         <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
             <Grid>
@@ -526,6 +543,6 @@
         <Setter Property="Template" Value="{StaticResource imageStackSliderTemplate}"/>
     </Style>
 
-    
+
 
 </ResourceDictionary>

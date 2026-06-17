@@ -1,3 +1,6 @@
+// intended AsString design
+#pragma warning disable S3218 // Inner class members should not shadow outer class "static" or type members
+
 using CommunityToolkit.Diagnostics;
 
 namespace Tarmi.Devices.Thermofisher.Instrument.ObjectModel.PathLiterals;

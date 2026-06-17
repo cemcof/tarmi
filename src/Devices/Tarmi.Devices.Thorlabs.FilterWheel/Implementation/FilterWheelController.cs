@@ -15,7 +15,7 @@ public class FilterWheelController : IFilterWheelController
     private bool _filterWheelIsActive = false;
     private double _filterColor;
 
-    public FilterWheelController(ISerialCommunication serialCommunication, ILogger<FilterWheelController> logger)
+    public FilterWheelController(ISerialCommunication serialCommunication, ILogger logger)
     {
         _serialCommunication = serialCommunication;
         _logger = logger;

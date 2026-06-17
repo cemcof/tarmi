@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Tarmi.App.Infrastructure;
 using Tarmi.Imaging.Common;
@@ -37,7 +37,7 @@ public abstract class FilterBase : IDisposable
         {
             if (_firstSource)
             {
-                image = image with { Image = image.Image.Clone() };
+                image = image.Clone();
             }
 
             ProcessImageImplementation(image);

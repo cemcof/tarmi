@@ -40,9 +40,9 @@ internal class TarmiNaviApplicationHost : WpfApplicationHost<TarmiApplicationMod
                 );
     }
 
-    protected override void ConfigureApplicationHostEvents(ApplicationHostEvents applicationHostEvents)
-    {
-        base.ConfigureApplicationHostEvents(applicationHostEvents);
-        // here subscribe events if needed
-    }
+    //protected override void ConfigureApplicationHostEvents(ApplicationHostEvents applicationHostEvents)
+    //{
+    //    base.ConfigureApplicationHostEvents(applicationHostEvents);
+    //    // here subscribe events if needed
+    //}
 }

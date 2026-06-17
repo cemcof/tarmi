@@ -2,6 +2,8 @@
 using Tarmi.Configuration.Holders;
 using UnitsNet;
 
+namespace ConfigsGenerator;
+
 internal static class HoldersConfigGenerator
 {
     public static void Generate(string filename = "holders.xml")
@@ -189,83 +191,83 @@ internal static class HoldersConfigGenerator
         };
     }
 
-    private static Holder CreateAgAg35Hydra2Holder()
-    {
-        return new()
-        {
-            Name = "Holder AG-AG 35 HYDRA 2",
-            PreTilt = Angle.FromDegrees(35),
-            SemModePlanePoint = new()
-            {
-                X = Length.FromMillimeters(-2.7147),
-                Y = Length.FromMillimeters(2.5754),
-                Z = Length.FromMillimeters(31.7710),
-                Rotation = Angle.FromDegrees(-70),
-                Tilt = Angle.FromDegrees(35)
-            },
-            FibMillingModePlanePoint = new()
-            {
-                X = Length.FromMillimeters(-2.7147),
-                Y = Length.FromMillimeters(2.5754),
-                Z = Length.FromMillimeters(31.7710),
-                Rotation = Angle.FromDegrees(-70),
-                Tilt = Angle.FromDegrees(35)
-            },
-            FibRightAngleModePlanePoint = new()
-            {
-                X = Length.FromMillimeters(2.8087),
-                Y = Length.FromMillimeters(-2.7815),
-                Z = Length.FromMillimeters(31.7703),
-                Rotation = Angle.FromDegrees(110),
-                Tilt = Angle.FromDegrees(17)
-            },
-            LmModePlanePoint = new()
-            {
-                // !!!
-                X = Length.FromMillimeters(48.9606),
-                Y = Length.FromMillimeters(-2.5584),
-                Z = Length.FromMillimeters(31.2006),
-                Rotation = Angle.FromDegrees(0),
-                Tilt = Angle.FromDegrees(17.4)
-            },
-            ConfocalModePlanePoint = new()
-            {
-                // !!!
-                X = Length.FromMillimeters(48.9606),
-                Y = Length.FromMillimeters(-2.5584),
-                Z = Length.FromMillimeters(31.2006),
-                Rotation = Angle.FromDegrees(0),
-                Tilt = Angle.FromDegrees(17.4)
-            },
-            SafeUnknownMoveZ = Length.FromMillimeters(20),
-            SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
-            {
-                Min = Angle.FromDegrees(-2),
-                Max = Angle.FromDegrees(2)
-            },
-            Grids =
-            [
-                new CircleAreaOfInterest()
-                {
-                    Name = "AG 1",
-                    Radius = Length.FromMillimeters(1.4),
-                    Center = new() {
-                        X = Length.FromMillimeters(2.720),
-                        Y = Length.FromMillimeters(0.133),
-                    }
-                },
-                new CircleAreaOfInterest()
-                {
-                    Name = "AG 2",
-                    Radius = Length.FromMillimeters(1.4),
-                    Center = new() {
-                        X = Length.FromMillimeters(-3.275),
-                        Y = Length.FromMillimeters(-0.193),
-                    }
-                }
-            ]
-        };
-    }
+    //private static Holder CreateAgAg35Hydra2Holder()
+    //{
+    //    return new()
+    //    {
+    //        Name = "Holder AG-AG 35 HYDRA 2",
+    //        PreTilt = Angle.FromDegrees(35),
+    //        SemModePlanePoint = new()
+    //        {
+    //            X = Length.FromMillimeters(-2.7147),
+    //            Y = Length.FromMillimeters(2.5754),
+    //            Z = Length.FromMillimeters(31.7710),
+    //            Rotation = Angle.FromDegrees(-70),
+    //            Tilt = Angle.FromDegrees(35)
+    //        },
+    //        FibMillingModePlanePoint = new()
+    //        {
+    //            X = Length.FromMillimeters(-2.7147),
+    //            Y = Length.FromMillimeters(2.5754),
+    //            Z = Length.FromMillimeters(31.7710),
+    //            Rotation = Angle.FromDegrees(-70),
+    //            Tilt = Angle.FromDegrees(35)
+    //        },
+    //        FibRightAngleModePlanePoint = new()
+    //        {
+    //            X = Length.FromMillimeters(2.8087),
+    //            Y = Length.FromMillimeters(-2.7815),
+    //            Z = Length.FromMillimeters(31.7703),
+    //            Rotation = Angle.FromDegrees(110),
+    //            Tilt = Angle.FromDegrees(17)
+    //        },
+    //        LmModePlanePoint = new()
+    //        {
+    //            // !!!
+    //            X = Length.FromMillimeters(48.9606),
+    //            Y = Length.FromMillimeters(-2.5584),
+    //            Z = Length.FromMillimeters(31.2006),
+    //            Rotation = Angle.FromDegrees(0),
+    //            Tilt = Angle.FromDegrees(17.4)
+    //        },
+    //        ConfocalModePlanePoint = new()
+    //        {
+    //            // !!!
+    //            X = Length.FromMillimeters(48.9606),
+    //            Y = Length.FromMillimeters(-2.5584),
+    //            Z = Length.FromMillimeters(31.2006),
+    //            Rotation = Angle.FromDegrees(0),
+    //            Tilt = Angle.FromDegrees(17.4)
+    //        },
+    //        SafeUnknownMoveZ = Length.FromMillimeters(20),
+    //        SafeTiltRange = new Tarmi.Models.AngleRangeDescriptor()
+    //        {
+    //            Min = Angle.FromDegrees(-2),
+    //            Max = Angle.FromDegrees(2)
+    //        },
+    //        Grids =
+    //        [
+    //            new CircleAreaOfInterest()
+    //            {
+    //                Name = "AG 1",
+    //                Radius = Length.FromMillimeters(1.4),
+    //                Center = new() {
+    //                    X = Length.FromMillimeters(2.720),
+    //                    Y = Length.FromMillimeters(0.133),
+    //                }
+    //            },
+    //            new CircleAreaOfInterest()
+    //            {
+    //                Name = "AG 2",
+    //                Radius = Length.FromMillimeters(1.4),
+    //                Center = new() {
+    //                    X = Length.FromMillimeters(-3.275),
+    //                    Y = Length.FromMillimeters(-0.193),
+    //                }
+    //            }
+    //        ]
+    //    };
+    //}
 
     private static Holder CreateP3AgHolder()
     {

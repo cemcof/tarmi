@@ -15,7 +15,7 @@ internal class CheckConnectionCommand : AsyncCommand<FilterHandlerSettings>
         _filterHandlerFactory = filterHandlerFactory;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, FilterHandlerSettings settings, CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext context, FilterHandlerSettings settings, CancellationToken cancellationToken)
     {
         try
         {

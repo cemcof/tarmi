@@ -1,4 +1,4 @@
-using Tarmi.Devices.Arduino.FilterHandler;
+﻿using Tarmi.Devices.Arduino.FilterHandler;
 using Tarmi.Devices.Thorlabs.Light;
 using Tarmi.Models;
 using Tarmi.VirtualDevices.Implementation;
@@ -6,24 +6,26 @@ using UnitsNet;
 
 namespace Tarmi.VirtualDevices;
 
-public interface ILuminescenceMode : IVirtualDevice, IZStackGrabbingMode, ILuminescenceTubeControllingMode
+public interface ILuminescenceMode : IVirtualDevice, IZStackGrabbingMode
 {
-    Task<FilterType> GetModeAsync();
-    Task ChangeModeAsync(FilterType mode);
     IObservable<FilterType> ModeChanges {  get; }
     Duration ExposureTime { get; set; }
     RangeDescriptor<Duration> ExposureTimeRange { get; }
-    IObservable<LightColor?> CurrentActiveLightColor { get; }
-    LightColor? ActiveLightColor { get; }
-    Task TurnLightOn(LightColor color, CancellationToken cancellationToken);
-    Task TurnLightOff(CancellationToken cancellationToken);
+    IObservable<LightColor?> CurrentSelectedLightColor { get; }
+    LightColor? SelectedLightColor { get; }
     Ratio Intensity { get; }
     RangeDescriptor<Ratio> IntensityRange { get; }
-    Task SetIntensityAsync(Ratio intensity, CancellationToken cancellationToken);
     double Gamma { get; set; }
     RangeDescriptor<double> GammaRange { get; }
     Level Gain { get; set; }
     RangeDescriptor<Level> GainRange { get; }
     BinningSize Binning { get; set; }
     Dictionary<FilterType, LightConfiguration> DefaultLightConfigurations { get; }
+    IObservable<bool> CurrentIsLightActive { get; }
+
+    Task<FilterType> GetModeAsync();
+    Task ChangeModeAsync(FilterType mode);
+
+    Task SelectLightAsync(LightColor? color, CancellationToken cancellationToken);
+    Task SetIntensityAsync(Ratio intensity, CancellationToken cancellationToken);
 }

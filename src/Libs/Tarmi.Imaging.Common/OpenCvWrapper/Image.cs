@@ -2,7 +2,9 @@ using OpenCvSharp;
 
 namespace Tarmi.Imaging.Common.OpenCvWrapper;
 
+#pragma warning disable S4050 // Operators should be overloaded consistently
 public unsafe partial class Image<TColor, TDepth> : IImage
+#pragma warning restore S4050 // Operators should be overloaded consistently
         where TColor : struct, IColor
         where TDepth : unmanaged
 {
@@ -138,7 +140,10 @@ public unsafe partial class Image<TColor, TDepth> : IImage
     IImage IImage.CopyBlank()
         => CopyBlank();
 
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
+    // intentional
     private MatType GetMatType()
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
     {
         return GetMatType<TColor, TDepth>();
     }
@@ -163,7 +168,10 @@ public unsafe partial class Image<TColor, TDepth> : IImage
         };
     }
 
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
+    // intentional
     private ColorConversionCodes GetColorConversionCode<TDstColor>()
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
         where TDstColor : struct, IColor
     {
         return GetColorConversionCode<TColor, TDstColor>();
@@ -370,8 +378,8 @@ public unsafe partial class Image<TColor, TDepth> : IImage
 
     private void ThresholdBase(Image<TColor, TDepth> dest, TColor threshold, TColor maxValue, ThresholdTypes thresholdType)
     {
-        double[] t = threshold.Scalar.ToArray();
-        double[] m = maxValue.Scalar.ToArray();
+        //double[] t = threshold.Scalar.ToArray();
+        //double[] m = maxValue.Scalar.ToArray();
         ForEachChannel(dest, (input, output, channel) =>
         {
             _ = Cv2.Threshold(input, output, threshold.Scalar[channel], maxValue.Scalar[channel], thresholdType);
@@ -625,7 +633,7 @@ public unsafe partial class Image<TColor, TDepth> : IImage
             {
                 if (typeof(TDepth) == typeof(byte) && typeof(TSrcDepth) != typeof(byte))
                 {
-                    srcImage.MinMax(out var minVal, out var maxVal, out var minLoc, out var maxLoc);
+                    srcImage.MinMax(out var minVal, out var maxVal, out var _, out var _);
                     double min = minVal[0];
                     double max = maxVal[0];
                     for (int i = 1; i < minVal.Length; i++)
@@ -694,7 +702,7 @@ public unsafe partial class Image<TColor, TDepth> : IImage
             {
                 if (typeof(TDepth) == typeof(byte) && typeof(TSrcDepth) != typeof(byte))
                 {
-                    srcImage.MinMax(out var minVal, out var maxVal, out var minLoc, out var maxLoc);
+                    srcImage.MinMax(out var minVal, out var maxVal, out var _, out var _);
                     double min = minVal[0];
                     double max = maxVal[0];
                     for (int i = 1; i < minVal.Length; i++)

@@ -1,4 +1,4 @@
-using Tarmi.Imaging.Common;
+﻿using Tarmi.Imaging.Common;
 using Tarmi.Imaging.Common.OpenCvWrapper;
 using CommunityToolkit.Diagnostics;
 using OpenCvSharp;
@@ -339,7 +339,12 @@ public static class Overlays
         }
 
         var resultImage = Image<Bgr, byte>.FromMat(result);
-        return firstImage with { ImageId = Guid.NewGuid(), Image = resultImage };
+        return firstImage with
+        {
+            ImageId = Guid.NewGuid(),
+            Image = resultImage,
+            Coordinates = firstImage.Coordinates with { }
+        };
     }
 
     /// <summary>

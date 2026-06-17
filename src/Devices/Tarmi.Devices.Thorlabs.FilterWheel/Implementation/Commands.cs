@@ -1,8 +1,8 @@
 ﻿namespace Tarmi.Devices.Thorlabs.FilterWheel.Implementation;
 
-internal class Commands
+internal static class Commands
 {
-    public static string GetCurrentPositionCommand() => "";
+    public static string GetCurrentPositionCommand() => $"";
 
     public static string SetGoToPositionCommand(long position) => $"{position:X8}";
 

@@ -1,11 +1,15 @@
+﻿#pragma warning disable OCVS005 // Intermediate MatExpr not disposed in chained Mat arithmetic
+#pragma warning disable OCVS003 // Mat.Row() / Mat.Col() called inside a loop
+#pragma warning disable OCVS004 // Mat submatrix not disposed
+
 using System.Diagnostics;
-using Tarmi.Imaging.Algorithms.Utilities;
 using CommunityToolkit.Diagnostics;
 using OpenCvSharp;
+using Tarmi.Imaging.Algorithms.Utilities;
 
 namespace Tarmi.Imaging.Algorithms.Focus.Sharpness;
 
-public class FastImageSharpness
+public static class FastImageSharpness
 {
     public static async Task<double> CalculateIndex(Mat mat)
     {
@@ -45,7 +49,7 @@ public class FastImageSharpness
     /// <summary>
     /// Empirical coefficient
     /// </summary>
-    private const double Alpha = 0.8;
+    private const double AlphaRatio = 0.8;
 
     private static double[] ComputeLogEnergies(Mat wavelet, int levels)
     {
@@ -67,7 +71,7 @@ public class FastImageSharpness
             var highHighRoi = new Rect(width, height, width, height);
             using var highHigh = squaredWavelet.SubMat(highHighRoi);
 
-            result[level] = (1 - Alpha) / 2 * (CalculateLogEnergy(lowHigh) + CalculateLogEnergy(highLow)) + Alpha * CalculateLogEnergy(highHigh);
+            result[level] = (1 - AlphaRatio) / 2 * (CalculateLogEnergy(lowHigh) + CalculateLogEnergy(highLow)) + AlphaRatio * CalculateLogEnergy(highHigh);
         }
 
         return result;
@@ -90,7 +94,7 @@ public class FastImageSharpness
     /// <summary>
     /// Cohen-Daubechies-Feauveau 9/7 wavelet transform
     /// </summary>
-    private class CDF97
+    private static class CDF97
     {
         // Lifting scheme coefficients
         private const double Alpha = -1.586134342;

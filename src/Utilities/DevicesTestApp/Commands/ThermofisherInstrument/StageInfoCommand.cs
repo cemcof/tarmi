@@ -20,7 +20,7 @@ internal sealed class StageInfoCommand : Command<StageInfoCommand.Settings>
         _stage = stage;
     }
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

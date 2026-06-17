@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -13,9 +13,9 @@ public sealed class SimulatedLightController : ILightController
     private readonly BehaviorSubject<LightColor?> _activeLightSubject = new(null);
     private readonly BehaviorSubject<Ratio> _brightnessSubject = new(Ratio.FromPercent(0));
 
-    public IObservable<LightColor?> CurrentActiveLight => _activeLightSubject.DistinctUntilChanged();
+    public IObservable<LightColor?> CurrentSelectedLight => _activeLightSubject.DistinctUntilChanged();
 
-    public LightColor? ActiveLight
+    public LightColor? SelectedLight
     {
         get => _activeLightSubject.Value;
         private set => _logger.Swallow(() => _activeLightSubject.OnNext(value));
@@ -28,6 +28,16 @@ public sealed class SimulatedLightController : ILightController
         get => _brightnessSubject.Value;
         private set => _logger.Swallow(() => _brightnessSubject.OnNext(value));
     }
+
+    private readonly BehaviorSubject<bool> _isActiveLight = new(false);
+    public bool IsLightActive
+    {
+        get => _isActiveLight.Value;
+        set => _logger.Swallow(() => _isActiveLight.OnNext(value));
+    }
+
+    public IObservable<bool> CurrentIsLightActive => _isActiveLight.DistinctUntilChanged();
+
     public SimulatedLightController(ILogger<SimulatedLightController> logger)
     {
         _logger = logger;
@@ -38,9 +48,9 @@ public sealed class SimulatedLightController : ILightController
         GC.SuppressFinalize(this);
     }
 
-    public async Task SetBrightnessAsync(Ratio brightness, CancellationToken cancellationToken = default)
+    public async Task SetBrightnessAsync(Ratio brightness, CancellationToken cancellationToken)
     {
-        Guard.IsBetweenOrEqualTo(brightness.Percent, 0, 100, nameof(brightness));
+        Guard.IsBetweenOrEqualTo(brightness.Percent, 0, 100);
 
         await Task.Delay(AnswerDelay, cancellationToken);
 
@@ -50,26 +60,38 @@ public sealed class SimulatedLightController : ILightController
 
     public async Task Initialize(CancellationToken cancellationToken)
     {
-        await SetActiveLightAsync(null, cancellationToken);
+        await SelectLightAsync(null, cancellationToken);
         await SetBrightnessAsync(Brightness, cancellationToken);
     }
 
     public async Task Deinitialize(CancellationToken cancellationToken)
     {
-        await SetActiveLightAsync(null, cancellationToken);
+        await SelectLightAsync(null, cancellationToken);
     }
 
-    public async Task SetActiveLightAsync(LightColor? color, CancellationToken cancellationToken = default)
+    public async Task SelectLightAsync(LightColor? color, CancellationToken cancellationToken)
     {
         await Task.Delay(AnswerDelay, cancellationToken);
         if (color.HasValue)
         {
             _logger.LogTrace("Simulator {Light} set on with {Brightness}.", color.Value, Brightness);
         }
-        else if (ActiveLight.HasValue)
+        else if (SelectedLight.HasValue)
         {
-            _logger.LogTrace("Simulator {Light} set off.", ActiveLight);
+            _logger.LogTrace("Simulator {Light} set off.", SelectedLight);
         }
-        ActiveLight = color;
+        SelectedLight = color;
+    }
+
+    public async Task TurnLightOnAsync(CancellationToken cancellationToken)
+    {
+        await Task.Delay(AnswerDelay, cancellationToken);
+        IsLightActive = true;
+    }
+
+    public async Task TurnLightOffAsync(CancellationToken cancellationToken)
+    {
+        await Task.Delay(AnswerDelay, cancellationToken);
+        IsLightActive = false; 
     }
 }

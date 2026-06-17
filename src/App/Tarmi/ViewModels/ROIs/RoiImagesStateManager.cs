@@ -19,8 +19,8 @@ public partial class RoiImagesStateManager : ObservableObject
     private VirtualDeviceViewModel? _virtualDeviceViewModel;
     private RoiVM? _selectedRoi;
     private ImageChildVM? _primarySource;
-    private readonly List<ImageChildVM> _overlaySources = [];
     private ImageChildVM? _secondarySource;
+    private readonly List<ImageChildVM> _overlaySources = [];
     private readonly Subject<TileSetVirtualChildVM?> _primaryTileSet = new();
 
     public bool IsZStackVisible
@@ -57,10 +57,10 @@ public partial class RoiImagesStateManager : ObservableObject
             device.ShowSecondaryImage = false;
             device.SecondaryImageWithMetadata?.Dispose();
             device.SecondaryImageWithMetadata = null;
-        _secondarySource?.Unselect();
-        _secondarySource = null;
-        UpdateCanToggleVisibilities();
-    }
+            _secondarySource?.Unselect();
+            _secondarySource = null;
+            UpdateCanToggleVisibilities();
+        }
     }
 
     private async Task AddPrimaryImage(ImageChildVM childVM)
@@ -99,22 +99,23 @@ public partial class RoiImagesStateManager : ObservableObject
     private void ChangeBoundImageLayers(StackedImageChildVM sourceChildVM)
     {
         var linkId = sourceChildVM.Descriptor.LinkId;
-        if (_primarySource is StackedImageChildVM primaryStack && primaryStack.Descriptor.LinkId == linkId)
+        if (
+            _primarySource is StackedImageChildVM primaryStack &&
+            primaryStack.Descriptor.LinkId == linkId &&
+            primaryStack.Index != sourceChildVM.Index
+        )
         {
-            if (primaryStack.Index != sourceChildVM.Index)
-            {
-                primaryStack.Index = sourceChildVM.Index;
-            }
+            primaryStack.Index = sourceChildVM.Index;
         }
 
         foreach (var overlaySource in _overlaySources.OfType<StackedImageChildVM>())
         {
-            if (overlaySource.Descriptor.LinkId == linkId)
+            if (
+                overlaySource.Descriptor.LinkId == linkId &&
+                overlaySource.Index != sourceChildVM.Index
+            )
             {
-                if (overlaySource.Index != sourceChildVM.Index)
-                {
-                    overlaySource.Index = sourceChildVM.Index;
-                }
+                overlaySource.Index = sourceChildVM.Index;
             }
         }
     }
@@ -142,15 +143,15 @@ public partial class RoiImagesStateManager : ObservableObject
         }
         else
         {
-        var overlayVm = _overlaySources.FirstOrDefault(source => GetPipelineImageId(source) == layerId);
-            if (overlayVm is not null)
-        {
-                if (_virtualDeviceViewModel is VirtualDeviceViewModel device)
-                {
-                    await device.ImagingPipeline.UpdateOverlayImage(GetPipelineImageId(childVM), filePath, childVM.Descriptor.CorrelationInfo);
-        ChangeBoundImageLayers(childVM);
-    }
-    }
+            var overlayVm = _overlaySources.FirstOrDefault(source => GetPipelineImageId(source) == layerId);
+            if (
+                overlayVm is not null &&
+                _virtualDeviceViewModel is VirtualDeviceViewModel device
+            )
+            {
+                await device.ImagingPipeline.UpdateOverlayImage(GetPipelineImageId(childVM), filePath, childVM.Descriptor.CorrelationInfo);
+                ChangeBoundImageLayers(childVM);
+            }
         }
     }
 
@@ -173,8 +174,8 @@ public partial class RoiImagesStateManager : ObservableObject
         if (_virtualDeviceViewModel is VirtualDeviceViewModel device)
         {
             _ = _overlaySources.Remove(childVM);
-                await device.ImagingPipeline.RemoveOverlayImage(GetPipelineImageId(childVM));
-                await device.ImagingPipeline.Invalidate();
+            await device.ImagingPipeline.RemoveOverlayImage(GetPipelineImageId(childVM));
+            await device.ImagingPipeline.Invalidate();
         }
     }
 
@@ -326,7 +327,7 @@ public partial class RoiImagesStateManager : ObservableObject
                 await RemoveOverlayImage(childVM);
                 UpdateControllableZStack();
                 break;
-            case ImageSelection.Unselected:
+            //case ImageSelection.Unselected:
             default:
                 if (_primarySource is null)
                 {
@@ -387,28 +388,26 @@ public partial class RoiImagesStateManager : ObservableObject
 
     internal async Task OnRoiCorrelationModeChanged(RoiVM roiVM)
     {
-        if (_virtualDeviceViewModel is VirtualDeviceViewModel device)
+        if (
+            _virtualDeviceViewModel is VirtualDeviceViewModel device &&
+            _selectedRoi?.Id == roiVM.Id
+        )
         {
-            if (_selectedRoi?.Id == roiVM.Id)
-            {
-                var targetState = !roiVM.CorrelationByFiducials;
-                {
-                    await device.ImagingPipeline.SetCorrelationMode(targetState);
-                }
-                roiVM.UpdateCorrelationMode(targetState);
-                await ClearState();
-            }
+            var targetState = !roiVM.CorrelationByFiducials;
+            await device.ImagingPipeline.SetCorrelationMode(targetState);
+            roiVM.UpdateCorrelationMode(targetState);
+            await ClearState();
         }
     }
 
     public async Task OnImageCorrelationSettingUpdated(ImageChildVM childVM)
     {
-        if (_virtualDeviceViewModel is VirtualDeviceViewModel device)
+        if (
+            _virtualDeviceViewModel is VirtualDeviceViewModel device &&
+            _overlaySources.Any(source => GetPipelineImageId(source) == GetPipelineImageId(childVM))
+        )
         {
-            if (_overlaySources.Any(source => GetPipelineImageId(source) == GetPipelineImageId(childVM)))
-            {
-                await device.ImagingPipeline.Invalidate();
-            }
+            await device.ImagingPipeline.Invalidate();
         }
     }
 

@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Tarmi.Models;
 using Tarmi.Models.Serialization;
 using UnitsNet;
@@ -25,8 +25,9 @@ public record Holder
 
     [DataMember(IsRequired = true)]
     public required StagePosition FibMillingModePlanePoint { get; init; }
-    [DataMember(IsRequired = true)]
-    public required StagePosition ConfocalModePlanePoint { get; init; }
+
+    [DataMember(IsRequired = false)]
+    public required StagePosition ConfocalModePlanePoint { get; init; } = new();
 
     [DataMember(IsRequired = true)]
     public required Length SafeUnknownMoveZ { get; init; }

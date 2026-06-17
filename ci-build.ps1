@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop";
 
 $Env:CI='1'
-$Env:APP_VERSION='1.6.64'
+$Env:APP_VERSION='1.6.66'
 $Env:CONFIGURATION='Release'
 
 $version=$Env:APP_VERSION
@@ -15,8 +15,8 @@ function Ensure-Directory([String] $path)
 }
 
 dotnet tool install --global wix --version 6.0.2
-wix extension -g add WixToolset.Util.wixext
-wix extension -g add WixToolset.UI.wixext
+wix extension -g add WixToolset.Util.wixext/6.0.2
+wix extension -g add WixToolset.UI.wixext/6.0.2
 
 $projects = @(
     ('src\App\installer\installer.csproj', 'installer'),

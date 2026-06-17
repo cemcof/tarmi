@@ -1,12 +1,13 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
 using SimpleBase;
+using System.Linq;
 
 namespace Tarmi.Serializers.Ini;
 
-internal class IniDeserialization
+internal static class IniDeserialization
 {
     private const string ArraySeparator = ", ";
 
@@ -16,46 +17,43 @@ internal class IniDeserialization
         var obj = new T();
         var properties = GetStringProperties(content);
         var type = obj.GetType();
-        foreach (var propertyInfo in type.GetProperties())
+        foreach (var propertyInfo in type.GetProperties().Where(propertyInfo => propertyInfo.IsDefined(typeof(IniSectionAttribute))))
         {
-            if (propertyInfo.IsDefined(typeof(IniSectionAttribute)))
+            var sectionAttribute = propertyInfo.GetCustomAttribute<IniSectionAttribute>();
+            object? sectionObj = null;
+            var method = propertyInfo.GetGetMethod();
+            if (method != null)
             {
-
-                var sectionAttribute = propertyInfo.GetCustomAttribute<IniSectionAttribute>();
-                object? sectionObj = null;
-                var method = propertyInfo.GetGetMethod();
-                if (method != null)
+                sectionObj = method.Invoke(obj, null);
+                if (sectionObj == null)
                 {
-                    sectionObj = method.Invoke(obj, null);
-                    if (sectionObj == null)
+                    method = propertyInfo.GetSetMethod(true);
+                    if (method != null)
                     {
-                        method = propertyInfo.GetSetMethod(true);
-                        if (method != null)
-                        {
-                            sectionObj = Activator.CreateInstance(propertyInfo.PropertyType);
-                            _ = method.Invoke(obj, [sectionObj]);
-                        }
+                        sectionObj = Activator.CreateInstance(propertyInfo.PropertyType);
+                        _ = method.Invoke(obj, [sectionObj]);
                     }
                 }
-                if (sectionObj is not null)
+            }
+            if (sectionObj is not null)
+            {
+                foreach (var sectionProperty in sectionObj.GetType().GetProperties())
                 {
-                    foreach (var sectionProperty in sectionObj.GetType().GetProperties())
+                    var setMethod = sectionProperty.GetSetMethod();
+                    if (setMethod is not null)
                     {
-                        var setMethod = sectionProperty.GetSetMethod();
-                        if (setMethod is not null)
+                        var sectionPropertyName = sectionProperty.GetCustomAttribute<IniValueAttribute>()?.Name ?? sectionProperty.Name;
+                        var property = properties.Find(p => p.Section == sectionAttribute!.Name && p.Name == sectionPropertyName);
+                        if (property is not null)
                         {
-                            var sectionPropertyName = sectionProperty.GetCustomAttribute<IniValueAttribute>()?.Name ?? sectionProperty.Name;
-                            var property = properties.Find(p => p.Section == sectionAttribute!.Name && p.Name == sectionPropertyName);
-                            if (property is not null)
-                            {
-                                var processedValue = ProcessValue(property.Value?.ToString() ?? string.Empty, sectionProperty.PropertyType, sectionProperty);
-                                _ = setMethod.Invoke(sectionObj, [processedValue]);
-                            }
+                            var processedValue = ProcessValue(property.Value?.ToString() ?? string.Empty, sectionProperty.PropertyType, sectionProperty);
+                            _ = setMethod.Invoke(sectionObj, [processedValue]);
                         }
                     }
                 }
             }
         }
+
         return obj;
     }
 
@@ -84,7 +82,9 @@ internal class IniDeserialization
                     {
                         if (s != 0)
                         {
+#pragma warning disable S1643 // Strings should not be concatenated using '+' in a loop
                             value += (s == settingParts.Length - 1) ? settingParts[s] : settingParts[s] + " ";
+#pragma warning restore S1643 // Strings should not be concatenated using '+' in a loop
                         }
                     }
                     var property = new Property()
@@ -104,40 +104,40 @@ internal class IniDeserialization
     private static DateOnly ProcessDateOnly(string value, PropertyInfo? propertyInfo)
     {
         var customAttr = propertyInfo?.GetCustomAttribute<IniValueFormatterAttribute>();
-        if (customAttr is not null)
+        if (
+            customAttr is not null &&
+            DateOnly.TryParseExact(value, customAttr.Formatter, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d1)
+        )
         {
-            if (DateOnly.TryParseExact(value, customAttr.Formatter, out var d1))
-            {
-                return d1;
-            }
+            return d1;
         }
-        return DateOnly.TryParse(value, CultureInfo.InvariantCulture, out var d2) ? d2 : DateOnly.MinValue;
+        return DateOnly.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d2) ? d2 : DateOnly.MinValue;
     }
 
     private static TimeOnly ProcessTimeOnly(string value, PropertyInfo? propertyInfo)
     {
         var customAttr = propertyInfo?.GetCustomAttribute<IniValueFormatterAttribute>();
-        if (customAttr is not null)
+        if (
+            customAttr is not null &&
+            TimeOnly.TryParseExact(value, customAttr.Formatter, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d1)
+        )
         {
-            if (TimeOnly.TryParseExact(value, customAttr.Formatter, out var d1))
-            {
-                return d1;
-            }
+            return d1;
         }
-        return TimeOnly.TryParse(value, CultureInfo.InvariantCulture, out var d2) ? d2 : TimeOnly.MinValue;
+        return TimeOnly.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d2) ? d2 : TimeOnly.MinValue;
     }
 
     private static DateTime ProcessDateTime(string value, PropertyInfo? propertyInfo)
     {
         var customAttr = propertyInfo?.GetCustomAttribute<IniValueFormatterAttribute>();
-        if (customAttr is not null)
+        if (
+            customAttr is not null &&
+            DateTime.TryParseExact(value, customAttr.Formatter, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d1)
+        )
         {
-            if (DateTime.TryParseExact(value, customAttr.Formatter, CultureInfo.InvariantCulture, DateTimeStyles.None, out var d1))
-            {
-                return d1;
-            }
+            return d1;
         }
-        return DateTime.TryParse(value, CultureInfo.InvariantCulture, out var d2) ? d2 : DateTime.MinValue;
+        return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d2) ? d2 : DateTime.MinValue;
     }
 
     private static object? ProcessValue(string value, Type propertyType, PropertyInfo? propertyInfo = null)
@@ -179,7 +179,7 @@ internal class IniDeserialization
         }
         else if (propertyType == typeof(TimeSpan))
         {
-            if (TimeSpan.TryParse(value!.ToString(), out var span))
+            if (TimeSpan.TryParse(value!.ToString(), CultureInfo.InvariantCulture, out var span))
             {
                 return span;
             }
@@ -335,7 +335,10 @@ internal class IniDeserialization
                 var kv = item.Split(ArraySeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
                 var key = ProcessValue(kv[0], keyType);
                 var val = ProcessValue(kv[1], valueType);
+#pragma warning disable S1751 // Loops with at most one iteration should be refactored
+                // TODO: check if this can be refactored
                 return ctor.Invoke([key, val]);
+#pragma warning restore S1751 // Loops with at most one iteration should be refactored
             }
         }
 

@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,5 +15,5 @@ internal static class Commands
 
     public static string SetLightStateCommand(LightColor color, bool on) => $"o {color.ToChannel()} {on.ToInt()}";
 
-    public static string SetLightBrightnessCommand(LightColor color, Ratio brightness) => FormattableString.Invariant($"bp {color.ToChannel()} {brightness.Percent:N2}");
+    public static string SetLightBrightnessCommand(LightColor color, Ratio brightness) => string.Create(CultureInfo.InvariantCulture, $"bp {color.ToChannel()} {brightness.Percent:N2}");
 }

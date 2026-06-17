@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Fei.XT.Instrument.gen;
@@ -7,7 +7,7 @@ namespace Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Implementation;
 
 internal class XtConnectionService : BackgroundService
 {
-    private readonly ILogger<XtConnectionService> _logger;
+    private readonly ILogger _logger;
     private readonly IXtObjectsCollection _xtObjects;
     private readonly IBrickConnector _brickConnector;
     private IInstrumentInfo? _instrumentInfo = null;
@@ -25,6 +25,8 @@ internal class XtConnectionService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _ = _logger;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);

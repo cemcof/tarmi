@@ -1,3 +1,6 @@
+// TODO: check the design
+#pragma warning disable S3218 // Inner class members should not shadow outer class "static" or type members
+
 using System.Text;
 
 namespace Tarmi.Devices.SmarAct.Stage.Implementation;

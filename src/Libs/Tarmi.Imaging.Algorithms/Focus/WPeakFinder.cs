@@ -1,6 +1,6 @@
 namespace Tarmi.Imaging.Algorithms.Focus;
 
-public class WPeakFinder
+public static class WPeakFinder
 {
     public static (int LowerBoundIndex, int UpperBoundIndex)? FindPeakBounds(IList<double> series, int stableComparisonsCount = 2)
     {

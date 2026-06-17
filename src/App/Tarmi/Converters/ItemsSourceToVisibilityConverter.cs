@@ -14,12 +14,9 @@ public class ItemsSourceToVisibilityConverter : IValueConverter
         {
             foreach (var item in collection)
             {
-                if (item is Control control)
+                if (item is Control control && control.Visibility != Visibility.Collapsed)
                 {
-                    if (control.Visibility != Visibility.Collapsed)
-                    {
-                        return Visibility.Visible;
-                    }
+                    return Visibility.Visible;
                 }
             }
         }

@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -6,7 +6,15 @@ namespace Tarmi.WPF.CeitecStyles.Controls;
 
 public class HistogramPolygon : Shape
 {
-    public static readonly DependencyProperty HistogramProperty = DependencyProperty.Register(nameof(Histogram), typeof(SortedDictionary<int, double>), typeof(HistogramPolygon), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender, OnHistogramChanged));
+    public static readonly DependencyProperty HistogramProperty =
+        DependencyProperty.Register(
+            nameof(Histogram),
+            typeof(SortedDictionary<int, double>),
+            typeof(HistogramPolygon),
+            new FrameworkPropertyMetadata(
+                null,
+                FrameworkPropertyMetadataOptions.AffectsRender,
+                OnHistogramChanged));
 
     private Geometry _definingGeometry = Geometry.Empty;
 
@@ -28,32 +36,47 @@ public class HistogramPolygon : Shape
 
     private void UpdateGeometry()
     {
-        if (Histogram is null || Histogram.Count <= 2)
+        SortedDictionary<int, double>? histogram = Histogram;
+        if (histogram is null || histogram.Count <= 2)
         {
+            _definingGeometry = Geometry.Empty;
             return;
         }
 
-        PathFigure path = new()
-        {
-            StartPoint = new Point(0, 1)
-        };
+        StreamGeometry geometry = new();
 
-        path.Segments.Add(new LineSegment(new Point(0, 1 - Histogram[0]), false));
-
-        PolyLineSegment curve = new();
-        for (int i = 1; i < Histogram.Count; i++)
+        using (StreamGeometryContext context = geometry.Open())
         {
-            curve.Points.Add(new Point(i, 1 - Histogram[i]));
+            context.BeginFigure(new Point(0, 1), isFilled: true, isClosed: true);
+
+            using IEnumerator<double> values = histogram.Values.GetEnumerator();
+            if (!values.MoveNext())
+            {
+                _definingGeometry = Geometry.Empty;
+                return;
+            }
+
+            context.LineTo(new Point(0, 1 - values.Current), isStroked: true, isSmoothJoin: false);
+
+            int pointCount = histogram.Count - 1;
+            if (pointCount > 0)
+            {
+                Point[] points = new Point[pointCount];
+                int x = 1;
+                int i = 0;
+
+                while (values.MoveNext())
+                {
+                    points[i++] = new Point(x++, 1 - values.Current);
+                }
+
+                context.PolyLineTo(points, isStroked: true, isSmoothJoin: false);
+            }
+
+            context.LineTo(new Point(histogram.Count - 1, 1), isStroked: true, isSmoothJoin: false);
         }
-        path.Segments.Add(curve);
 
-        path.Segments.Add(new LineSegment(new Point(Histogram.Count - 1, 1), false));
-        path.Segments.Add(new LineSegment(new Point(0, 1), false));
-
-        path.IsClosed = true;
-
-        PathGeometry geometry = new();
-        geometry.Figures.Add(path);
+        geometry.Freeze();
         _definingGeometry = geometry;
     }
 }

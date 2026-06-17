@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Tarmi.Communication.Common.Serial.Implementation;
+
 public sealed class SerialCommunication : ISerialCommunication
 {
     private readonly SerialPort _serialPort;
@@ -32,7 +28,7 @@ public sealed class SerialCommunication : ISerialCommunication
         await _serialPort.WriteLineAsync(command, cancellationToken);
     }
 
-    public async Task<string> SendCommandWithResponseAsync(string command, CancellationToken cancellationToken)
+    public async Task<string> SendCommandWithResponseAsync(string command, CancellationToken cancellationToken = default)
     {
         using var lockGuard = await _semaphore.UseOnceAsync(cancellationToken);
         _logger.LogInformation("Sending command {Command} to port {Port}.", command, _serialPort.PortName);

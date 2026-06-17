@@ -30,7 +30,7 @@ public sealed class NestedZStackCreationTransaction : ZStackCreationTransaction
             RegionOfInterestId = _descriptor.RegionOfInterestId,
             LayerId = _descriptor.Id
         };
-        var filename = $"{++index:00000}{ProjectExtensions.ImageExtension}";
+        var filename = $"{index + 1:00000}{ProjectExtensions.ImageExtension}";
         var path = Path.Combine(_project.GetLayerDirectoryPath(_parentLayer, _descriptor), filename);
         TiffImage.Save(image, path);
         _descriptor = _descriptor with

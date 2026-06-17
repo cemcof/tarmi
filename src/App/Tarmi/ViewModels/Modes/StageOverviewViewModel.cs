@@ -72,6 +72,7 @@ public abstract partial class StageOverviewViewModel : ObservableObject
         StageState = state;
         SamplePosition = _stageNavigation.GetPlanePosition(StageState.CurrentPosition, _safeStageControlling.ActiveCameraView);
     }
-    private string CreateActivityName([CallerMemberName] string methodName = "")
+
+    private static string CreateActivityName([CallerMemberName] string methodName = "")
         => $"{nameof(StageOverviewViewModel)}::{methodName}";
 }

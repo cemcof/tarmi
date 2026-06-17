@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using Tarmi.Communication.Common.Serial;
 using Tarmi.Configuration;
 using Tarmi.Configuration.Devices;
@@ -10,20 +10,17 @@ namespace Tarmi.Devices.Thorlabs.Light.Implementation;
 
 internal class LightControllerFactory : ILightControllerFactory
 {
-    private readonly ISerialCommunicationFactory _serialCommunicationFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
     private readonly bool _simulationEnabled;
     private readonly Thorlabs4100 _thorlabsConfig;
 
     public LightControllerFactory(
-        ISerialCommunicationFactory serialCommunicationFactory,
         ILoggerFactory loggerFactory,
         ILogger<LightControllerFactory> logger,
         ApplicationConfig applicationConfig
     )
     {
-        _serialCommunicationFactory = serialCommunicationFactory;
         _loggerFactory = loggerFactory;
         _logger = logger;
         _simulationEnabled = applicationConfig.Simulation.Enabled;
@@ -33,16 +30,11 @@ internal class LightControllerFactory : ILightControllerFactory
     public ILightController CreateLightController()
     {
         _logger.LogInformation("Creating light controller with {@Configuration}", _thorlabsConfig.Port);
-        bool useThorlabsDriver = true;
         if (_simulationEnabled)
         {
             return new SimulatedLightController(_loggerFactory.CreateLogger<SimulatedLightController>());
         }
-        else if (useThorlabsDriver)
-        {
-            return new ThorlabsLightController(InitializeThorlabsController(), _loggerFactory.CreateLogger<ThorlabsLightController>());
-        }
-        return new LightController(_serialCommunicationFactory, _thorlabsConfig.Port,  _loggerFactory.CreateLogger<LightController>());
+        return new ThorlabsLightController(InitializeThorlabsController(), _loggerFactory.CreateLogger<ThorlabsLightController>());
     }
 
     private TLDC4100 InitializeThorlabsController()

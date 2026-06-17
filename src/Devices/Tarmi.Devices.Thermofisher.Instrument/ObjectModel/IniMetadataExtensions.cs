@@ -1,4 +1,4 @@
-using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
+﻿using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Tarmi.Imaging.Common.Metadata.Thermofisher.IniFormat;
 using Fei.XT.Instrument.gen;
 
@@ -145,40 +145,40 @@ internal static class IniMetadataExtensions
         };
     }
 
-    private static GisSection CreateGisSection(this Memento memento)
-    {
-        return new GisSection
-        {
-            Number = memento.Get<int>("GIS.Number")
-        };
-    }
+    //private static GisSection CreateGisSection(this Memento memento)
+    //{
+    //    return new GisSection
+    //    {
+    //        Number = memento.Get<int>("GIS.Number")
+    //    };
+    //}
 
-    private static ScanSection CreateScanSection(this Memento memento, string beamType)
-    {
-        var filterType = memento.Get<string>("View.FilterType") ?? "Live";
-        var filterCount = memento.Get<int>("View.FilterCount");
-        if (filterCount == 0)
-        {
-            filterCount = 1;
-        }
+    //private static ScanSection CreateScanSection(this Memento memento, string beamType)
+    //{
+    //    var filterType = memento.Get<string>("View.FilterType") ?? "Live";
+    //    var filterCount = memento.Get<int>("View.FilterCount");
+    //    if (filterCount == 0)
+    //    {
+    //        filterCount = 1;
+    //    }
 
-        var dwellTime = memento.Get<double>($"{beamType}.DwellTime");
-        var width = memento.Get<double>($"{beamType}.PixelSize.Width");
-        var height = memento.Get<double>($"{beamType}.PixelSize.Height");
+    //    var dwellTime = memento.Get<double>($"{beamType}.DwellTime");
+    //    var width = memento.Get<double>($"{beamType}.PixelSize.Width");
+    //    var height = memento.Get<double>($"{beamType}.PixelSize.Height");
 
-        return new ScanSection
-        {
-            InternalScan = true,
-            Dwelltime = dwellTime,
-            PixelWidth = width,
-            PixelHeight = height,
-            HorFieldsize = memento.Get<double>($"{beamType}.ScanField.Width"),
-            VerFieldsize = memento.Get<double>($"{beamType}.ScanField.Height"),
-            Average = filterType == "Average" ? filterCount : 0,
-            Integrate = filterType == "Integrate" ? filterCount : 0,
-            FrameTime = width * height * dwellTime * filterCount
-        };
-    }
+    //    return new ScanSection
+    //    {
+    //        InternalScan = true,
+    //        Dwelltime = dwellTime,
+    //        PixelWidth = width,
+    //        PixelHeight = height,
+    //        HorFieldsize = memento.Get<double>($"{beamType}.ScanField.Width"),
+    //        VerFieldsize = memento.Get<double>($"{beamType}.ScanField.Height"),
+    //        Average = filterType == "Average" ? filterCount : 0,
+    //        Integrate = filterType == "Integrate" ? filterCount : 0,
+    //        FrameTime = width * height * dwellTime * filterCount
+    //    };
+    //}
 
     private static NamedScanSection CreateNamedScanSection(this Memento memento, string beamType)
     {
@@ -199,27 +199,27 @@ internal static class IniMetadataExtensions
         };
     }
 
-    private static StageSection CreateStageSection(this Memento memento, string beamType)
-    {
-        return new StageSection
-        {
-            ActiveStage = memento.Get<string>("stage.ActiveStage")!,
-            StageX = memento.Get<double>("stage.Position.x"),
-            StageY = memento.Get<double>("stage.Position.y"),
-            StageZ = memento.Get<double>("stage.Position.z"),
-            StageR = memento.Get<double>("stage.Position.Rotation"),
-            StageT = memento.Get<double>("stage.Position.Tilt"),
-            StageTb = memento.Get<double>("stage.Position.BetaTilt"),
-            StageRawX = memento.Get<double>("stage.PositionRaw.x"),
-            StageRawY = memento.Get<double>("stage.PositionRaw.y"),
-            StageRawZ = memento.Get<double>("stage.PositionRaw.z"),
-            StageRawR = memento.Get<double>("stage.PositionRaw.Rotation"),
-            StageRawT = memento.Get<double>("stage.PositionRaw.Tilt"),
-            StageRawTb = memento.Get<double>("stage.PositionRaw.BetaTilt"),
-            SpecTilt = 0,
-            WorkingDistance = memento.Get<double>("stage.Position.z")
-        };
-    }
+    //private static StageSection CreateStageSection(this Memento memento, string beamType)
+    //{
+    //    return new StageSection
+    //    {
+    //        ActiveStage = memento.Get<string>("stage.ActiveStage")!,
+    //        StageX = memento.Get<double>("stage.Position.x"),
+    //        StageY = memento.Get<double>("stage.Position.y"),
+    //        StageZ = memento.Get<double>("stage.Position.z"),
+    //        StageR = memento.Get<double>("stage.Position.Rotation"),
+    //        StageT = memento.Get<double>("stage.Position.Tilt"),
+    //        StageTb = memento.Get<double>("stage.Position.BetaTilt"),
+    //        StageRawX = memento.Get<double>("stage.PositionRaw.x"),
+    //        StageRawY = memento.Get<double>("stage.PositionRaw.y"),
+    //        StageRawZ = memento.Get<double>("stage.PositionRaw.z"),
+    //        StageRawR = memento.Get<double>("stage.PositionRaw.Rotation"),
+    //        StageRawT = memento.Get<double>("stage.PositionRaw.Tilt"),
+    //        StageRawTb = memento.Get<double>("stage.PositionRaw.BetaTilt"),
+    //        SpecTilt = 0,
+    //        WorkingDistance = memento.Get<double>("stage.Position.z")
+    //    };
+    //}
 
     //[Image]
     //DigitalContrast=1

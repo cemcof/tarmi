@@ -26,7 +26,7 @@ internal sealed class GrabSingleImageCommand : Command<GrabSingleImageCommand.Se
         _imageGraberFactory = imageGraberFactory;
     }
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

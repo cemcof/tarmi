@@ -41,9 +41,9 @@ internal abstract class ImageSourceBase
     private volatile bool _isActivated;
     private readonly BehaviorSubject<DetectorState> _detectorStateSubject = new(DetectorState.Zero);
     private readonly BehaviorSubject<ImageFilterState> _imageFilterStateSubject = new(ImageFilterState.Zero);
-    private CompositeDisposable _disposables = [];
+    //private CompositeDisposable _disposables = [];
     private CompositeDisposable _detectorDisposables = [];
-    private Subject<ImageWithMetadata> _imageStreamProducer = new();
+    private readonly Subject<ImageWithMetadata> _imageStreamProducer = new();
     private readonly enDBBeamType _beamType;
     private Filter? _fullFrameFilterPresets;
     private Filter? _reducedAreaFilterPresets;
@@ -387,7 +387,7 @@ internal abstract class ImageSourceBase
                 var sourceImageWidth = imageDescriptor.Width;
                 var sourceImageHeight = imageDescriptor.Height;
                 var sourceBitsPerSample = imageDescriptor.Bits[0];
-                var offset = imageDescriptor.Offset[0];
+                //var offset = imageDescriptor.Offset[0];
                 var encoding = rawImage.Descriptor.Encoding[0];
 
                 var imagePtr = rawImage.GetReadAccess().Ptr();
@@ -493,7 +493,7 @@ internal abstract class ImageSourceBase
                 var sourceImageWidth = imageDescriptor.Width;
                 var sourceImageHeight = imageDescriptor.Height;
                 var sourceBitsPerSample = imageDescriptor.Bits[0];
-                var offset = imageDescriptor.Offset[0];
+                //var offset = imageDescriptor.Offset[0];
                 var encoding = rawImage.Descriptor.Encoding[0];
 
                 var imagePtr = rawImage.GetReadAccess().Ptr();

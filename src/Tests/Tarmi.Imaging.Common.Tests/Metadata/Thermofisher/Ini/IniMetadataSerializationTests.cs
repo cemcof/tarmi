@@ -1,4 +1,4 @@
-using Tarmi.Imaging.Common.Metadata.Thermofisher.IniFormat;
+﻿using Tarmi.Imaging.Common.Metadata.Thermofisher.IniFormat;
 using Xunit;
 
 namespace Tarmi.Imaging.Common.Tests.Metadata.Thermofisher.Ini;
@@ -235,5 +235,6 @@ SampleBias=
 """;
 
         var metadata = MetadataIniSerializer.Deserialize(testData);
+        Assert.NotNull(metadata);
     }
 }

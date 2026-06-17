@@ -47,7 +47,7 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
     private readonly NonblockingBufferedSubject<ImageWithMetadata> _imageGrabberSubject;
     private readonly LuminescenceAberrations _aberrations;
     private Length _activeAberration = Length.Zero;
-    private const int TaskDelay = 1000;
+
     public IConfocalDevice ConfocalData { get; private set; }
 
     public Length HorizontalFieldWidth => ConfocalData.FieldWidth;
@@ -164,6 +164,12 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
 
     public async Task<FilterType> GetModeAsync()
     {
+        // suppress so far unused members warnings
+        _ =  _pinHoleWheelController;
+        _ = _filterWheelController;
+        _ = _pythonConfig;
+        _ = _thorlabsPinHoleWheel;
+
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
         return await _filterHandler.ReadFilterPositionAsync();
@@ -338,10 +344,10 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         set => ConfocalData.PinHolePosition = value;
     }
 
-    public async Task SetPinHolePositionAsync(Length position, CancellationToken cancellationToken)
+    public async Task SetPinHolePositionAsync(Length pinhole, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
-        await _imageController.SetPinHolePosition((long)position.Nanometers, cancellationToken);
+        await _imageController.SetPinHolePosition((long)pinhole.Nanometers, cancellationToken);
     }
 
     public Length FilterWheelColor => _imageController.GetFilterWheelColor();
@@ -369,7 +375,7 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         }
         else
         {
-            _logger.LogError("ConfocalMode, {name}, Emission filter color was not found for laser color {laserColor}", nameof(SetFilterWheelColorAsync), laserColor);
+            _logger.LogError("ConfocalMode, {Name}, Emission filter color was not found for laser color {LaserColor}", nameof(SetFilterWheelColorAsync), laserColor);
             throw new NotSupportedException($"Emission filter color was not found for laser color {laserColor}");
         }
 
@@ -430,11 +436,11 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         if (command.IsNotNullOrEmpty())
         {
             _pythonController.ExecuteTuningCommand(command);
-            _logger.LogDebug("Confocal script execution for {propertyName}", propertyName);
+            _logger.LogDebug("Confocal script execution for {PropertyName}", propertyName);
         }
         else
         {
-            _logger.LogError("Confocal script execution for {propertyName} failed. Property not found", propertyName);
+            _logger.LogError("Confocal script execution for {PropertyName} failed. Property not found", propertyName);
         }
     }
 
@@ -510,43 +516,24 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
 
         var confocalMetadata = source.ConfocalMetadata;
 
-        confocalMetadata = confocalMetadata == null
-            ? new Metadata()
-            {
-                PixelSizeX = ConfocalData.FieldWidth / source.Image.Width,
-                PixelSizeY = ConfocalData.FieldHeight / source.Image.Height,
-                LightWavelength = ConfocalData.LaserColor,
-                LightIntensity = ConfocalData.Intensity,
-                WorkingDistance = _linearStage.CurrentPosition,
-                Mode = _filterHandler.FilterPosition == FilterType.Fluorescence ?
-                    Tarmi.Imaging.Common.Metadata.Confocal.LuminescenceMode.Fluorescence :
-                    Tarmi.Imaging.Common.Metadata.Confocal.LuminescenceMode.Reflection,
-                StackInfo = stackInfo,
-                Gain = ConfocalData.Gain,
-                Dwell = ConfocalData.Dwell,
-                ADC = ConfocalData.ADC,
-                //ImagePath = "",
-                PinholePosition = _imageController.GetPinHoleWheelPosition(),
-                FilterWheelColor = _imageController.GetFilterWheelColor(),
-            }
-            : (confocalMetadata with
-            {
-                PixelSizeX = ConfocalData.FieldWidth / source.Image.Width,
-                PixelSizeY = ConfocalData.FieldHeight / source.Image.Height,
-                LightWavelength = ConfocalData.LaserColor,
-                LightIntensity = ConfocalData.Intensity,
-                WorkingDistance = _linearStage.CurrentPosition,
-                Mode = _filterHandler.FilterPosition == FilterType.Fluorescence ?
-                    Tarmi.Imaging.Common.Metadata.Confocal.LuminescenceMode.Fluorescence :
-                    Tarmi.Imaging.Common.Metadata.Confocal.LuminescenceMode.Reflection,
-                StackInfo = stackInfo,
-                Gain = ConfocalData.Gain,
-                Dwell = ConfocalData.Dwell,
-                ADC = ConfocalData.ADC,
-                //ImagePath = "",
-                PinholePosition = _imageController.GetPinHoleWheelPosition(),
-                FilterWheelColor = _imageController.GetFilterWheelColor(),
-            });
+        confocalMetadata = (confocalMetadata ?? new()) with
+        {
+            PixelSizeX = ConfocalData.FieldWidth / source.Image.Width,
+            PixelSizeY = ConfocalData.FieldHeight / source.Image.Height,
+            LightWavelength = ConfocalData.LaserColor,
+            LightIntensity = ConfocalData.Intensity,
+            WorkingDistance = _linearStage.CurrentPosition,
+            Mode = _filterHandler.FilterPosition == FilterType.Fluorescence ?
+                    Imaging.Common.Metadata.Confocal.LuminescenceMode.Fluorescence :
+                    Imaging.Common.Metadata.Confocal.LuminescenceMode.Reflection,
+            StackInfo = stackInfo,
+            Gain = ConfocalData.Gain,
+            Dwell = ConfocalData.Dwell,
+            ADC = ConfocalData.ADC,
+            //ImagePath = "",
+            PinholePosition = _imageController.GetPinHoleWheelPosition(),
+            FilterWheelColor = _imageController.GetFilterWheelColor(),
+        };
 
         return source with
         {
@@ -632,18 +619,18 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         _activeAberration = Length.Zero;
     }
 
-    public async Task MoveLinearStageToAsync(Length position, CancellationToken cancellation)
+    public async Task MoveLinearStageToAsync(Length position, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
-        await _logger.SwallowAsync(() => _linearStage.MoveAbsoluteAsync(position, cancellation));
+        await _logger.SwallowAsync(() => _linearStage.MoveAbsoluteAsync(position, cancellationToken));
     }
 
-    public async Task MoveLinearStageRelativeAsync(Length position, CancellationToken cancellation)
+    public async Task MoveLinearStageRelativeAsync(Length position, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
-        await _logger.SwallowAsync(() => _linearStage.MoveRelativeAsync(position, cancellation));
+        await _logger.SwallowAsync(() => _linearStage.MoveRelativeAsync(position, cancellationToken));
     }
 
     //private ConfocalLightColor GetColorFromWaveLength(Length lightWavelength)
@@ -702,13 +689,13 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
     //    };
     //}
 
-    public async Task RestoreImageState(ImageMetadata imageMetadata, CancellationToken cancellation)
+    public async Task RestoreImageState(ImageMetadata imageMetadata, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
         if (
             imageMetadata.GetSource() != StageCameraView.Confocal ||
-            _linearStage.GetIsProtracted() == false ||
+            !_linearStage.GetIsProtracted() ||
             imageMetadata.ConfocalMetadata == null
         )
         {
@@ -723,16 +710,16 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         {
             if (linearStagePosition >= _linearStageAlignment.FocusMinimum && linearStagePosition <= _linearStageAlignment.FocusMaximum)
             {
-                await MoveLinearStageToAsync(linearStagePosition, cancellation);
+                await MoveLinearStageToAsync(linearStagePosition, cancellationToken);
             }
-            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellation);
+            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellationToken);
         }
         else
         {
-            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellation);
+            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellationToken);
             if (linearStagePosition >= _linearStageAlignment.FocusMinimum && linearStagePosition <= _linearStageAlignment.FocusMaximum)
             {
-                await MoveLinearStageToAsync(linearStagePosition, cancellation);
+                await MoveLinearStageToAsync(linearStagePosition, cancellationToken);
             }
         }
 
@@ -769,7 +756,7 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         };
     }
 
-    private IEnumerable<Length> GetPinHoleSizes(PinHoleWheelAlignments alignments) =>
+    private static IEnumerable<Length> GetPinHoleSizes(PinHoleWheelAlignments alignments) =>
         alignments.PinHoleAlignments.Select(alignment => alignment.PinHoleSize);
 
     public void Dispose()
@@ -777,4 +764,7 @@ public sealed class ConfocalMode : StageControllingModeBase, IConfocalMode, IDis
         _grabbingTokenSource?.Dispose();
         _grabbingTokenSource = null;
     }
+
+    public Task TurnLightOnAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+    public Task TurnLightOffAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 }

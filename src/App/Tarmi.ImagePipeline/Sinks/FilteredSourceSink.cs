@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
@@ -30,17 +30,9 @@ public class FilteredSourceSink : IImageObservableSink
                 {
                     try
                     {
-                        using var guard = await _semaphore.UseOnceAsync();
-                        var oldImage = _inputSubject.Value;
-                        _inputSubject.OnNext(image);
-                        if (oldImage.Image != image.Image)
-                        {
-                            oldImage.Dispose();
-                        }
+                        await Set(image);
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             )
             .Subscribe()
@@ -63,13 +55,7 @@ public class FilteredSourceSink : IImageObservableSink
         _disposables.Add(currentInput.Subscribe(_outputSubject));
     }
 
-    public async Task Clear()
-    {
-        using var guard = await _semaphore.UseOnceAsync();
-        var oldImage = _inputSubject.Value;
-        _inputSubject.OnNext(ImageWithMetadata.Empty);
-        oldImage.Dispose();
-    }
+    public Task Clear() => Set(ImageWithMetadata.Empty);
 
     public async Task Set(ImageWithMetadata image)
     {
@@ -84,17 +70,8 @@ public class FilteredSourceSink : IImageObservableSink
 
     public async Task SetSourceFile(string path)
     {
-        using var guard = await _semaphore.UseOnceAsync();
-        await Task.Run(() =>
-        {
-            var image = TiffImage.Load(path);
-            var oldImage = _inputSubject.Value;
-            _inputSubject.OnNext(image);
-            if (oldImage.Image != image.Image)
-            {
-                oldImage.Dispose();
-            }
-        });
+        ImageWithMetadata image = await Task.Run(() => TiffImage.Load(path));
+        await Set(image);
     }
 
     public async Task Invalidate()
@@ -107,7 +84,7 @@ public class FilteredSourceSink : IImageObservableSink
     {
         using var guard = await _semaphore.UseOnceAsync();
         var image = _inputSubject.Value;
-        return image with { Image = image.Image.Clone() };
+        return image.Clone();
     }
 
     public async Task<ImageWithMetadata> GetOutputCopyAsync()
@@ -118,7 +95,7 @@ public class FilteredSourceSink : IImageObservableSink
         await Task.Run(() => _inputSubject.OnNext(_inputSubject.Value));
 
         var image = await imageTask;
-        return image with { Image = image.Image.Clone() };
+        return image.Clone();
     }
 
     public void Dispose()

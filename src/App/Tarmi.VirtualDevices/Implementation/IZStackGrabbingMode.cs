@@ -56,7 +56,7 @@ public interface IZStackGrabbingMode : ILuminescenceTubeControllingMode
                 };
             saveAction(image, stepIndex);
             maxIntensityImage = stepIndex == 0
-                ? image with { ImageId = Guid.NewGuid(), Image = image.Image.Clone() }
+                ? image.Clone() with { ImageId = Guid.NewGuid() }
                 : Overlays.GetMaxIntensityImage(maxIntensityImage, image);
         }
 

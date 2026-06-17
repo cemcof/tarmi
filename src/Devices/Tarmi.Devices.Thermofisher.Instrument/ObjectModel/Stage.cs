@@ -1,3 +1,7 @@
+﻿// bug in COM interop definition, CoordinateMask is being used as a flags enum
+#pragma warning disable S3265 // Non-flags enums should not be used in bitwise operations
+
+
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -14,7 +18,7 @@ internal sealed class Stage
 {
     private readonly ILogger _logger;
     private readonly IXtObjectHandle<BulkStageNavigation> _bulkStageNavigation;
-    private readonly IXtObjectHandle<NavigationRestrictions> _stageRestrictions;
+    //private readonly IXtObjectHandle<NavigationRestrictions> _stageRestrictions;
     private readonly IXtObjectHandle<Navigation> _stageNavigation;
     private readonly IXtObjectHandle<BulkStageDevice> _bulkStageDevice;
 
@@ -29,7 +33,7 @@ internal sealed class Stage
     {
         _logger = logger;
         _bulkStageNavigation = xtObjectsCollection.GetObject<BulkStageNavigation>(PathLiterals.Instrument.Positioning.BulkStage.AsString);
-        _stageRestrictions = xtObjectsCollection.GetObject<NavigationRestrictions>(PathLiterals.Instrument.Positioning.BulkStage.AsString);
+        //_stageRestrictions = xtObjectsCollection.GetObject<NavigationRestrictions>(PathLiterals.Instrument.Positioning.BulkStage.AsString);
         _stageNavigation = xtObjectsCollection.GetObject<Navigation>(PathLiterals.Instrument.Positioning.BulkStage.AsString);
         _bulkStageDevice = xtObjectsCollection.GetObject<BulkStageDevice>(PathLiterals.Instrument.Positioning.BulkStage.AsString);
 
@@ -143,7 +147,7 @@ internal sealed class Stage
     {
         try
         {
-            AllowedPositionRange allowedPositions = _stageRestrictions.Object.GetLimitsForCurrentPosition();
+            //AllowedPositionRange allowedPositions = _stageRestrictions.Object.GetLimitsForCurrentPosition();
 
             var allHomed = _bulkStageDevice.Object.GetHomedAxes() == (CoordinateMask.axis_x | CoordinateMask.axis_y | CoordinateMask.axis_z | CoordinateMask.axis_rx | CoordinateMask.axis_rz);
             return new Result<bool>(allHomed);

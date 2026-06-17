@@ -1,8 +1,8 @@
 using Basler.Pylon;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace Tarmi.Devices.Basler.Camera.Implementation;
+
 internal sealed class SimulatedImageGrabber : ImageGrabber, ISimulatedImageGrabber
 {
     public SimulatedImageGrabber(ILogger logger, ICameraInfo cameraInfo)
@@ -57,7 +57,11 @@ internal sealed class SimulatedImageGrabber : ImageGrabber, ISimulatedImageGrabb
             }
             else
             {
-                Guard.IsTrue(ImageFile.Exists, "Existing file path must be provided");
+                if (!ImageFile.Exists)
+                {
+                    throw new FileNotFoundException("Existing file path must be provided")
+                        .AddData("path", ImageFile.FullName);
+                }
                 _camera.Parameters[PLCamEmuCamera.TestImageSelector].SetValue("Off");
                 _camera.Parameters[PLCamEmuCamera.ImageFilename].SetValue(ImageFile.FullName);
                 _camera.Parameters[PLCamEmuCamera.ImageFileMode].SetValue("On");
@@ -75,7 +79,11 @@ internal sealed class SimulatedImageGrabber : ImageGrabber, ISimulatedImageGrabb
         }
         set
         {
-            Guard.IsTrue(value.Exists, "Existing file path must be provided");
+            if (!value.Exists)
+            {
+                throw new FileNotFoundException("Existing file path must be provided")
+                    .AddData("path", value.FullName);
+            }
             ThrowIfNotOpen();
             ThrowIfGrabbingInProgress();
             _camera.Parameters[PLCamEmuCamera.ImageFilename].SetValue(value.FullName);

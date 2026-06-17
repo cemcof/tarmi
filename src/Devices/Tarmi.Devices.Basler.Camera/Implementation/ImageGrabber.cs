@@ -65,7 +65,7 @@ internal class ImageGrabber : IImageGrabber
             var parameter = _camera.Parameters[PLCamera.GainRaw];
             var val = Math.Clamp(value, parameter.GetMinimum(), parameter.GetMaximum());
             parameter.SetValue(val);
-            _logger.LogDebug("Raw gain set to {value}", val);
+            _logger.LogDebug("Raw gain set to {Value}", val);
         }
     }
 
@@ -91,7 +91,7 @@ internal class ImageGrabber : IImageGrabber
             if (!Comparison.EqualsAbsolute(val, Gain.Value, _valueChangeTolerance))
             {
                 parameter.SetValue(val);
-                _logger.LogDebug("Gain set to {value}", val);
+                _logger.LogDebug("Gain set to {Value}", val);
             }
         }
     }
@@ -109,7 +109,7 @@ internal class ImageGrabber : IImageGrabber
             // can be changed during acquisition
             var val = value.ToGainAutoString();
             _camera.Parameters[PLCamera.GainAuto].SetValue(val);
-            _logger.LogDebug("Auto gain set to {value}", val);
+            _logger.LogDebug("Auto gain set to {Value}", val);
         }
     }
 
@@ -129,7 +129,7 @@ internal class ImageGrabber : IImageGrabber
             if (!Comparison.EqualsAbsolute(val, BlackLevel, _valueChangeTolerance))
             {
                 parameter.SetValue(val);
-                _logger.LogDebug("Black level set to {value}", val);
+                _logger.LogDebug("Black level set to {Value}", val);
             }
         }
     }
@@ -156,7 +156,7 @@ internal class ImageGrabber : IImageGrabber
             if (!Comparison.EqualsAbsolute(val, Gamma, _valueChangeTolerance))
             {
                 parameter.SetValue(val);
-                _logger.LogDebug("Gamma set to {value}", val);
+                _logger.LogDebug("Gamma set to {Value}", val);
             }
         }
     }
@@ -179,7 +179,7 @@ internal class ImageGrabber : IImageGrabber
             var binningModeValue = value.ToBinningModeString();
             _camera.Parameters[PLCamera.BinningHorizontalMode].SetValue(binningModeValue);
             _camera.Parameters[PLCamera.BinningVerticalMode].SetValue(binningModeValue);
-            _logger.LogDebug("Binning mode set to {value}", binningModeValue);
+            _logger.LogDebug("Binning mode set to {Value}", binningModeValue);
         }
     }
 
@@ -204,7 +204,7 @@ internal class ImageGrabber : IImageGrabber
             var verticalVal = Math.Clamp(value, verticalBinningParam.GetMinimum(), verticalBinningParam.GetMaximum());
             horizontalBinningParam.SetValue(horizontalVal);
             verticalBinningParam.SetValue(verticalVal);
-            _logger.LogDebug("Binning set to vertical: {verticalVal}, horizontal: {horizontalVal}", verticalVal, horizontalVal);
+            _logger.LogDebug("Binning set to vertical: {VerticalVal}, horizontal: {HorizontalVal}", verticalVal, horizontalVal);
         }
     }
 
@@ -224,7 +224,7 @@ internal class ImageGrabber : IImageGrabber
             var parameter = _camera.Parameters[PLCamera.Width];
             var val = Math.Clamp(value, parameter.GetMinimum(), parameter.GetMaximum());
             parameter.SetValue(val);
-            _logger.LogDebug("Width set to {value}", val);
+            _logger.LogDebug("Width set to {Value}", val);
         }
     }
 
@@ -244,7 +244,7 @@ internal class ImageGrabber : IImageGrabber
             var parameter = _camera.Parameters[PLCamera.Height];
             var val = Math.Clamp(value, parameter.GetMinimum(), parameter.GetMaximum());
             parameter.SetValue(val);
-            _logger.LogDebug("Height set to {value}", val);
+            _logger.LogDebug("Height set to {Value}", val);
 
         }
     }
@@ -265,7 +265,7 @@ internal class ImageGrabber : IImageGrabber
             Guard.IsTrue(value.IsOneOf(ImagePixelFormat.Mono8, ImagePixelFormat.Mono12));
             var val = value.ToPixelTypeString();
             _camera.Parameters[PLCamera.PixelFormat].SetValue(val);
-            _logger.LogDebug("Pixel format set to {value}", val);
+            _logger.LogDebug("Pixel format set to {Value}", val);
         }
     }
 
@@ -283,7 +283,7 @@ internal class ImageGrabber : IImageGrabber
             var parameter = _camera.Parameters[PLCamera.AcquisitionFrameRate];
             var val = Math.Clamp(value.Hertz, parameter.GetMinimum(), parameter.GetMaximum());
             parameter.SetValue(val);
-            _logger.LogDebug("Frame rate set to {value}", val);
+            _logger.LogDebug("Frame rate set to {Value}", val);
         }
     }
 
@@ -309,7 +309,7 @@ internal class ImageGrabber : IImageGrabber
             if (!Comparison.EqualsAbsolute(val, ExposureTime.Value, _valueChangeTolerance))
             {
                 parameter.SetValue(val);
-                _logger.LogDebug("Exposure set to {value}", val);
+                _logger.LogDebug("Exposure set to {Value}", val);
             }
         }
     }

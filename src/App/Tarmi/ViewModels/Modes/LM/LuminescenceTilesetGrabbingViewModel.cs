@@ -30,43 +30,40 @@ internal partial class LuminescenceTilesetGrabbingViewModel : TileSetGrabbingVie
     private readonly ILuminescenceMode _luminescenceMode;
     private readonly LuminescenceImagingViewModel _luminescenceImaging;
 
+    protected override async Task TileSetReAcquisitionImplementation(TileSetDescriptor descriptor, IProgress<(string, Ratio)> progress, CancellationToken cancellationToken)
+    {
+        await _luminescenceMode.TurnLightOnAsync(cancellationToken);
+        await base.TileSetReAcquisitionImplementation(descriptor, progress, cancellationToken);
+        await _luminescenceMode.TurnLightOffAsync(default);
+    }
+
     protected override async Task TileSetAcquisitionImplementation(AcquisitionStrategy acquisitionStrategy, IProgress<(string, Ratio)> progress, CancellationToken cancellationToken)
     {
-        var lightSettings = _luminescenceImaging.LightSettings
-            .Where(settings => settings.IsSelected)
-            .ToArray();
-
+        var selectedLights = _luminescenceImaging.GetSelectedLights().ToArray();
         // Acquisition with current light setting.
-        if (lightSettings is [])
+        if (selectedLights is [])
         {
+            await _luminescenceMode.TurnLightOnAsync(cancellationToken);
             await base.TileSetAcquisitionImplementation(acquisitionStrategy, progress, cancellationToken);
+            await _luminescenceMode.TurnLightOffAsync(default);
             return;
         }
 
-        var initialColor = _luminescenceMode.ActiveLightColor;
-        var initialExposure = _luminescenceMode.ExposureTime;
-        var initialIntensity = _luminescenceMode.Intensity;
-
-        var part = Ratio.FromDecimalFractions(1.0 / lightSettings.Length);
-        for (var i = 0; i < lightSettings.Length; i++)
+        await _luminescenceMode.TurnLightOnAsync(cancellationToken);
+        var initialColor = _luminescenceMode.SelectedLightColor;
+        var part = Ratio.FromDecimalFractions(1.0 / selectedLights.Length);
+        for (var i = 0; i < selectedLights.Length; i++)
         {
             var innerProgress = new Progress<(string Message, Ratio Percentage)>(inner => progress.Report((inner.Message, i * part + part.DecimalFractions * inner.Percentage)));
-            var lightSetting = lightSettings[i];
-
-            await _luminescenceMode.TurnLightOn(lightSetting.Color, cancellationToken);
-            var percent = Ratio.FromPercent(lightSetting.ImagingSettings.Intensity);
-            await _luminescenceMode.SetIntensityAsync(percent, cancellationToken);
-            _luminescenceMode.ExposureTime = Duration.FromMicroseconds(lightSetting.ImagingSettings.Exposure);
+            var lightColor = selectedLights[i];
+            await _luminescenceImaging.SelectLightColorAsync(lightColor);
 
             await base.TileSetAcquisitionImplementation(acquisitionStrategy, innerProgress, cancellationToken);
         }
-
-        await _luminescenceMode.TurnLightOff(cancellationToken);
-        await _luminescenceMode.SetIntensityAsync(initialIntensity, cancellationToken);
+        await _luminescenceMode.TurnLightOffAsync(default);
         if (initialColor.HasValue)
         {
-            await _luminescenceMode.TurnLightOn(initialColor.Value, cancellationToken);
+            await _luminescenceImaging.SelectLightColorAsync(initialColor.Value);
         }
-        _luminescenceMode.ExposureTime = initialExposure;
     }
 }

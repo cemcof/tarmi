@@ -96,7 +96,7 @@ public static class Prompt
         }
     }
 
-    private class PromptViewModel<T>
+    private sealed class PromptViewModel<T>
     {
         public required string Prompt { get; set; }
         public T? Value { get; set; }

@@ -41,13 +41,13 @@ public class FocusingService
         {
             case IBeamMode beamMode when focusPointsInImage is []:
                 {
-                    var reducedArea = new RatioRectangle
-                    {
-                        Left = Ratio.FromDecimalFractions(0.25),
-                        Top = Ratio.FromDecimalFractions(0.25),
-                        Right = Ratio.FromDecimalFractions(0.75),
-                        Bottom = Ratio.FromDecimalFractions(0.75)
-                    };
+                    //var reducedArea = new RatioRectangle
+                    //{
+                    //    Left = Ratio.FromDecimalFractions(0.25),
+                    //    Top = Ratio.FromDecimalFractions(0.25),
+                    //    Right = Ratio.FromDecimalFractions(0.75),
+                    //    Bottom = Ratio.FromDecimalFractions(0.75)
+                    //};
                     using var dwellTimeGuard = beamMode.UseFullFrameSettings(LowDwellTime, Devices.Thermofisher.Instrument.Types.ImageFilterType.None, 1, 1);
                     //using var reducedAreaGuard = beamMode.UseReducedArea(reducedArea, LowDwellTime, Devices.Thermofisher.Instrument.Types.ImageFilterType.None, 1, 1);
                     optimalPosition = await BeamFocusAutomaticallyAsync(pipelineGrabber, progress, cancellationToken);

@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
@@ -66,7 +66,7 @@ public class FilteredFileSink : IImageFileSink
     {
         using var guard = await _semaphore.UseOnceAsync();
         var image = _inputSubject.Value;
-        return image with { Image = image.Image.Clone() };
+        return image.Clone();
     }
 
     public async Task<ImageWithMetadata> GetOutputCopyAsync()
@@ -77,7 +77,7 @@ public class FilteredFileSink : IImageFileSink
         await Task.Run(() => _inputSubject.OnNext(_inputSubject.Value));
 
         var image = await imageTask;
-        return image with { Image = image.Image.Clone() };
+        return image.Clone();
     }
 
     public void Dispose()

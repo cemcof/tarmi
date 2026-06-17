@@ -71,7 +71,7 @@
     </Style>
 
     <DataTemplate DataType="{x:Type rois:RoiVM}">
-        <Grid Margin="-16,-16,0,0">
+        <Grid Margin="-16,-16,0,0" IsHitTestVisible="{Binding IsInteractive}">
             <Border Background="#55000000" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="22,-6,0,0" VerticalAlignment="Top" Padding="2,0">
                 <TextBlock Text="{Binding Name}" Foreground="#edff00" />
             </Border>
@@ -81,7 +81,7 @@
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type viewModels:ROIPoint}">
-        <Grid Margin="-16,-16,0,0">
+        <Grid Margin="-16,-16,0,0" IsHitTestVisible="{Binding IsInteractive}">
             <Border Background="#55808080" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="24,-10,0,0" VerticalAlignment="Top" Padding="4,2">
                 <TextBlock Text="{Binding Label}" FontWeight="Bold" Foreground="#edff00" />
             </Border>
@@ -91,7 +91,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels:GridCenterROIPoint}">
-        <Grid Margin="-16,-16,0,0">
+        <Grid Margin="-16,-16,0,0" IsHitTestVisible="{Binding IsInteractive}">
             <Border Background="#55e6e6e6" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="24,-10,0,0" VerticalAlignment="Top" Padding="4,2">
                 <TextBlock Text="{Binding Label}" FontWeight="Bold" Foreground="#0090ff" />
             </Border>
@@ -100,7 +100,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels:FocusPoint}">
-        <Grid Margin="-7,-20,0,0">
+        <Grid Margin="-7,-20,0,0" IsHitTestVisible="{Binding IsInteractive}">
                 <Image Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Image.Style>
                         <Style TargetType="{x:Type Image}">
@@ -118,7 +118,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewModels:Fiducial}">
-        <Grid Margin="-8,-8,0,0">
+        <Grid Margin="-8,-8,0,0" IsHitTestVisible="{Binding IsInteractive}">
             <Border Background="#55808080" CornerRadius="{StaticResource CornerRadiusThickness}" Margin="24,-12,0,0" VerticalAlignment="Top" Padding="2,0">
                 <TextBlock Text="{Binding Label}" FontWeight="Bold" Foreground="#0090ff" Margin="2" />
             </Border>

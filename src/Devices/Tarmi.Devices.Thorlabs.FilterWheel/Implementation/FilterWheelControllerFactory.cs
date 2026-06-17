@@ -9,14 +9,17 @@ public class FilterWheelControllerFactory : IFilterWheelControllerFactory
 {
     private readonly ISerialCommunicationFactory _serialCommunicationFactory;
     private readonly ILogger _logger;
-    private readonly ILogger<FilterWheelController> _controllerLogger;
+    private readonly ILogger _controllerLogger;
     private readonly bool _simulationEnabled;
     private readonly SerialPort _serialPort;
 
     public FilterWheelControllerFactory(
         ISerialCommunicationFactory serialCommunicationFactory,
         ILogger<FilterWheelControllerFactory> logger,
+#pragma warning disable S6672 // Generic logger injection should match enclosing type
+        // logger for instancees creation
         ILogger<FilterWheelController> controllerLogger,
+#pragma warning restore S6672 // Generic logger injection should match enclosing type
         ApplicationConfig applicationConfig
     )
     {

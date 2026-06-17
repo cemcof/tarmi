@@ -222,12 +222,9 @@ public partial class OverviewImageViewModel : ViewModelBase
         {
             return;
         }
-        foreach (var grid in _selectedThumbnailPerGrid.Keys)
+        foreach (var grid in _selectedThumbnailPerGrid.Keys.Where(grid => IsImageFromGrid(image, grid)))
         {
-            if (IsImageFromGrid(image, grid))
-            {
-                _selectedThumbnailPerGrid[grid] = image;
-            }
+            _selectedThumbnailPerGrid[grid] = image;
         }
 
         try
@@ -236,7 +233,7 @@ public partial class OverviewImageViewModel : ViewModelBase
             {
                 return;
             }
-            var metadata = image.Coordinates;
+            //var metadata = image.Coordinates;
 
             BitmapSource bitmapSource = image.Image.Mat.ToBitmapSource();
             PixelSize pixelSize = image.GetPixelSize();
@@ -396,7 +393,7 @@ public partial class OverviewImageViewModel : ViewModelBase
     {
         foreach (AreaOfInterest grid in AvailableGrids)
         {
-            _ = _selectedThumbnailPerGrid.TryAdd(grid, TileSetThumbnails.Where(img => IsImageFromGrid(img, grid)).FirstOrDefault());
+            _ = _selectedThumbnailPerGrid.TryAdd(grid, TileSetThumbnails.FirstOrDefault(img => IsImageFromGrid(img, grid)));
         }
     }
 

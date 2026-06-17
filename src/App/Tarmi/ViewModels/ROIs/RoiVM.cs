@@ -193,11 +193,11 @@ public partial class RoiVM : ObservableProjectVMBase
         }
     }
 
-    protected override void NameChanged(string name)
+    protected override void NameChanged(string value)
     {
-        if (_roi.Name != name && _roi.CanBeRenamed)
+        if (_roi.Name != value && _roi.CanBeRenamed)
         {
-            _observableProject.UpdateROI(_roi, roi => roi.Name = name);
+            _observableProject.UpdateROI(_roi, roi => roi.Name = value);
         }
     }
 
@@ -321,7 +321,7 @@ public partial class RoiVM : ObservableProjectVMBase
     internal void ModeDeInitialized()
         => _roiChildVms.ForEach(vm => vm.OnModeDeInitialized());
 
-    internal bool IsBindable(RoiChildVM child)
+    internal static bool IsBindable(RoiChildVM child)
     {
         var source = child switch
         {

@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Fei.XT.Common.gen;
 using Microsoft.Extensions.Logging;
@@ -29,7 +29,7 @@ internal sealed class IonBeam : InstrumentBeamBase
 
     private readonly IXtObjectHandle<ControlItemStringState> _gas;
 
-    public IonBeam(ILogger<ElectronBeam> logger, IXtObjectsCollection xtObjectsCollection)
+    public IonBeam(ILogger<IonBeam> logger, IXtObjectsCollection xtObjectsCollection)
         : base(logger, xtObjectsCollection, OmPaths)
     {
         _gas = xtObjectsCollection.GetObject<ControlItemStringState>(PathLiterals.Instrument.Beams.IonBeam.Source.PlasmaGas.AsString);
@@ -61,10 +61,10 @@ internal sealed class IonBeam : InstrumentBeamBase
         ConnectIonBeam();
     }
 
-    protected override void Disconnect()
-    {
-        base.Disconnect();
-    }
+    //protected override void Disconnect()
+    //{
+    //    base.Disconnect();
+    //}
 
     public Result<string> GetActiveIonGas()
     {

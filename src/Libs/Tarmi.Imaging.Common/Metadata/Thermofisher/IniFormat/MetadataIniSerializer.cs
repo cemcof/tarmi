@@ -8,9 +8,4 @@ public static class MetadataIniSerializer
     {
         return IniSerializer.Deserialize<Metadata>(ini);
     }
-
-    //public static string Serialize(Metadata metadata)
-    //{
-    //    return IniSerializer.Serialize(metadata);
-    //}
 }

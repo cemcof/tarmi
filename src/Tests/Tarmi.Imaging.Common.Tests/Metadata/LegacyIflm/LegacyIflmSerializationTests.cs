@@ -1,3 +1,6 @@
+﻿#pragma warning disable OCVS002 // Mat property accessed in loop condition
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using Tarmi.Imaging.Common.Metadata.LegacyIflm;
 using AwesomeAssertions;
 using OpenCvSharp;

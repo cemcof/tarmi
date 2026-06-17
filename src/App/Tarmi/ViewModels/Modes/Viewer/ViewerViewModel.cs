@@ -104,7 +104,7 @@ public partial class ViewerViewModel : ApplicationModeViewModelBase
         _subscriptions.Clear();
     }
 
-    private string CreateActivityName([CallerMemberName] string methodName = "") => $"{nameof(ViewerViewModel)}::{methodName}";
+    private static string CreateActivityName([CallerMemberName] string methodName = "") => $"{nameof(ViewerViewModel)}::{methodName}";
 
     private void HandleImageUpdate(ImageWithMetadata imageWithMetadata)
     {

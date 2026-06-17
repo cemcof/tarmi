@@ -193,3 +193,4 @@ public partial class ScrollDragZoomControl : ContentControl
         }
     }
 }
+

@@ -11,7 +11,7 @@ namespace Tarmi.PointMapping;
 
 public static class ImagesAnd5DPoints
 {
-    private static readonly Angle FlipAngle = Angle.FromDegrees(180);
+    //private static readonly Angle FlipAngle = Angle.FromDegrees(180);
 
     // angle between SEM and FIB mill = 52
     // lamella angle = 15
@@ -341,8 +341,8 @@ public static class ImagesAnd5DPoints
 
         Size imageSize = image.Size;
 
-        double widthHalf = (double)(imageSize.Width / 2.0);
-        double heightHalf = (double)(imageSize.Height / 2.0);
+        double widthHalf = (imageSize.Width / 2.0);
+        double heightHalf = (imageSize.Height / 2.0);
 
         Point2f[] corners =
             [
@@ -381,12 +381,12 @@ public static class ImagesAnd5DPoints
 
         if (w == 0 || Math.Abs(w) < 0.001)
         {
-            w = (double)1.0;
+            w = 1.0;
         }
 
         return new Point2d(
-            (double)(pointM.At<double>(0, 0) / w),
-            (double)(pointM.At<double>(1, 0) / w)
+            (pointM.At<double>(0, 0) / w),
+            (pointM.At<double>(1, 0) / w)
         );
     }
 }

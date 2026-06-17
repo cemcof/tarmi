@@ -16,19 +16,19 @@ public abstract partial class LayerDescriptorViewModel : ObservableObject
     public int ImagesCount => _layerDescriptor.ImagesCount;
 
     [ObservableProperty]
-    public bool _renaming;
+    public partial bool Renaming { get; set; }
 
     [ObservableProperty]
-    public bool _isVisible = true;
+    public partial bool IsVisible { get; set; } = true;
 
     [ObservableProperty]
-    public string _name;
+    public partial string Name { get; set; }
 
     protected LayerDescriptorViewModel(LayerDescriptor layerDescriptor, ObservableProject observableProject)
     {
         _layerDescriptor = layerDescriptor;
         _activeProject = observableProject;
-        _name = layerDescriptor.Name;
+        Name = layerDescriptor.Name;
     }
 
     [RelayCommand]

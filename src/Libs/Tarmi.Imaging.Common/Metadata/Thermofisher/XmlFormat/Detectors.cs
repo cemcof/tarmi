@@ -295,5 +295,4 @@ public record ScanningDetector : Detector
 /// <summary>
 /// Collection of Detector properties, a set of properties per active Detector
 /// </summary>
-//public class DetectorCollection : List<ScanningDetector> { }
 public class DetectorCollection : List<Detector> { }

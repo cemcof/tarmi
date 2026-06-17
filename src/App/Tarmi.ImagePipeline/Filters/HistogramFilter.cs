@@ -31,8 +31,8 @@ public sealed class HistogramFilter : FilterBase
         get => _lowerBound;
         set
         {
-            Guard.IsBetweenOrEqualTo(value, 0, 255, nameof(LowerBound));
-            Guard.IsLessThan(value, _upperBound, nameof(LowerBound));
+            Guard.IsBetweenOrEqualTo(value, 0, 255);
+            Guard.IsLessThan(value, _upperBound);
             _lowerBound = value;
         }
     }
@@ -43,8 +43,8 @@ public sealed class HistogramFilter : FilterBase
         get => _upperBound;
         set
         {
-            Guard.IsBetweenOrEqualTo(value, 0, 255, nameof(UpperBound));
-            Guard.IsGreaterThan(value, _lowerBound, nameof(UpperBound));
+            Guard.IsBetweenOrEqualTo(value, 0, 255);
+            Guard.IsGreaterThan(value, _lowerBound);
             _upperBound = value;
         }
     }

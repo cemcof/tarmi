@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Tarmi.Confocal.Implementation;
 
@@ -18,7 +17,11 @@ internal sealed class SimulatedImageGrabber : ImageGrabber, ISimulatedImageGrabb
         }
         set
         {
-            Guard.IsTrue(value.Exists, "Existing file path must be provided");
+            if (!value.Exists)
+            {
+                throw new FileNotFoundException("Existing file path must be provided")
+                    .AddData("path", value.FullName);
+            }
             ThrowIfGrabbingInProgress();
             ImagePath = value.FullName;
         }

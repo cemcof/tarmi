@@ -1,6 +1,6 @@
 ﻿namespace Tarmi.App.Infrastructure;
 
-internal class Messages
+internal static class Messages
 {
     public const string StageMoveBusyMessage = "Stage Move";
     public const string AcquiringImageBusyMessage = "Image Acquisition";

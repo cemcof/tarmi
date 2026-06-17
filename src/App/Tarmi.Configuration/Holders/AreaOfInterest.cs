@@ -43,8 +43,8 @@ public record RectangularAreaOfInterest : AreaOfInterest
 
     public override LengthPoint GetDefaultViewPosition() => Center;
 
-    public override bool Overlaps(LengthRectangle area)
-        => BoundingRectangle.IntersectsWith(area);
+    public override bool Overlaps(LengthRectangle rectangle)
+        => BoundingRectangle.IntersectsWith(rectangle);
 }
 
 [DataContract(Namespace = Helpers.AppNamespace)]
@@ -65,10 +65,10 @@ public record CircleAreaOfInterest : AreaOfInterest
         Bottom = Center.Y + Radius,
     };
 
-    public override bool Overlaps(LengthRectangle area)
+    public override bool Overlaps(LengthRectangle rectangle)
     {
-        var closestX = UnitMath.Clamp(Center.X, area.Left, area.Right);
-        var closestY = UnitMath.Clamp(Center.Y, area.Top, area.Bottom);
+        var closestX = UnitMath.Clamp(Center.X, rectangle.Left, rectangle.Right);
+        var closestY = UnitMath.Clamp(Center.Y, rectangle.Top, rectangle.Bottom);
 
         var xDifference = closestX - Center.X;
         var yDifference = closestY - Center.Y;

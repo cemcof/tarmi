@@ -42,11 +42,13 @@ public class ConvolutionKernelF : IDisposable
 
     public ConvolutionKernelF Flip(FlipMode flipType)
     {
+#pragma warning disable S3358 // Ternary operators should not be nested
         var flippedCenter = new Point
         {
             X = Center.X == -1 ? -1 : flipType.IsOneOf(FlipMode.Y, FlipMode.XY) ? _mat.Width - Center.X - 1 : Center.X,
             Y = Center.Y == -1 ? -1 : flipType.IsOneOf(FlipMode.X, FlipMode.XY) ? _mat.Height - Center.Y - 1 : Center.Y
         };
+#pragma warning restore S3358 // Ternary operators should not be nested
         return new ConvolutionKernelF(_mat.Flip(flipType), flippedCenter);
     }
 

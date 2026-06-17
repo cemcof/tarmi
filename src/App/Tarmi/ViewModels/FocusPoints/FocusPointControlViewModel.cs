@@ -89,11 +89,11 @@ public partial class FocusPointControlViewModel : ViewModelBase
         {
             foreach (var focusPoint in ActiveTileSet.Descriptor.GrabbingOptions.FocusPoints)
             {
-                if (true)//_stageNavigation.IsPlanePositionInImage(focusPoint.PlaneLocation, ImageWithMetadata)) // TODO
-                {
+                //if (_stageNavigation.IsPlanePositionInImage(focusPoint.PlaneLocation, ImageWithMetadata)) // TODO
+                //{
                     var point = _stageNavigation.GetImageLocationFromPlanePosition(focusPoint.PlaneLocation, ImageWithMetadata);
                     AvailableFocusPoints.Add(new FocusPoint() { X = point.X, Y = point.Y, IsAutoFocused = focusPoint.IsAutofocused, ParentFocusPoint = focusPoint, OnMoveFinished = UpdateFocusPointPosition });
-                }
+                //}
             }
         }
     }

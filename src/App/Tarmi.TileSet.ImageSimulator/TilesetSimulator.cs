@@ -1,4 +1,4 @@
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 using System.Reactive.Linq;
 using Tarmi.Devices.Thermofisher.Instrument;
 using Tarmi.Devices.Thermofisher.Instrument.Types;
@@ -30,7 +30,6 @@ internal class TileSetSimulator : ITileSetImageSimulator
             projectManager.ActiveProject,
             (stage, cameraView, activeProject) => (stage, cameraView, activeProject)
         ).Subscribe(state => HandleStageAndViewChanges(state.stage, state.cameraView, state.activeProject));
-
     }
 
     private void HandleStageAndViewChanges(StageState stage, StageCameraView cameraView, ObservableProject? project)
@@ -43,8 +42,8 @@ internal class TileSetSimulator : ITileSetImageSimulator
                 _tileSetDefinition?.Dispose();
                 _tileSetDefinition = cameraView switch
                 {
-                    StageCameraView.FIB_RightAngle => FibRightAngleTileSetDefinition.Create(project.Holder),
-                    StageCameraView.SEM => SemTileSetDefinition.Create(project.Holder),
+                    StageCameraView.FIB_RightAngle => new FibRightAngleTileSetDefinition(project.Holder),
+                    StageCameraView.SEM => new SemTileSetDefinition(project.Holder),
                     _ => null,
                 };
                 _currentContextCameraView = cameraView;
@@ -58,15 +57,7 @@ internal class TileSetSimulator : ITileSetImageSimulator
 
     public StageCameraView CurrentContextCameraView => _currentContextCameraView;
 
-    public bool IsViewSupported(StageCameraView cameraView)
-    {
-        return cameraView switch
-        {
-            StageCameraView.FIB_RightAngle => true,
-            StageCameraView.SEM => true,
-            _ => false,
-        };
-    }
+    public bool IsViewSupported(StageCameraView cameraView) => cameraView.IsOneOf(StageCameraView.FIB_RightAngle, StageCameraView.SEM);
 
     public ImageWithMetadata GrabOne()
     {

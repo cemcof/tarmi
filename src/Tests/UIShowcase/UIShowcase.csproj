@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" />
+        <PackageReference Include="JetBrains.Annotations" />
     </ItemGroup>
 
   <ItemGroup>

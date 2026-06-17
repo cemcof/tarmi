@@ -18,7 +18,10 @@ public class PinHoleWheelControllerFactory : IPinHoleWheelControllerFactory
     public PinHoleWheelControllerFactory(
         ISerialCommunicationFactory serialCommunicationFactory,
         ILogger<PinHoleWheelControllerFactory> logger,
+#pragma warning disable S6672 // Generic logger injection should match enclosing type
+        // logger for instancees creation
         ILogger<PinHoleWheelController> controllerLogger,
+#pragma warning restore S6672 // Generic logger injection should match enclosing type
         ApplicationConfig applicationConfig
     )
     {

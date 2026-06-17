@@ -11,7 +11,7 @@ public class UnitConverter : IValueConverter
 {
     private const int SignificantDigits = 2;
 
-    private record UnitConversionDescriptor
+    private sealed record UnitConversionDescriptor
     {
         public required Enum BaseUnit { get; init; }
         public required Func<int, Enum> DisplayUnitForExponent { get; init; }

@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
@@ -125,14 +125,11 @@ internal class BrickConnector : IBrickConnector
         }
         catch (COMException ex)
         {
-            if (ex is COMException cex)
+            if (ex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
             {
-                if (cex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
-                {
-                    DisconnectionDetected();
-                    var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, cex);
-                    return new Result<PatternDataSource>(exception);
-                }
+                DisconnectionDetected();
+                var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, ex);
+                return new Result<PatternDataSource>(exception);
             }
             return ex.MapToResult<PatternDataSource>();
         }
@@ -148,14 +145,11 @@ internal class BrickConnector : IBrickConnector
         }
         catch (COMException ex)
         {
-            if (ex is COMException cex)
+            if (ex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
             {
-                if (cex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
-                {
-                    DisconnectionDetected();
-                    var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, cex);
-                    return new Result<ViewServer>(exception);
-                }
+                DisconnectionDetected();
+                var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, ex);
+                return new Result<ViewServer>(exception);
             }
             return ex.MapToResult<ViewServer>();
         }
@@ -171,14 +165,11 @@ internal class BrickConnector : IBrickConnector
         }
         catch (COMException ex)
         {
-            if (ex is COMException cex)
+            if (ex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
             {
-                if (cex.ErrorCode == ErrorCodes.CannotConnectToMicroscope)
-                {
-                    DisconnectionDetected();
-                    var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, cex);
-                    return new Result<View>(exception);
-                }
+                DisconnectionDetected();
+                var exception = new InvalidOperationException(ErrorCodes.XtServerNotRunningMessage, ex);
+                return new Result<View>(exception);
             }
             return ex.MapToResult<View>();
         }
@@ -275,7 +266,10 @@ internal class BrickConnector : IBrickConnector
     {
         var s = "This program \u0001cannot be ";
         var array = Convert.FromBase64String(input);
+#pragma warning disable S5547 // Cipher algorithms should be robust
+        // compatibility with XT server which uses weak TripleDES encryption
         using var tripleDESCryptoServiceProvider = TripleDES.Create();
+#pragma warning restore S5547 // Cipher algorithms should be robust
         tripleDESCryptoServiceProvider.Key = Encoding.UTF8.GetBytes(s);
         tripleDESCryptoServiceProvider.Mode = CipherMode.ECB;
         tripleDESCryptoServiceProvider.Padding = PaddingMode.PKCS7;

@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Fei.XT.Server.BrickConnector;
@@ -24,6 +24,7 @@ internal class XtObjectsCollection : IXtObjectsCollection
         public int GetHashCode([DisallowNull] HandleDescriptor obj) => obj.GetHashCode();
 
         public override int GetHashCode() => ObjectKey.GetHashCode(StringComparison.Ordinal) ^ ObjectType.GetHashCode();
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is HandleDescriptor descriptor && Equals(this, descriptor);
     }
 
     private readonly IBrickConnector _brickConnector;

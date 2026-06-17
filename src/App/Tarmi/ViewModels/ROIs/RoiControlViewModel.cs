@@ -206,18 +206,15 @@ public partial class RoiControlViewModel : ViewModelBase
         roiSource.Clear();
         if (ActiveProject != null && image != null)
         {
-            foreach (var item in ActiveProject.RegionsOfInterest)
+            foreach (var item in ActiveProject.RegionsOfInterest.Where(item => _stageNavigation.IsPlanePositionInImage(item.Position, image)))
             {
-                if (_stageNavigation.IsPlanePositionInImage(item.Position, image))
+                var point = _stageNavigation.GetImageLocationFromPlanePosition(item.Position, image);
+                var roi = item switch
                 {
-                    var point = _stageNavigation.GetImageLocationFromPlanePosition(item.Position, image);
-                    var roi = item switch
-                    {
-                        GridCenterRegionOfInterest => new GridCenterROIPoint { X = point.X, Y = point.Y, Label = item.Name, RegionOfInterest = item, OnMoveFinished = UpdateROIPosition },
-                        _ => new ROIPoint() { X = point.X, Y = point.Y, Label = item.Name, RegionOfInterest = item, IsInteractive = interactive, OnMoveFinished = UpdateROIPosition }
-                    };
-                    roiSource.Add(roi);
-                }
+                    GridCenterRegionOfInterest => new GridCenterROIPoint { X = point.X, Y = point.Y, Label = item.Name, RegionOfInterest = item, IsInteractive = false, OnMoveFinished = UpdateROIPosition },
+                    _ => new ROIPoint() { X = point.X, Y = point.Y, Label = item.Name, RegionOfInterest = item, IsInteractive = interactive, OnMoveFinished = UpdateROIPosition }
+                };
+                roiSource.Add(roi);
             }
         }
     }

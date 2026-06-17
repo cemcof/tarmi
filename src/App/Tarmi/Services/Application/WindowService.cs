@@ -39,7 +39,7 @@ internal class WindowService : IWindowService
     public IObservable<bool> IsBusy => _isBusySubject.DistinctUntilChanged().AsObservable();
     public IObservable<string> BusyMessage => _busyMessageSubject.AsObservable();
 
-    public WindowService(ILogger<IWindowService> logger)
+    public WindowService(ILogger<WindowService> logger)
     {
         _logger = logger;
     }
@@ -88,9 +88,9 @@ internal class WindowService : IWindowService
         return viewModel.IsAccepted;
     }
 
-    public async Task ShowDeterminateWaitingDialogAsync(string dialogTitle, Func<IProgress<(string, Ratio)>, Task> progressTask, Action? terminate, string terminateControlName)
+    public async Task ShowDeterminateWaitingDialogAsync(string dialogTitle, Func<IProgress<(string, Ratio)>, Task> progressTask, Action? terminate = null, string terminateControlName = "Cancel")
     {
-        await ShowWaitingDialogAsync<string>(
+        await ShowWaitingDialogAsync(
             dialogTitle,
             false,
             async viewModel =>
@@ -107,9 +107,9 @@ internal class WindowService : IWindowService
         );
     }
 
-    public Task ShowIndeterminateWaitingDialogAsync(string dialogTitle, Func<IProgress<string>, Task> progressTask, Action? terminate, string terminateControlName)
+    public Task ShowIndeterminateWaitingDialogAsync(string dialogTitle, Func<IProgress<string>, Task> progressTask, Action? terminate = null, string terminateControlName = "Cancel")
     {
-        return ShowWaitingDialogAsync<string>(
+        return ShowWaitingDialogAsync(
             dialogTitle,
             true,
             async viewModel =>
@@ -122,7 +122,7 @@ internal class WindowService : IWindowService
         );
     }
 
-    private async Task ShowWaitingDialogAsync<T>(string dialogTitle, bool isIndeterminate, Func<WaitingDialogViewModel, Task> task, Action? terminate, string terminateControlName)
+    private async Task ShowWaitingDialogAsync(string dialogTitle, bool isIndeterminate, Func<WaitingDialogViewModel, Task> task, Action? terminate, string terminateControlName)
     {
         var mainWindow = System.Windows.Application.Current.MainWindow;
 
@@ -148,9 +148,9 @@ internal class WindowService : IWindowService
             await task.Invoke(viewModel);
             _logger.LogInformation("{TitleName} operation finished.", dialogTitle);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            _logger.LogInformation("{TitleName} operation cancelled.", dialogTitle);
+            _logger.LogInformation(ex, "{TitleName} operation cancelled.", dialogTitle);
         }
         finally
         {

@@ -73,10 +73,10 @@ internal sealed class ElectronBeam : InstrumentBeamBase
         ConnectElectronBeam();
     }
 
-    protected override void Disconnect()
-    {
-        base.Disconnect();
-    }
+    //protected override void Disconnect()
+    //{
+    //    base.Disconnect();
+    //}
 
     public Result Degauss()
     {

@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using Tarmi.Models;
 using OpenCvSharp;
 using UnitsNet;
@@ -14,6 +14,9 @@ public enum ImageTransformationType
 
 public static class ImageMetadataExtensions
 {
+    private static readonly Angle Angle180 = Angle.FromDegrees(180.0);
+    private static readonly Angle AngleTolerance = Angle.FromDegrees(1.0);
+
     public static Length ToLength(this Metadata.Thermofisher.XmlFormat.Quantity quantity)
     {
         return quantity.Unit switch
@@ -99,13 +102,10 @@ public static class ImageMetadataExtensions
     {
         var rotationAngle = metadata.GetStagePosition().Rotation;
         var isBeamImage = metadata.Coordinates?.CameraView.IsOneOf(StageCameraView.SEM, StageCameraView.FIB_RightAngle, StageCameraView.FIB_Milling) ?? false;
-        if (isBeamImage)
+        if (isBeamImage && metadata.FeiXmlMetadata is not null)
         {
-            if (metadata.FeiXmlMetadata is not null)
-            {
-                var scanRotation = Angle.FromRadians(metadata.FeiXmlMetadata.ScanSettings!.ScanRotation!.Value);
-                rotationAngle -= scanRotation;
-            }
+            var scanRotation = Angle.FromRadians(metadata.FeiXmlMetadata.ScanSettings!.ScanRotation!.Value);
+            rotationAngle -= scanRotation;
         }
         return rotationAngle.NormalizeAngle();
     }
@@ -141,116 +141,44 @@ public static class ImageMetadataExtensions
         };
     }
 
-
-    private static readonly Angle Angle180 = Angle.FromDegrees(180.0);
-    private static readonly Angle AngleTolerance = Angle.FromDegrees(1.0);
-
-    private static ImageWithMetadata TransformToRaw(this ImageWithMetadata imageWithMetadata)
+    public static ImageWithMetadata TransformTo(this ImageWithMetadata imageWithMetadata, ImageTransformationType transformationType)
     {
-        var coordinates = imageWithMetadata.Coordinates;
-        var isFlippedOnX = coordinates.ImageIsFlippedOnX;
-        var isFlippedOnY = coordinates.ImageIsFlippedOnY;
+        imageWithMetadata = imageWithMetadata.Clone();
+        imageWithMetadata.TransformToInplace(transformationType);
+        return imageWithMetadata;
+    }
 
-        return (isFlippedOnX, isFlippedOnY) switch
+    public static void TransformToInplace(this ImageWithMetadata imageWithMetadata, ImageTransformationType transformationType)
+    {
+        switch (transformationType)
         {
-            (true, true) => imageWithMetadata with { Image = imageWithMetadata.Image.Flip(FlipMode.XY), Coordinates = coordinates with { ImageIsFlippedOnX = false, ImageIsFlippedOnY = false } },
-            (true, false) => imageWithMetadata with { Image = imageWithMetadata.Image.Flip(FlipMode.X), Coordinates = coordinates with { ImageIsFlippedOnX = false, ImageIsFlippedOnY = false } },
-            (false, true) => imageWithMetadata with { Image = imageWithMetadata.Image.Flip(FlipMode.Y), Coordinates = coordinates with { ImageIsFlippedOnX = false, ImageIsFlippedOnY = false } },
-            (false, false) => imageWithMetadata with { Image = imageWithMetadata.Image.Clone() }
-        };
+            case ImageTransformationType.Raw: imageWithMetadata.TransformToRawInplace(); break;
+            case ImageTransformationType.View: imageWithMetadata.TransformToViewInplace(); break;
+            case ImageTransformationType.Maps: imageWithMetadata.TransformToMapsViewInplace(); break;
+            default: throw new NotSupportedException($"Transformation type '{transformationType}' is not supported.");
+        }
     }
 
     private static void TransformToRawInplace(this ImageWithMetadata imageWithMetadata)
-    {
-        var coordinates = imageWithMetadata.Coordinates;
-        var isFlippedOnX = coordinates.ImageIsFlippedOnX;
-        var isFlippedOnY = coordinates.ImageIsFlippedOnY;
-
-        switch (isFlippedOnX, isFlippedOnY)
-        {
-            case (true, true):
-                imageWithMetadata.Image.FlipInplace(FlipMode.XY);
-                break;
-            case (true, false):
-                imageWithMetadata.Image.FlipInplace(FlipMode.X);
-                break;
-            case (false, true):
-                imageWithMetadata.Image.FlipInplace(FlipMode.Y);
-                break;
-            case (false, false):
-                break;
-        }
-        imageWithMetadata.Coordinates.ImageIsFlippedOnX = false;
-        imageWithMetadata.Coordinates.ImageIsFlippedOnY = false;
-    }
-
-    private static bool IsInRawForm(this ImageWithMetadata imageWithMetadata)
-        => !imageWithMetadata.Coordinates.ImageIsFlippedOnX && !imageWithMetadata.Coordinates.ImageIsFlippedOnY;
-
-    private static ImageWithMetadata TransformToView(this ImageWithMetadata imageWithMetadata)
-    {
-        var isRaw = imageWithMetadata.IsInRawForm();
-        var rawImage = isRaw ? imageWithMetadata : imageWithMetadata.TransformToRaw();
-        using var rawImageGuard = Disposable.Create(() =>
-        {
-            if (!isRaw)
-            {
-                rawImage.Dispose();
-            }
-        });
-
-        var rotationAngle = rawImage.GetRawImageRotationAngle();
-        var isImageAngle180 = rotationAngle.IsInTolerance(Angle180, AngleTolerance);
-        var coordinates = rawImage.Coordinates;
-        var cameraView = imageWithMetadata.GetSource();
-        if (cameraView.IsOneOf(StageCameraView.LM, StageCameraView.Confocal))
-        {
-            return imageWithMetadata with { Image = rawImage.Image.Flip(FlipMode.X), Coordinates = coordinates with { ImageIsFlippedOnX = true, ImageIsFlippedOnY = false } };
-        }
-
-        if (isImageAngle180)
-        {
-            return imageWithMetadata with { Image = rawImage.Image.Flip(FlipMode.XY), Coordinates = coordinates with { ImageIsFlippedOnY = true, ImageIsFlippedOnX = true } };
-        }
-        else
-        {
-            return imageWithMetadata with { Image = rawImage.Image.Clone(), Coordinates = coordinates with { ImageIsFlippedOnX = false, ImageIsFlippedOnY = false } };
-        }
-    }
+        => imageWithMetadata.TransformToExpectedInplace(false, false);
 
     private static void TransformToViewInplace(this ImageWithMetadata imageWithMetadata)
     {
-        if (imageWithMetadata.IsInRawForm())
+        var cameraView = imageWithMetadata.GetSource();
+        if (cameraView.IsOneOf(StageCameraView.LM, StageCameraView.Confocal))
         {
-            imageWithMetadata.TransformToRawInplace();
+            imageWithMetadata.TransformToExpectedInplace(true, false);
+            return;
         }
-
         var rotationAngle = imageWithMetadata.GetRawImageRotationAngle();
         var isImageAngle180 = rotationAngle.IsInTolerance(Angle180, AngleTolerance);
 
         if (isImageAngle180)
         {
-            imageWithMetadata.Image.FlipInplace(FlipMode.XY);
-            imageWithMetadata.Coordinates.ImageIsFlippedOnX = true;
-            imageWithMetadata.Coordinates.ImageIsFlippedOnY = true;
+            imageWithMetadata.TransformToExpectedInplace(true, true);
+            return;
         }
-    }
-
-    private static ImageWithMetadata TransformToMapsView(this ImageWithMetadata imageWithMetadata)
-    {
-        var cameraView = imageWithMetadata.GetSource();
-
-        var depth = imageWithMetadata.Image.Depth;
-
-        using var grayImage =
-            depth == 8 || depth == 16 ?
-                imageWithMetadata with { Image = imageWithMetadata.Image.Clone() } :
-                imageWithMetadata with { Image = imageWithMetadata.Image.ToGrayscale() };
-
-        return
-            (cameraView == StageCameraView.LM || cameraView == StageCameraView.Confocal) ?
-                grayImage.TransformToView() :
-                grayImage.TransformToRaw();
+        imageWithMetadata.TransformToExpectedInplace(false, false);
     }
 
     private static void TransformToMapsViewInplace(this ImageWithMetadata imageWithMetadata)
@@ -265,7 +193,7 @@ public static class ImageMetadataExtensions
             imageWithMetadata = imageWithMetadata with { Image = imageWithMetadata.Image.ToGrayscale() };
         }
 
-        if (cameraView == StageCameraView.LM)
+        if (cameraView.IsOneOf(StageCameraView.LM, StageCameraView.Confocal))
         {
             imageWithMetadata.TransformToViewInplace();
         }
@@ -275,25 +203,32 @@ public static class ImageMetadataExtensions
         }
     }
 
-    public static ImageWithMetadata TransformTo(this ImageWithMetadata imageWithMetadata, ImageTransformationType transformationType)
+    private static void TransformToExpectedInplace(this ImageWithMetadata imageWithMetadata, bool isFlippedOnXExpected, bool isFlippedOnYExpected)
     {
-        return transformationType switch
+        var coordinates = imageWithMetadata.Coordinates;
+        var flipOnX = coordinates.ImageIsFlippedOnX ^ isFlippedOnXExpected;
+        var flipOnY = coordinates.ImageIsFlippedOnY ^ isFlippedOnYExpected;
+
+        FlipMode? flipMode = (flipOnX, flipOnY) switch
         {
-            ImageTransformationType.Raw => imageWithMetadata.TransformToRaw(),
-            ImageTransformationType.View => imageWithMetadata.TransformToView(),
-            ImageTransformationType.Maps => imageWithMetadata.TransformToMapsView(),
-            _ => throw new NotSupportedException($"Transformation type '{transformationType}' is not supported.")
+            (false, false) => null,
+            (true, false) => FlipMode.X,
+            (false, true) => FlipMode.Y,
+            (true, true) => FlipMode.XY
         };
+
+        if (flipMode.HasValue)
+        {
+            imageWithMetadata.Image.FlipInplace(flipMode.Value);
+        }
+
+        coordinates.ImageIsFlippedOnX = isFlippedOnXExpected;
+        coordinates.ImageIsFlippedOnY = isFlippedOnYExpected;
     }
 
-    public static void TransformToInplace(this ImageWithMetadata imageWithMetadata, ImageTransformationType transformationType)
+    public static ImageWithMetadata Clone(this ImageWithMetadata imageWithMetadata) => imageWithMetadata with
     {
-        switch (transformationType)
-        {
-            case ImageTransformationType.Raw: imageWithMetadata.TransformToRawInplace(); break;
-            case ImageTransformationType.View: imageWithMetadata.TransformToViewInplace(); break;
-            case ImageTransformationType.Maps: imageWithMetadata.TransformToMapsViewInplace(); break;
-            default: throw new NotSupportedException($"Transformation type '{transformationType}' is not supported.");
-        }
-    }
+        Image = imageWithMetadata.Image.Clone(),
+        Coordinates = imageWithMetadata.Coordinates with { }
+    };
 }

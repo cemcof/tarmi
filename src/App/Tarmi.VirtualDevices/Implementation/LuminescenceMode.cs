@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using Tarmi.App.Infrastructure;
@@ -41,6 +41,7 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
     private readonly LuminescenceImageController _imageController;
     private readonly Length _manualFocusStep = Length.FromMicrometers(1);
     private readonly NonblockingBufferedSubject<ImageWithMetadata> _imageGrabberSubject;
+    private readonly IDisposable _subscription;
     private readonly LuminescenceAberrations _aberrations;
     private Length _activeAberration = Length.Zero;
 
@@ -109,7 +110,7 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
             itemDropped: _ => _logger.LogDebug("Image dropped due newer image available.")
         );
 
-        _ = _imageGrabber.GrabbedImage.Select(grabbed => TransformToImageWithMetadata(grabbed)).Subscribe(_imageGrabberSubject.OnNext);
+        _subscription = _imageGrabber.GrabbedImage.Select(grabbed => TransformToImageWithMetadata(grabbed)).Subscribe(_imageGrabberSubject);
         _imageController = new(_lightController, _filterHandler, _imageGrabber, applicationConfig);
     }
 
@@ -140,9 +141,9 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
         await _imageController.SwitchFilter(mode, default);
-        if (_lightController.ActiveLight is LightColor color)
+        if (_lightController.SelectedLight is LightColor color)
         {
-            await SetActiveAberration(color, default);
+            await ActivateAberration(color, default);
         }
         //_ = await _filterHandler.SwitchFilterAsync(mode, CancellationToken.None);
         if (_simulationEnabled && _imageGrabber is ISimulatedImageGrabber simulatedGrabber)
@@ -158,55 +159,54 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
     public Duration ExposureTime
     {
         get => _imageGrabber.ExposureTime;
-        set => _imageController.SetExposure(value); // _imageGrabber.ExposureTime = value;
+        set => _imageController.SetExposure(value);
     }
 
-    public LightColor? ActiveLightColor => _lightController.ActiveLight;
+    public LightColor? SelectedLightColor => _lightController.SelectedLight;
 
-    public IObservable<LightColor?> CurrentActiveLightColor => _lightController.CurrentActiveLight;
+    public IObservable<LightColor?> CurrentSelectedLightColor => _lightController.CurrentSelectedLight;
 
-    public async Task TurnLightOn(LightColor color, CancellationToken cancellationToken)
+    public async Task SelectLightAsync(LightColor? color, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
-
-        await SetActiveAberration(color, cancellationToken);
-        await _lightController.SetActiveLightAsync(color, cancellationToken);
+        if (color.HasValue)
+        {
+            await ActivateAberration(color.Value, cancellationToken);
+        }
+        else
+        {
+            await DeactivateAberration(cancellationToken);
+        }
+        await _lightController.SelectLightAsync(color, cancellationToken);
     }
 
-    public async Task TurnLightOff(CancellationToken cancellationToken)
-    {
-        await EliminateActiveAberration(cancellationToken);
-        await _lightController.SetActiveLightAsync(null, cancellationToken);
-    }
+    public Task TurnLightOnAsync(CancellationToken cancellationToken) => _lightController.TurnLightOnAsync(cancellationToken);
 
-    private async Task SetActiveAberration(LightColor color, CancellationToken cancellationToken)
+    public Task TurnLightOffAsync(CancellationToken cancellationToken) => _lightController.TurnLightOffAsync(cancellationToken);
+
+    private async Task ActivateAberration(LightColor color, CancellationToken cancellationToken)
     {
         if (_linearStage.GetIsProtracted())
         {
-            await EliminateActiveAberration(cancellationToken);
-            SetAberrationValue(color);
+            await DeactivateAberration(cancellationToken);
+            if (_filterHandler.FilterPosition == FilterType.Fluorescence)
+            {
+                _activeAberration = _aberrations.FluorescenceAberrations.FirstOrDefault(x => x.Key.Equals(color.ToString(), StringComparison.OrdinalIgnoreCase)).Value;
+            }
+            else if (_filterHandler.FilterPosition == FilterType.Reflection)
+            {
+                _activeAberration = _aberrations.ReflectionAberrations.FirstOrDefault(x => x.Key.Equals(color.ToString(), StringComparison.OrdinalIgnoreCase)).Value;
+            }
             await _logger.SwallowAsync(_linearStage.MoveRelativeAsync(_activeAberration, cancellationToken));
         }
     }
 
-    private async Task EliminateActiveAberration(CancellationToken cancellationToken)
+    private async Task DeactivateAberration(CancellationToken cancellationToken)
     {
         if (_linearStage.GetIsProtracted() && !Equals(_activeAberration, Length.Zero))
         {
             await _logger.SwallowAsync(_linearStage.MoveRelativeAsync(-_activeAberration, cancellationToken));
             _activeAberration = Length.Zero;
-        }
-    }
-
-    private void SetAberrationValue(LightColor color) // TODO: optimize/refactor
-    {
-        if (_filterHandler.FilterPosition == FilterType.Fluorescence)
-        {
-            _activeAberration = _aberrations.FluorescenceAberrations.FirstOrDefault(x => x.Key.Equals(color.ToString(), StringComparison.OrdinalIgnoreCase)).Value;
-        }
-        else if (_filterHandler.FilterPosition == FilterType.Reflection)
-        {
-            _activeAberration = _aberrations.ReflectionAberrations.FirstOrDefault(x => x.Key.Equals(color.ToString(), StringComparison.OrdinalIgnoreCase)).Value;
         }
     }
 
@@ -222,7 +222,6 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
         await _imageController.SetIntensity(intensity, cancellationToken);
-        //await _lightController.SetBrightnessAsync(intensity, cancellationToken);
     }
 
     public RangeDescriptor<double> GammaRange => _imageGrabber.GammaRange;
@@ -245,7 +244,9 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         set => AssignWithStoppedGrabbing(() => _imageGrabber.Binning = (int)value);
     }
 
-    public Length CurrentLinearStagePosition => _linearStage.CurrentPosition;    
+    public Length CurrentLinearStagePosition => _linearStage.CurrentPosition;
+
+    public IObservable<bool> CurrentIsLightActive => _lightController.CurrentIsLightActive;
 
     public async Task EnableAsync(CancellationToken cancellationToken)
     {
@@ -266,10 +267,7 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
             simulatedGrabber.SimulationMode = SimulationImageMode.File;
         }
         await _lightController.Initialize(cancellationToken);
-        //await _lightController.SetBrightnessAsync(Ratio.FromPercent(89), cancellationToken);
-        await _lightController.SetActiveLightAsync(null, cancellationToken);
-        //await ChangeModeAsync(FilterType.Reflection);
-        //await _imageController.SwitchFilter(FilterType.Reflection, cancellationToken);
+        await _lightController.SelectLightAsync(null, cancellationToken);
         await _imageController.Initialize(cancellationToken);
     }
 
@@ -282,8 +280,6 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
             await _grabbingTokenSource.CancelAsync();
             _grabbingTokenSource = null;
         }
-        //await _logger.SwallowAsync(() => _linearStage.RetractAsync(cancellationToken));
-        //cancellationToken.ThrowIfCancellationRequested();
         await _logger.SwallowAsync(() => _lightController.Deinitialize(cancellationToken));
         cancellationToken.ThrowIfCancellationRequested();
         _logger.Swallow(_imageGrabber.Close);
@@ -314,7 +310,7 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
-        return _lightController.ActiveLight switch
+        return _lightController.SelectedLight switch
         {
             LightColor.Red => _thorlabs4100Config.Lights.RedWavelength,
             LightColor.Green => _thorlabs4100Config.Lights.GreenWavelength,
@@ -324,7 +320,7 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         };
     }
 
-    private ImageWithMetadata TransformToImageWithMetadata(ImageWithMetadata source, Tarmi.Imaging.Common.Metadata.Luminescence.StackInfo? stackInfo = null)
+    private ImageWithMetadata TransformToImageWithMetadata(ImageWithMetadata source, StackInfo? stackInfo = null)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
@@ -348,8 +344,8 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
                 LightIntensity = _lightController.Brightness,
                 WorkingDistance = _linearStage.CurrentPosition,
                 Mode = _filterHandler.FilterPosition == FilterType.Fluorescence ?
-                    Tarmi.Imaging.Common.Metadata.Luminescence.LuminescenceMode.Fluorescence :
-                    Tarmi.Imaging.Common.Metadata.Luminescence.LuminescenceMode.Reflection,
+                    Imaging.Common.Metadata.Luminescence.LuminescenceMode.Fluorescence :
+                    Imaging.Common.Metadata.Luminescence.LuminescenceMode.Reflection,
                 StackInfo = stackInfo,
                 Camera = source.LuminescenceMetadata!.Camera with
                 {
@@ -427,33 +423,32 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         
         await _logger.SwallowAsync(() => _linearStage.ProtractAsync(cancellationToken));
         _activeAberration = Length.Zero;
-        if (_lightController.ActiveLight is LightColor color)
+        if (_lightController.SelectedLight is LightColor color)
         {
-            await SetActiveAberration(color, cancellationToken);
+            await ActivateAberration(color, cancellationToken);
         }
     }
 
     public async Task RetractAsync(CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
-
-        await _lightController.SetActiveLightAsync(null, cancellationToken);
+        await _lightController.TurnLightOffAsync(cancellationToken);
         await _logger.SwallowAsync(() => _linearStage.RetractAsync(cancellationToken));
         _activeAberration = Length.Zero;
     }
 
-    public async Task MoveLinearStageToAsync(Length position, CancellationToken cancellation)
+    public async Task MoveLinearStageToAsync(Length position, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
-        await _logger.SwallowAsync(() => _linearStage.MoveAbsoluteAsync(position, cancellation));
+        await _logger.SwallowAsync(() => _linearStage.MoveAbsoluteAsync(position, cancellationToken));
     }
 
-    public async Task MoveLinearStageRelativeAsync(Length position, CancellationToken cancellation)
+    public async Task MoveLinearStageRelativeAsync(Length position, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
-        await _logger.SwallowAsync(() => _linearStage.MoveRelativeAsync(position, cancellation));
+        await _logger.SwallowAsync(() => _linearStage.MoveRelativeAsync(position, cancellationToken));
     }
 
     private LightColor GetColorFromImageMetadata(Metadata luminescenceMetadata)
@@ -464,27 +459,24 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         {
             return LightColor.Red;
         }
-        else if (waveLength == _thorlabs4100Config.Lights.GreenWavelength.Nanometers)
+        if (waveLength == _thorlabs4100Config.Lights.GreenWavelength.Nanometers)
         {
             return LightColor.Green;
         }
-        else if (waveLength == _thorlabs4100Config.Lights.BlueWavelength.Nanometers)
+        if (waveLength == _thorlabs4100Config.Lights.BlueWavelength.Nanometers)
         {
             return LightColor.Blue;
         }
-        else
-        {
-            return LightColor.UltraViolet;
-        }
+        return LightColor.UltraViolet;
     }
 
-    public async Task RestoreImageState(ImageMetadata imageMetadata, CancellationToken cancellation)
+    public async Task RestoreImageState(ImageMetadata imageMetadata, CancellationToken cancellationToken)
     {
         using var activity = AppTelemetry.DeviceActivitySource.StartActivity(CreateActivityName());
 
         if (
             imageMetadata.GetSource() != StageCameraView.LM ||
-            _linearStage.GetIsProtracted() == false ||
+            !_linearStage.GetIsProtracted() ||
             imageMetadata.LuminescenceMetadata == null
         )
         {
@@ -499,16 +491,16 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         {
             if (linearStagePosition >= _linearStageAlignment.FocusMinimum && linearStagePosition <= _linearStageAlignment.FocusMaximum)
             {
-                await MoveLinearStageToAsync(linearStagePosition, cancellation);
+                await MoveLinearStageToAsync(linearStagePosition, cancellationToken);
             }
-            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellation);
+            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellationToken);
         }
         else
         {
-            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellation);
+            _ = await _safeStageControlling.MoveStageAsync(stagePosition, cancellationToken);
             if (linearStagePosition >= _linearStageAlignment.FocusMinimum && linearStagePosition <= _linearStageAlignment.FocusMaximum)
             {
-                await MoveLinearStageToAsync(linearStagePosition, cancellation);
+                await MoveLinearStageToAsync(linearStagePosition, cancellationToken);
             }
         }
 
@@ -517,14 +509,15 @@ public sealed class LuminescenceMode : StageControllingModeBase, ILuminescenceMo
         Gamma = luminescenceMetadata!.Camera.Gamma;
 
         var light = GetColorFromImageMetadata(luminescenceMetadata);
-        await _lightController.SetActiveLightAsync(light, cancellation);
-        await SetIntensityAsync(luminescenceMetadata!.LightIntensity, cancellation);
+        await _lightController.SelectLightAsync(light, cancellationToken);
+        await SetIntensityAsync(luminescenceMetadata!.LightIntensity, cancellationToken);
 
         Binning = (BinningSize)luminescenceMetadata!.Camera.Binning;
     }
 
     public void Dispose()
     {
+        _subscription.Dispose();
         _grabbingTokenSource?.Dispose();
         _grabbingTokenSource = null;
     }

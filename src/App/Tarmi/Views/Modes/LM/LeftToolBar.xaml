@@ -49,8 +49,8 @@
             <ItemsControl ItemsSource="{Binding LuminescenceImaging.LightColors}" x:Name="Colors">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <RadioButton Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.LuminescenceImaging.SetLightColorCommand}" CommandParameter="{Binding}"
-                                     Width="auto" Height="45" Margin="0">
+                        <RadioButton Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.LuminescenceImaging.SelectLightColorCommand}" CommandParameter="{Binding}"
+                                     Width="Auto" Height="45" Margin="0">
                             <RadioButton.ToolTip>
                                 <MultiBinding Converter="{StaticResource LightColorAndFilterTypeToNameConverter}">
                                     <Binding Path="."/>
@@ -77,6 +77,30 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <Border Height="45">
+                <Image x:Name="LightBulbImage" Margin="10">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Source" Value="{StaticResource light_bulb_gray}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=LuminescenceImaging.IsLightActive}" Value="True">
+                                    <Setter Property="Source" Value="{StaticResource light_bulb_green}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="ToolTip" Value="Light Status: Off"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=LuminescenceImaging.IsLightActive}" Value="True">
+                                <Setter Property="ToolTip" Value="Light Status: On"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
             <Separator/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom">

@@ -2,7 +2,9 @@ using OpenCvSharp;
 
 namespace Tarmi.Imaging.Common.OpenCvWrapper;
 
+#pragma warning disable S4050 // Operators should be overloaded consistently
 public partial class Image<TColor, TDepth>
+#pragma warning restore S4050 // Operators should be overloaded consistently
 {
     public Image<TColor, TDepth> Add(Image<TColor, TDepth> img2, Image<Gray, byte>? mask = null)
     {

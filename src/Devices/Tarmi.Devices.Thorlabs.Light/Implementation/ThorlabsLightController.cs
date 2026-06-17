@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -18,21 +18,32 @@ public class ThorlabsLightController : ILightController
         _logger = logger;
     }
 
-    public LightColor? ActiveLight => _activeLightSubject.Value;
+    public LightColor? SelectedLight => _selectedLightSubject.Value;
 
     public Ratio Brightness => _brightnessSubject.Value;
 
-    private readonly BehaviorSubject<LightColor?> _activeLightSubject = new(null);
-    public IObservable<LightColor?> CurrentActiveLight => _activeLightSubject.DistinctUntilChanged();
+    private readonly BehaviorSubject<LightColor?> _selectedLightSubject = new(null);
+    private readonly BehaviorSubject<bool> _isLightActiveSubject = new(false);
+    public IObservable<LightColor?> CurrentSelectedLight => _selectedLightSubject.DistinctUntilChanged();
+    public IObservable<bool> CurrentIsLightActive => _isLightActiveSubject.DistinctUntilChanged();
 
     private readonly BehaviorSubject<Ratio> _brightnessSubject = new(Ratio.Zero);
     public IObservable<Ratio> CurrentBrightness => _brightnessSubject.DistinctUntilChanged();
+
+    public bool IsLightActive
+    {
+        get => _isLightActiveSubject.Value;
+        private set
+        {
+            _logger.Swallow(() => _isLightActiveSubject.OnNext(value));
+        }
+    }
 
     public async Task Deinitialize(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Deinitializing Thorlabs light controller.");
         using var guard = await _semaphore.UseOnceAsync(cancellationToken);
-        TurnLightsOff();
+        TurnAllLightsOff();
         _logger.LogInformation("Thorlabs light controller deinitialized.");
     }
 
@@ -51,43 +62,69 @@ public class ThorlabsLightController : ILightController
         using var guard = await _semaphore.UseOnceAsync(cancellationToken);
 
         SetOperationMode(OperationMode.Brightness);
-        TurnLightsOff();
+        TurnAllLightsOff();
         SetSelectionMode(SelectionMode.Single);
+        IsLightActive = false;
 
         _logger.LogInformation("Thorlabs light controller initialized.");
     }
 
-    public async Task SetActiveLightAsync(LightColor? color, CancellationToken cancellationToken)
+    public async Task SelectLightAsync(LightColor? color, CancellationToken cancellationToken)
     {
-        if (color == ActiveLight)
+        if (color == SelectedLight)
         {
             _logger.LogInformation("Ignored light setting as it was already active.");
             return;
         }
         using var guard = await _semaphore.UseOnceAsync(cancellationToken);
-        if (ActiveLight.HasValue)
+        if (SelectedLight.HasValue && IsLightActive)
         {
-            SetLightState(ActiveLight.Value, false);
+            SetLightState(SelectedLight.Value, false);
         }
-        if (color.HasValue)
+        if (color.HasValue && IsLightActive)
         {
             SetBrightness(color.Value, Brightness);
             SetLightState(color.Value, true);
         }
-        _logger.Swallow(() => _activeLightSubject.OnNext(color));
+        _logger.Swallow(() => _selectedLightSubject.OnNext(color));
     }
 
     public async Task SetBrightnessAsync(Ratio brightness, CancellationToken cancellationToken)
     {
         using var guard = await _semaphore.UseOnceAsync(cancellationToken);
-        if (ActiveLight.HasValue)
+        if (SelectedLight.HasValue)
         {
-            SetBrightness(ActiveLight.Value, brightness);
+            SetBrightness(SelectedLight.Value, brightness);
         }
         _logger.Swallow(() => _brightnessSubject.OnNext(brightness));
     }
-    
-    private void TurnLightsOff()
+
+    public async Task TurnLightOnAsync(CancellationToken cancellationToken)
+    {
+        using var guard = await _semaphore.UseOnceAsync(cancellationToken);
+
+        _logger.LogInformation("Setting light on.");
+        if (SelectedLight.HasValue)
+        {
+            SetBrightness(SelectedLight.Value, Brightness);
+            SetLightState(SelectedLight.Value, true);
+        }
+        IsLightActive = true;
+    }
+
+    public async Task TurnLightOffAsync(CancellationToken cancellationToken)
+    {
+        using var guard = await _semaphore.UseOnceAsync(cancellationToken);
+
+        _logger.LogInformation("Setting light off.");
+        if (SelectedLight.HasValue)
+        {
+            SetLightState(SelectedLight.Value, false);
+        }
+        IsLightActive = false;
+    }
+
+    private void TurnAllLightsOff()
     {
         foreach (var color in LightColors)
         {

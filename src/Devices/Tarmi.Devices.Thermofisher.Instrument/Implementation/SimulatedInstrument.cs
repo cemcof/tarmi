@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using AsyncAwaitBestPractices;
@@ -27,7 +27,6 @@ public class SimulatedInstrument : IInstrument
     private readonly BehaviorSubject<DetectorState> _detectorStateSubject = new(DetectorState.Zero);
     private readonly BehaviorSubject<ImageFilterState> _imageFilterSubject = new(ImageFilterState.Zero);
 
-    private BeamState _lastBeamOnState = GetInitialBeamState();
     private CancellationTokenSource? _imageStreamCts = null;
     private CancellationTokenSource? _imageStreamLinkedCts = null;
     private CancellationTokenSource? _stageMoveCts = null;
@@ -39,8 +38,8 @@ public class SimulatedInstrument : IInstrument
     public SimulatedInstrument(ILogger<SimulatedInstrument> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _defaultSemImage = TiffImage.Load("simulation/sem/default.tif");
-        _defaultIonImage = TiffImage.Load("simulation/ion/default.tif");
+        _defaultSemImage = TiffImage.Load(@"sem\default-raw.tiff");
+        _defaultIonImage = TiffImage.Load(@"fib\default-raw.tiff");
 
         Task.Run(() => InitializeImageSimulator(serviceProvider))
             .SafeFireAndForget(ex => _logger.LogError(ex, "InitializeImageSimulator"));
@@ -219,11 +218,11 @@ public class SimulatedInstrument : IInstrument
         return _beamStateSubject.Value.HorizontalFieldWidth;
     }
 
-    public void SetHorizontalFieldWidth(Length value)
+    public void SetHorizontalFieldWidth(Length hfw)
     {
         ThrowIfStageOnlyOrBeamIsOff();
 
-        if (!Simulator.Beam.Limits.HorizontalFieldWidthRange.IsValueInRange(value))
+        if (!Simulator.Beam.Limits.HorizontalFieldWidthRange.IsValueInRange(hfw))
         {
             throw new InvalidOperationException("Target HFW is out of range");
         }
@@ -231,7 +230,7 @@ public class SimulatedInstrument : IInstrument
         Task.Delay(TimeSpan.FromMilliseconds(100)).SyncResult();
 
         // FYI: does not affect the image, in fact it get out of sync, just for milling definitions transfer testing
-        var beamState = _beamStateSubject.Value with { HorizontalFieldWidth = value };
+        var beamState = _beamStateSubject.Value with { HorizontalFieldWidth = hfw };
         _logger.Swallow(() => _beamStateSubject.OnNext(beamState));
     }
 
@@ -312,7 +311,7 @@ public class SimulatedInstrument : IInstrument
 
     public async Task StageMove(StagePosition axesPositions)
     {
-        using var guard = _stageLock.UseOnce();
+        using var guard = await _stageLock.UseOnceAsync();
 
         await _stageIdleEvent.WaitAsync();
 
@@ -365,18 +364,18 @@ public class SimulatedInstrument : IInstrument
         }
     }
 
-    public async Task StageMoveBy(StagePosition stageOffsets)
+    public async Task StageMoveBy(StagePosition axesOffsets)
     {
         await _stageIdleEvent.WaitAsync();
 
         var position = CurrentStageState.CurrentPosition;
         var targetPosition = new StagePosition
         {
-            X = position.X + stageOffsets.X,
-            Y = position.Y + stageOffsets.Y,
-            Z = position.Z + stageOffsets.Z,
-            Rotation = position.Rotation + stageOffsets.Rotation,
-            Tilt = position.Tilt + stageOffsets.Tilt
+            X = position.X + axesOffsets.X,
+            Y = position.Y + axesOffsets.Y,
+            Z = position.Z + axesOffsets.Z,
+            Rotation = position.Rotation + axesOffsets.Rotation,
+            Tilt = position.Tilt + axesOffsets.Tilt
         };
         await StageMove(targetPosition);
     }
@@ -391,61 +390,80 @@ public class SimulatedInstrument : IInstrument
 
     private void UpdateCoreStateFromImage(ImageWithMetadata imageWithMetadata)
     {
+        var image = imageWithMetadata.Image;
+        var pixelSize = imageWithMetadata.GetPixelSize();
         _logger.Swallow(() => _beamStateSubject.OnNext(_beamStateSubject.Value with
         {
             Resolution = new()
             {
-                Width = imageWithMetadata.Image.Width,
-                Height = imageWithMetadata.Image.Height,
-                Depth = imageWithMetadata.Image.Depth
+                Width = image.Width,
+                Height = image.Height,
+                Depth = image.Depth
             },
-            PixelSize = imageWithMetadata.GetPixelSize(),
-            HorizontalFieldWidth = imageWithMetadata.Image.Width * imageWithMetadata.GetPixelSize().X,
-            VerticalFieldWidth = imageWithMetadata.Image.Height * imageWithMetadata.GetPixelSize().Y,
+            PixelSize = pixelSize,
+            HorizontalFieldWidth = image.Width * pixelSize.X,
+            VerticalFieldWidth = image.Height * pixelSize.Y,
         }));
     }
 
     public async Task SwitchMode(InstrumentMode mode)
     {
-        if (mode != _modeSubject.Value)
+        if (mode == _modeSubject.Value)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
-            _modeSubject.OnNext(mode);
-            if (mode == InstrumentMode.Sem)
-            {
+            return;
+        }
+        await Task.Delay(TimeSpan.FromMilliseconds(100));
+        _modeSubject.OnNext(mode);
+        switch (mode)
+        {
+            case InstrumentMode.Sem:
                 UpdateCoreStateFromImage(_defaultSemImage);
-
-                _logger.Swallow(() => _detectorStateSubject.OnNext(new DetectorState { Name = "TLD", Brightness = Ratio.FromPercent(50), Contrast = Ratio.FromPercent(50) }));
+                _logger.Swallow(() => _detectorStateSubject.OnNext(new DetectorState
+                {
+                    Name = "TLD",
+                    Brightness = Ratio.FromPercent(50),
+                    Contrast = Ratio.FromPercent(50)
+                }));
                 _logger.Swallow(() => _beamStateSubject.OnNext(_beamStateSubject.Value with
                 {
                     Gas = string.Empty,
                     LensMode = "Field Free"
                 }));
-                _logger.Swallow(() => _imageFilterSubject.OnNext(new ImageFilterState { Type = ImageFilterType.Average, Frames = 4 }));
-            }
-            else if (mode == InstrumentMode.Fib)
-            {
+                _logger.Swallow(() => _imageFilterSubject.OnNext(new ImageFilterState
+                {
+                    Type = ImageFilterType.Average,
+                    Frames = 4
+                }));
+                break;
+            case InstrumentMode.Fib:
                 UpdateCoreStateFromImage(_defaultIonImage);
 
-                _logger.Swallow(() => _detectorStateSubject.OnNext(new DetectorState { Name = "ETD (SE)", Brightness = Ratio.FromPercent(50), Contrast = Ratio.FromPercent(50) }));
-                _logger.Swallow(() => _beamStateSubject.OnNext(_beamStateSubject.Value with { Gas = "Xenon", LensMode = string.Empty }));
+                _logger.Swallow(() => _detectorStateSubject.OnNext(new DetectorState
+                {
+                    Name = "ETD (SE)",
+                    Brightness = Ratio.FromPercent(50),
+                    Contrast = Ratio.FromPercent(50)
+                }));
                 _logger.Swallow(() => _beamStateSubject.OnNext(_beamStateSubject.Value with
                 {
                     Gas = "Xenon",
                     LensMode = string.Empty
                 }));
-
-                _logger.Swallow(() => _imageFilterSubject.OnNext(new ImageFilterState { Type = ImageFilterType.Integrate, Frames = 2 }));
-            }
-
-            if (!_beamStateSubject.Value.IsOn)
-            {
-                SetBeamOn(true);
-            }
-
-            // simulate some delay
-            await Task.Delay(TimeSpan.FromSeconds(1));
+                _logger.Swallow(() => _imageFilterSubject.OnNext(new ImageFilterState
+                {
+                    Type = ImageFilterType.Integrate,
+                    Frames = 2
+                }));
+                break;
         }
+
+        if (!_beamStateSubject.Value.IsOn)
+        {
+            SetBeamOn(true);
+        }
+
+        // simulate some delay
+        await Task.Delay(TimeSpan.FromSeconds(1));
     }
 
     public ImageWithMetadata GrabImage()
@@ -464,14 +482,12 @@ public class SimulatedInstrument : IInstrument
         {
             image = _imageSimulator.GrabOne();
             UpdateCoreStateFromImage(image);
-
-            image.Image.Mat.ApplyGaussianNoiseInplace(mean: 50, stdDev: 32);
         }
         else
         {
-            image = image with { Image = image.Image.Clone() };
-            image.Image.Mat.ApplyGaussianNoiseInplace(mean: 50, stdDev: 32);
+            image = image.Clone();
         }
+        image.Image.Mat.ApplyGaussianNoiseInplace(mean: 50, stdDev: 32);
 
         return UpdateImageMetadata(image);
     }

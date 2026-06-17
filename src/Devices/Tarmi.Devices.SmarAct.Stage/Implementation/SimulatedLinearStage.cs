@@ -14,8 +14,6 @@ public class SimulatedLinearStage : ILinearStage
 
     private static readonly TimeSpan Delay = TimeSpan.FromMilliseconds(100);
 
-    private bool _stopRequested = true;
-
     private readonly BehaviorSubject<Length> _positionSubject = new(default);
     public IObservable<Length> Position => _positionSubject.AsObservable();
 
@@ -39,40 +37,40 @@ public class SimulatedLinearStage : ILinearStage
         _alignment = applicationConfig.Microscope.Alignment.LinearStage;
     }
 
-    public async Task<ResponseType> GetErrorAsync(CancellationToken cancellationToken)
+    public async Task<ResponseType> GetErrorAsync(CancellationToken cancellationToken = default)
         => await GetDelayedValueAsync(ResponseType.NoError, cancellationToken);
 
-    public async Task<int> GetErrorsCountAsync(CancellationToken cancellationToken)
+    public async Task<int> GetErrorsCountAsync(CancellationToken cancellationToken = default)
         => await GetDelayedValueAsync(0, cancellationToken);
 
-    public async Task<ChannelState> GetStateAsync(CancellationToken cancellationToken)
+    public async Task<ChannelState> GetStateAsync(CancellationToken cancellationToken = default)
         => await GetDelayedValueAsync(_state, cancellationToken);
 
-    public async Task<int> GetTemperatureAsync(CancellationToken cancellationToken)
+    public async Task<int> GetTemperatureAsync(CancellationToken cancellationToken = default)
         => await GetDelayedValueAsync(15, cancellationToken);
 
-    public async Task<bool> IsConnectedAsync(CancellationToken cancellationToken)
+    public async Task<bool> IsConnectedAsync(CancellationToken cancellationToken = default)
         => await GetDelayedValueAsync(true, cancellationToken);
 
-    public async Task MoveRelativeAsync(Length distance, CancellationToken cancellationToken)
+    public async Task MoveRelativeAsync(Length distance, CancellationToken cancellationToken = default)
     {
         var position = UnitMath.Clamp(CurrentPosition + distance, _alignment.FocusMinimum, _alignment.FocusMaximum);
         await MoveAbsoluteAsync(position, cancellationToken);
     }
 
-    public async Task MoveAbsoluteAsync(Length position, CancellationToken cancellationToken)
+    public async Task MoveAbsoluteAsync(Length position, CancellationToken cancellationToken = default)
     {
         Guard.IsBetweenOrEqualTo(position, _alignment.FocusMinimum, _alignment.FocusMaximum);
         await MoveAsync(position, _alignment.LowVelocity, cancellationToken);
     }
 
-    public async Task ProtractAsync(CancellationToken cancellationToken)
+    public async Task ProtractAsync(CancellationToken cancellationToken = default)
         => await MoveAsync(_alignment.ProtractPosition, _alignment.HighVelocity, cancellationToken);
 
-    public async Task RetractAsync(CancellationToken cancellationToken)
+    public async Task RetractAsync(CancellationToken cancellationToken = default)
         => await MoveAsync(_alignment.RetractPosition, _alignment.HighVelocity, cancellationToken);
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken = default)
         => await StopIfMoving();
 
     public static async Task<T> GetDelayedValueAsync<T>(T value, CancellationToken cancellationToken)
@@ -85,16 +83,16 @@ public class SimulatedLinearStage : ILinearStage
     {
         cancellationToken.ThrowIfCancellationRequested();
         await StopIfMoving();
-        _stopRequested = false;
+        var stopRequested = false;
         _state = ChannelState.ActivelyMoving;
         var step = Math.Sign((targetPosition - CurrentPosition).Value) * (Delay * velocity);
-        while (!_stopRequested && (targetPosition - CurrentPosition).Abs() > step.Abs())
+        while (!stopRequested && (targetPosition - CurrentPosition).Abs() > step.Abs())
         {
             await Task.Delay(Delay, cancellationToken);
             CurrentPosition += step;
         }
         _state = ChannelState.InPosition;
-        if (!_stopRequested)
+        if (!stopRequested)
         {
             CurrentPosition = targetPosition;
         }

@@ -1,4 +1,4 @@
-using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
+﻿using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Tarmi.Models;
 using Tarmi.Configuration;
 using Tarmi.Configuration.Devices;
@@ -19,7 +19,7 @@ internal sealed class IonImageSource : ImageSourceBase
         CompositeImageEventsClientId = 1222
     };
 
-    public IonImageSource(ILogger<SemImageSource> logger, IXtObjectsCollection xtObjectsCollection, ApplicationConfig appConfig)
+    public IonImageSource(ILogger<IonImageSource> logger, IXtObjectsCollection xtObjectsCollection, ApplicationConfig appConfig)
         : base(logger, xtObjectsCollection, CreateImageSourceDefinitions(appConfig.Microscope.ThermofisherInstrument))
     {
         var viewType = GetViewName(appConfig.Microscope.ThermofisherInstrument.IonQuad);

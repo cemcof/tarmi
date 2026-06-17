@@ -13,10 +13,10 @@ namespace Tarmi.App.Controls;
 
 public class ZStackSlider : Control
 {
-    public static readonly DependencyProperty LowerValueProperty = DependencyProperty.Register(nameof(LowerValue), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnLowerValueChanged, ConstrainToRangeLower));
+    public static readonly DependencyProperty LowerValueProperty = DependencyProperty.Register(nameof(LowerValue), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnLowerValueChanged, ConstrainToRange));
     public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, MaximumChanged, CoerceMaximum), IsValidDoubleValue);
     public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(nameof(Minimum), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, MinimumChanged, CoerceMinimum), IsValidDoubleValue);
-    public static readonly DependencyProperty UpperValueProperty = DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnUpperValueChanged, ConstrainToRangeUpper));
+    public static readonly DependencyProperty UpperValueProperty = DependencyProperty.Register(nameof(UpperValue), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnUpperValueChanged, ConstrainToRange));
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(ZStackSlider), new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.Journal, OnValueChanged, ConstrainToRange));
 
     private Canvas? _canvas;
@@ -129,24 +129,6 @@ public class ZStackSlider : Control
         return value;
     }
 
-    private static object ConstrainToRangeLower(DependencyObject d, object value)
-    {
-        if (d is ZStackSlider ctrl && value is double val)
-        {
-            return Math.Clamp(val, ctrl.Minimum, ctrl.Maximum);
-        }
-        return value;
-    }
-
-    private static object ConstrainToRangeUpper(DependencyObject d, object value)
-    {
-        if (d is ZStackSlider ctrl && value is double val)
-        {
-            return Math.Clamp(val, ctrl.Minimum, ctrl.Maximum);
-        }
-        return value;
-    }
-
     private static bool IsValidDoubleValue(object value) => value is double;
 
     private static void MaximumChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -226,8 +208,8 @@ public class ZStackSlider : Control
     {
         if (_stripedRectangle != null && _canvas != null)
         {
-            double deltaPerPixel = (Maximum - Minimum) / _canvas.ActualHeight;
-            double height = (Maximum - LowerValue) / deltaPerPixel;
+           //double deltaPerPixel = (Maximum - Minimum) / _canvas.ActualHeight;
+           //double height = (Maximum - LowerValue) / deltaPerPixel;
            // _stripedRectangle.Height = height;
         }
     }

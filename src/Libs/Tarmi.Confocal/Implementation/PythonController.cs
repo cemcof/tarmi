@@ -50,112 +50,21 @@ public class PythonController
         return args;
     }
 
-    public static List<string> GeneratePythonArg(IConfocalDevice confocalDevice, string propertyName)
-    {
-        var list = new List<string>();
-
-        switch (propertyName)
-        {
-            case nameof(confocalDevice.LuminescenceMode):
-                {
-                    return [$"--{Light}={confocalDevice.LuminescenceMode}"];
-                }
-
-            case nameof(confocalDevice.LaserColor):
-                {
-                    return [$"--{LaserColor}={confocalDevice.LaserColor.Nanometers}"];
-                }
-
-            case nameof(confocalDevice.Intensity):
-                {
-                    return [$"--{Intensity}={confocalDevice.Intensity.Percent}"];
-                }
-
-            case nameof(confocalDevice.Dwell):
-                {
-                    return [$"--{Dwell}={confocalDevice.Dwell.Nanoseconds}"];
-                }
-
-            case nameof(confocalDevice.FieldWidth):
-                {
-                    return [$"--{FieldOfViewWidth}={confocalDevice.FieldWidth.Nanometers}"];
-                }
-
-            case nameof(confocalDevice.FieldHeight):
-                {
-                    return [$"--{FieldOfViewHeight}={confocalDevice.FieldHeight.Nanometers}"];
-                }
-
-            case nameof(confocalDevice.PixelSize):
-                {
-                    return [$"--{PixelSize}={confocalDevice.PixelSize.X.Nanometers}"];
-                }
-
-            case nameof(confocalDevice.Gain):
-                {
-                    return [$"--{Gain}={confocalDevice.Gain.Decibels}"];
-                }
-
-            case nameof(confocalDevice.ADC):
-                {
-                    return [$"--{ADC}={confocalDevice.ADC.Volts}"];
-                }
-        }
-
-        return list;
-    }
-
     public static string GetPythonArg(IConfocalDevice confocalDevice, string propertyName)
     {
-        switch (propertyName)
+        return propertyName switch
         {
-            case nameof(confocalDevice.LuminescenceMode):
-                {
-                    return $"--{Light}={confocalDevice.LuminescenceMode}";
-                }
-
-            case nameof(confocalDevice.LaserColor):
-                {
-                    return $"--{LaserColor}={confocalDevice.LaserColor.Nanometers}";
-                }
-
-            case nameof(confocalDevice.Intensity):
-                {
-                    return $"--{Intensity}={confocalDevice.Intensity.Percent}";
-                }
-
-            case nameof(confocalDevice.Dwell):
-                {
-                    return $"--{Dwell}={confocalDevice.Dwell.Nanoseconds}";
-                }
-
-            case nameof(confocalDevice.FieldWidth):
-                {
-                    return $"--{FieldOfViewWidth}={confocalDevice.FieldWidth.Nanometers}";
-                }
-
-            case nameof(confocalDevice.FieldHeight):
-                {
-                    return $"--{FieldOfViewHeight}={confocalDevice.FieldHeight.Nanometers}";
-                }
-
-            case nameof(confocalDevice.PixelSize):
-                {
-                    return $"--{PixelSize}={confocalDevice.PixelSize.X.Nanometers}";
-                }
-
-            case nameof(confocalDevice.Gain):
-                {
-                    return $"--{Gain}={confocalDevice.Gain.Decibels}";
-                }
-
-            case nameof(confocalDevice.ADC):
-                {
-                    return $"--{ADC}={confocalDevice.ADC.Volts}";
-                }
-        }
-
-        return string.Empty;
+            nameof(confocalDevice.LuminescenceMode) => $"--{Light}={confocalDevice.LuminescenceMode}",
+            nameof(confocalDevice.LaserColor) => $"--{LaserColor}={confocalDevice.LaserColor.Nanometers}",
+            nameof(confocalDevice.Intensity) => $"--{Intensity}={confocalDevice.Intensity.Percent}",
+            nameof(confocalDevice.Dwell) => $"--{Dwell}={confocalDevice.Dwell.Nanoseconds}",
+            nameof(confocalDevice.FieldWidth) => $"--{FieldOfViewWidth}={confocalDevice.FieldWidth.Nanometers}",
+            nameof(confocalDevice.FieldHeight) => $"--{FieldOfViewHeight}={confocalDevice.FieldHeight.Nanometers}",
+            nameof(confocalDevice.PixelSize) => $"--{PixelSize}={confocalDevice.PixelSize.X.Nanometers}",
+            nameof(confocalDevice.Gain) => $"--{Gain}={confocalDevice.Gain.Decibels}",
+            nameof(confocalDevice.ADC) => $"--{ADC}={confocalDevice.ADC.Volts}",
+            _ => string.Empty,
+        };
     }
 
     public async Task<(bool, string)> ExecuteScriptWithArgs(List<string> pythonArgs)
@@ -182,11 +91,11 @@ public class PythonController
             throw new FileNotFoundException($"Python script was not found on {_pythonConfig.ScriptTuningPath}");
         }
 
-        CancellationTokenSource cts = new CancellationTokenSource();
+        using CancellationTokenSource cts = new();
 
         var stdErrBuffer = new StringBuilder();
         _stdIn = new MemoryStream(0x1000);
-        _stdInWriter = new StreamWriter(_stdIn, Encoding.ASCII);//, 0, true);
+        _stdInWriter = new StreamWriter(_stdIn, Encoding.ASCII);
         using var shutDownCommandGuard = cts.Token.Register(() => _stdInWriter.WriteLine("quit"));
 
         var result = await Cli.Wrap(_pythonConfig.ExecutablePath)
@@ -200,7 +109,7 @@ public class PythonController
 
     public void ExecuteTuningCommand(string command)
     {
-        if (_stdInWriter != null && command.IsNotNullOrEmpty())
+        if (_stdInWriter is not null && command.IsNotNullOrEmpty())
         {
             _stdInWriter.WriteLine(command);
         }
@@ -208,7 +117,7 @@ public class PythonController
 
     public void EndTuning()
     {
-        if (_stdInWriter != null)
+        if (_stdInWriter is not null)
         {
             _stdInWriter.WriteLine("quit");
             _stdInWriter.Dispose();

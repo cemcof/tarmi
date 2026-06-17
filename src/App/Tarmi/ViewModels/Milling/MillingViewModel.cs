@@ -36,8 +36,8 @@ public partial class MillingViewModel : ObservableObject
                 {
                     X = item.Definition.Left.DecimalFractions * imageSize.Width,
                     Y = item.Definition.Top.DecimalFractions * imageSize.Height,
-                    Width = (item.Definition.Right - item.Definition.Left).DecimalFractions * imageSize.Width,
-                    Height = (item.Definition.Bottom - item.Definition.Top).DecimalFractions * imageSize.Height,
+                    RealWidth = (item.Definition.Right - item.Definition.Left).DecimalFractions * imageSize.Width,
+                    RealHeight = (item.Definition.Bottom - item.Definition.Top).DecimalFractions * imageSize.Height,
                     Label = item.Name,
                     MillingAreaInfo = item,
                     OnResizeFinished = UpdateMillingArea

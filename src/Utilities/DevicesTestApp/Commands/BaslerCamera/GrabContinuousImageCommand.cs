@@ -32,7 +32,7 @@ internal sealed class GrabContinuousImageCommand : AsyncCommand<GrabContinuousIm
         _imageGraberFactory = imageGraberFactory;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {
@@ -70,7 +70,7 @@ internal sealed class GrabContinuousImageCommand : AsyncCommand<GrabContinuousIm
 
             grabber.StartContinuousGrabbing();
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(settings.TimeoutSeconds));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(settings.TimeoutSeconds));
             await Task.Delay(-1, cts.Token);
         }
         catch (OperationCanceledException)

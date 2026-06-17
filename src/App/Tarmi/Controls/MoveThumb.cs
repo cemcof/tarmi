@@ -31,10 +31,10 @@ public class MoveThumb : Thumb
 
     private void MoveThumb_DragDelta(object sender, DragDeltaEventArgs e)
     {
-        if (DataContext is DependencyObject item && CanvasHelper.GetDirectCanvasChild(item) is UIElement canvasChild)
+        if (DataContext is DependencyObject item && UIHelper.FindAncestor<TransformCanvas>(item) is TransformCanvas canvas && UIHelper.TryGetScaleAwareItem(UIHelper.GetDirectCanvasChild(item), out IScaleAwareItem? scaleAwareItem))
         {
-            Canvas.SetLeft(canvasChild, Canvas.GetLeft(canvasChild) + e.HorizontalChange);
-            Canvas.SetTop(canvasChild, Canvas.GetTop(canvasChild) + e.VerticalChange);
+            scaleAwareItem.Move(e.HorizontalChange, e.VerticalChange);
+            canvas.InvalidateMeasure();
         }
     }
 }

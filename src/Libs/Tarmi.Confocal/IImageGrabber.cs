@@ -23,5 +23,6 @@ public interface IImageGrabber : IDisposable
     Task StartContinuousGrabbing(IConfocalDevice confocalDevice);
     void StopContinuousGrabbing();
     IObservable<ImageWithMetadata> GrabbedImage { get; }
+    string ImagePath { get; set; }
 }
 

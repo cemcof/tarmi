@@ -29,7 +29,7 @@ public static class Noise
     public static Mat ApplySaltAndPepperNoise(this Mat image, double saltProbability = 0.5, double pepperProbability = 0.5)
     {
         var result = image.Clone();
-        ApplySaltAndPepperNoise(result, saltProbability, pepperProbability);
+        ApplySaltAndPepperNoiseInplace(result, saltProbability, pepperProbability);
         return result;
     }
 

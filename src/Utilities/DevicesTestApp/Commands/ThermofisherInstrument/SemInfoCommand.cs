@@ -20,7 +20,7 @@ internal sealed class SemInfoCommand : Command<SemInfoCommand.Settings>
         _beam = beam;
     }
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         try
         {

@@ -1,6 +1,6 @@
 ﻿namespace Tarmi.Devices.Thorlabs.PinHoleWheel.Implementation;
 
-internal class Commands
+internal static class Commands
 {
     public static string GetCurrentPositionCommand(int address) => $"/{address.GetAddressString()}?8\r";
 

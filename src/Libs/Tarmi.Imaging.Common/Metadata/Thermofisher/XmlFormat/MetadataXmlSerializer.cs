@@ -1,4 +1,4 @@
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -6,23 +6,7 @@ namespace Tarmi.Imaging.Common.Metadata.Thermofisher.XmlFormat;
 
 public static class MetadataXmlSerializer
 {
-    private static XmlSerializerNamespaces CreateSerializerNamespaces()
-    {
-        var namespaces = new XmlSerializerNamespaces();
-        namespaces.Add("nil", "http://schemas.fei.com/Metadata/v1/2013/07");
-        namespaces.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        return namespaces;
-    }
-
-    private static readonly XmlSerializerNamespaces SerializerNamespaces = CreateSerializerNamespaces();
     private static readonly XmlSerializer Serializer = new(typeof(Metadata));
-    private static readonly XmlWriterSettings WriterSettings = new()
-    {
-        Indent = true,
-        IndentChars = "  ",
-        OmitXmlDeclaration = false,
-        NamespaceHandling = NamespaceHandling.OmitDuplicates
-    };
 
     private static readonly XmlReaderSettings ReaderSettings = new()
     {

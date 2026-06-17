@@ -9,12 +9,9 @@ using Tarmi.Models;
 using Tarmi.Configuration;
 using Tarmi.Projects;
 using Tarmi.VirtualDevices;
-using Tarmi.VirtualDevices.Implementation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
 using UnitsNet;
-using Duration = UnitsNet.Duration;
 using Tarmi.App.Services.Application;
 using Tarmi.App.ViewModels.Modes.LM;
 
@@ -27,7 +24,7 @@ public enum ZStackStepSetting
     SystemOptimized
 }
 
-public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbingViewModel, IDisposable
+public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbingViewModel
 {
     private readonly ZStackGrabbingService _zStackGrabbingService;
     private readonly IImagingPipelineGrabber _pipelineGrabber;
@@ -68,20 +65,21 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
     }
 
     [ObservableProperty]
-    private Length _linearStagePosition;
+    public partial Length LinearStagePosition { get; set; }
 
     [ObservableProperty]
-    private int _numberOfSteps = 1;
+    public partial int NumberOfSteps { get; set; } = 1;
 
     [ObservableProperty]
-    private double _stepSizeInMicrometers;
+    public partial double StepSizeInMicrometers { get; set; }
 
     [ObservableProperty]
-    private ZStackStepSetting _zStackStepSetting;
+    public partial ZStackStepSetting ZStackStepSetting { get; set; }
+
     private bool isDisposed;
 
     private IDisposable? _activeRoiSubscription;
-    private BehaviorSubject<bool> _isRoiSelectedSubject;
+    private readonly BehaviorSubject<bool> _isRoiSelectedSubject;
 
     public ZStackGrabbingViewModel(
         IWindowService windowService,
@@ -93,7 +91,6 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
         ZStackGrabbingService zStackGrabbingService,
         LuminescenceImagingViewModel luminescenceImaging,
         ApplicationConfig applicationConfig,
-        ILogger<ZStackGrabbingViewModel> logger,
         VirtualDeviceViewModel parent
     )
     {
@@ -137,10 +134,7 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
         => $"{nameof(ZStackGrabbingViewModel)}::{methodName}";
 
     [RelayCommand]
-    private void SelectStepSetting(ZStackStepSetting setting)
-    {
-        ZStackStepSetting = setting;
-    }
+    private void SelectStepSetting(ZStackStepSetting setting) => ZStackStepSetting = setting;
 
     [RelayCommand(CanExecute = nameof(CanAcquireZStack))]
     private async Task AcquireZStack()
@@ -181,43 +175,31 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
             throw new InvalidOperationException("Active project must exist for Z-stack to be acquired.");
 
         ZStackOptions zStackOptions = GetZStackOptions();
-        
-        var lightSettings = _luminescenceImaging.LightSettings
-            .Where(settings => settings.IsSelected)
-            .ToArray();
 
-        if (lightSettings is [])
+        var selectedLights = _luminescenceImaging.GetSelectedLights().ToArray();
+
+        if (selectedLights is [])
         {
+            await _luminescenceMode.TurnLightOnAsync(cancellationToken);
             await _zStackGrabbingService.GrabZStackAsync(activeProject, _stageNavigation, _getCameraView.Invoke(), _pipelineGrabber, zStackOptions, progress, null, cancellationToken);
+            await _luminescenceMode.TurnLightOffAsync(default);
             return;
         }
-
-        var initialColor = _luminescenceMode.ActiveLightColor;
-        var initialIntensity = _luminescenceMode.Intensity;
-        var initialExposure = _luminescenceMode.ExposureTime;
-        var part = Ratio.FromDecimalFractions(1.0 / lightSettings.Length);
+        await _luminescenceMode.TurnLightOnAsync(cancellationToken);
+        var initialColor = _luminescenceMode.SelectedLightColor;
+        var part = Ratio.FromDecimalFractions(1.0 / selectedLights.Length);
         var linkId = UUIDNext.Uuid.NewSequential();
-        for (var i = 0; i < lightSettings.Length; i++)
+        for (var i = 0; i < selectedLights.Length; i++)
         {
             var innerProgress = new Progress<(string Message, Ratio Percentage)>(inner => progress.Report((inner.Message, i * part + part.DecimalFractions * inner.Percentage)));
-            var lightSetting = lightSettings[i];
+            var selectedLight = selectedLights[i];
 
-            await _luminescenceMode.TurnLightOn(lightSetting.Color, cancellationToken);
-            var percent = Ratio.FromPercent(lightSetting.ImagingSettings.Intensity);
-            await _luminescenceMode.SetIntensityAsync(percent, cancellationToken);
-            _luminescenceMode.ExposureTime = Duration.FromMicroseconds(lightSetting.ImagingSettings.Exposure);
-
+            await _luminescenceImaging.SelectLightColorAsync(selectedLight);
             // TODO: Acquire for each light configuration after light settings are merged.
             await _zStackGrabbingService.GrabZStackAsync(activeProject, _stageNavigation, _getCameraView.Invoke(), _pipelineGrabber, zStackOptions, innerProgress, linkId, cancellationToken);
         }
-
-        await _luminescenceMode.TurnLightOff(cancellationToken);
-        await _luminescenceMode.SetIntensityAsync(initialIntensity, cancellationToken);
-        if (initialColor.HasValue)
-        {
-            await _luminescenceMode.TurnLightOn(initialColor.Value, cancellationToken);
-        }
-        _luminescenceMode.ExposureTime = initialExposure;
+        await _luminescenceMode.TurnLightOffAsync(default);
+        await _luminescenceImaging.SelectLightColorAsync(initialColor);
     }
 
     public ZStackOptions GetZStackOptions()

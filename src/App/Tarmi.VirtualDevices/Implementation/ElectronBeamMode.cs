@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
@@ -160,7 +160,7 @@ public sealed class ElectronBeamMode : StageControllingModeBase, IElectronBeamMo
         _instrument.SetBeamFreeWorkingDistance(wd);
     }
 
-    public IDisposable UseReducedArea(RatioRectangle rectangle, Duration dwellTime, ImageFilterType imageFilterType, int frames, int lineIntegration)
+    public IDisposable UseReducedArea(RatioRectangle rectangle, Duration dwellTime, ImageFilterType imageFilterType = ImageFilterType.None, int frames = 1, int lineIntegration = 1)
     {
         var currentDwellTime = _instrument.CurrentBeamState.DwellTime;
         var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;
@@ -179,7 +179,7 @@ public sealed class ElectronBeamMode : StageControllingModeBase, IElectronBeamMo
         return Disposable.Create(() => _instrument.SetFullFrameMode(currentDwellTime, currentImageFilterType, currentFrames, currentLineIntegration));
     }
 
-    public IDisposable UseFullFrameSettings(Duration dwellTime, ImageFilterType imageFilterType, int frames, int lineIntegration)
+    public IDisposable UseFullFrameSettings(Duration dwellTime, ImageFilterType imageFilterType = ImageFilterType.None, int frames = 1, int lineIntegration = 1)
     {
         var currentDwellTime = _instrument.CurrentBeamState.DwellTime;
         var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;

@@ -1,4 +1,4 @@
-using Tarmi.Imaging.Common;
+﻿using Tarmi.Imaging.Common;
 using Tarmi.Maps.DataFormat.TfsDataModel;
 using Tarmi.Models;
 using Tarmi.Projects;
@@ -30,12 +30,12 @@ public static class MapsExportService
 
         foreach (var (layer, content) in contentList)
         {
-            LayerContentDescriptor[] images = [];
+            LayerContentDescriptor[] images;
             LayerContentDescriptor mainImageDescriptor;
 
             switch (layer)
             {
-                case LayeredImageDescriptor imageDescriptor:
+                case LayeredImageDescriptor:
                     images = [content];
                     mainImageDescriptor = content;
                     break;
@@ -113,83 +113,64 @@ public static class MapsExportService
         LayerDescriptor layer,
         LayerContentDescriptor[] images,
         string exportPath,
-        Func<LayerDescriptor, LayerContentDescriptor, string> GetContentFilePath,
-        Func<StagePosition, StageCameraView, StageCameraView, StagePosition> TransformPosition
+        Func<LayerDescriptor, LayerContentDescriptor, string> getContentFilePath,
+        Func<StagePosition, StageCameraView, StageCameraView, StagePosition> transformPosition
     )
     {
         List<Image> imageList = [];
-        List<(LayerContentDescriptor, ImagePosition, string)> list = [];
-
-        foreach (var image in images)
-        {
-            var path = GetContentFilePath(layer, image);
-            var imageWithMetadata = TiffImage.Load(path);
-            imageWithMetadata.TransformToInplace(ImageTransformationType.Maps);
-            var imagePosition = MapImage(imageWithMetadata, image, exportPath, TransformPosition);
-            list.Add(new(image, imagePosition, imageWithMetadata.TiffMetadata!.TimeOfAcquisition.DateTime.ToString()));
-        }
+        (LayerContentDescriptor Descriptor, ImagePosition Position, string Time)[] list = images
+            .Select(image =>
+            {
+                var path = getContentFilePath(layer, image);
+                var imageWithMetadata = TiffImage.Load(path);
+                imageWithMetadata.TransformToInplace(ImageTransformationType.Maps);
+                var imagePosition = MapImage(imageWithMetadata, image, exportPath, transformPosition);
+                return (image, imagePosition, imageWithMetadata.TiffMetadata!.TimeOfAcquisition.DateTime.ToString());
+            })
+            .ToArray();
 
         if (layer is ZStackDescriptor)
         {
             byte plane = 0;
 
-            for (int j = 0; j < list.Count; j++)
+            imageList = list.Select(image => new Image
             {
-                imageList.Add(new Image()
-                {
-                    Guid = list[j].Item1.Id,
-                    Index = new ImageIndex() { Plane = plane++ },
-                    Position = list[j].Item2,
-                    RelativePath = Path.Combine(Path.GetFileName(exportPath)!, list[j].Item1.Filename),
-                    Time = list[j].Item3
-                });
-            }
+                Guid = image.Descriptor.Id,
+                Index = new ImageIndex() { Plane = plane++ },
+                Position = image.Position,
+                RelativePath = Path.Combine(Path.GetFileName(exportPath)!, image.Descriptor.Filename),
+                Time = image.Time
+            }).ToList();
 
             return new Images() { Items = imageList };
         }
 
-        var sortedImages = list.OrderByDescending(img => img.Item2.Y).ToList();
+        var sortedImages = list.OrderByDescending(img => img.Position.Y).ToArray();
         byte row = 0;
-        byte col = 0;
-
-        for (int i = 0; i < sortedImages.Count; i++)
+        int startIndex = 0;
+        while (startIndex < sortedImages.Length)
         {
-            List<(LayerContentDescriptor, ImagePosition, string)> rowList = [];
-            rowList.Add(sortedImages[i]);
-            var imagePosition = sortedImages[i].Item2;
-            int j;
+            var imagePosition = sortedImages[startIndex].Position;
+            var nextIndex = Array.FindLastIndex(sortedImages, startIndex, image => Math.Abs(image.Position.Y - imagePosition.Y) <= RowTolerance) + 1;
+            var rowArray = sortedImages[startIndex..nextIndex];
 
-            for (j = i + 1; j < sortedImages.Count; j++)
-            {
-                var currentPosition = sortedImages[j].Item2;
-
-                if (imagePosition.Y <= currentPosition.Y + RowTolerance && imagePosition.Y >= currentPosition.Y - RowTolerance)
+            imageList.AddRange(
+                rowArray.OrderByDescending(a => a.Position.X).Select((img, col) => new Image()
                 {
-                    rowList.Add(sortedImages[j]);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            i = j < (sortedImages.Count - 1) ? j - 1 : sortedImages.Count - 1;
-            var resultList = rowList.OrderByDescending(img => img.Item2.X).ToList();
-
-            for (j = 0; j < resultList.Count; j++)
-            {
-                imageList.Add(new Image()
-                {
-                    Guid = resultList[j].Item1.Id,
-                    Index = new ImageIndex() { Row = row, Column = col++ },
-                    Position = resultList[j].Item2,
-                    RelativePath = Path.Combine(Path.GetFileName(exportPath)!, resultList[j].Item1.Filename),
-                    Time = resultList[j].Item3
-                });
-            }
+                    Guid = img.Descriptor.Id,
+                    Index = new ImageIndex()
+                    {
+                        Row = row,
+                        Column = (byte)col
+                    },
+                    Position = img.Position,
+                    RelativePath = Path.Combine(Path.GetFileName(exportPath), img.Descriptor.Filename),
+                    Time = img.Time
+                })
+            );
 
             row++;
-            col = 0;
+            startIndex = nextIndex;
         }
 
         return new Images() { Items = imageList };
@@ -199,7 +180,7 @@ public static class MapsExportService
         ImageWithMetadata imageWithMetadata,
         LayerContentDescriptor image,
         string exportPath,
-        Func<StagePosition, StageCameraView, StageCameraView, StagePosition> TransformPosition)
+        Func<StagePosition, StageCameraView, StageCameraView, StagePosition> transformPosition)
     {
         string destinationImagePath = Path.Combine(exportPath, image.Filename);
         TiffImage.Save(imageWithMetadata, destinationImagePath);
@@ -209,7 +190,7 @@ public static class MapsExportService
         if (imageWithMetadata.GetSource() == StageCameraView.LM)
         {
             var stagePosition = imageWithMetadata.GetStagePosition();
-            var transformedPosition = TransformPosition(stagePosition, StageCameraView.LM, StageCameraView.SEM);
+            var transformedPosition = transformPosition(stagePosition, StageCameraView.LM, StageCameraView.SEM);
             imagePosition = new()
             {
                 X = transformedPosition.X.Micrometers,

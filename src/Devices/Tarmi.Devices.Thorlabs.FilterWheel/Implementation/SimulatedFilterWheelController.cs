@@ -13,7 +13,7 @@ public class SimulatedFilterWheelController : IFilterWheelController
     private bool _filterWheelIsActive = false;
     private double _filterColor = 0;
 
-    public SimulatedFilterWheelController(ILogger<FilterWheelController> logger)
+    public SimulatedFilterWheelController(ILogger logger)
     {
         _logger = logger;
     }

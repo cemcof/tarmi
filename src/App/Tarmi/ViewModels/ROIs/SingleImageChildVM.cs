@@ -33,7 +33,7 @@ public partial class SingleImageChildVM : ImageChildVM
         Descriptor = descriptor;
         Content = content;
         _millingViewModel = new MillingViewModel(this);
-        Update();
+        UpdateInternal();
     }
 
     public override Guid SortId => ImageMetadata.ImageId;
@@ -48,11 +48,16 @@ public partial class SingleImageChildVM : ImageChildVM
         return attributes;
     }
 
-    public override void Update()
+    private void UpdateInternal()
     {
         string imagePath = GetImageFilePath();
         ImageMetadata = TiffImage.LoadMetadata(imagePath);
         _millingViewModel.UpdateMillingAreasOverlay();
+    }
+
+    public override void Update()
+    {
+        UpdateInternal();
     }
 
     public override CorrelationInfo CorrelationInfo => (Descriptor, Content) switch
@@ -71,27 +76,24 @@ public partial class SingleImageChildVM : ImageChildVM
             return;
         }
 
-        if (_millingViewModel is not null)
+        if (
+            _millingViewModel is not null &&
+            RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is MillingControl mc &&
+            mc.DataContext.Equals(_millingViewModel)
+        )
         {
-            if (RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is MillingControl mc)
-            {
-                if (mc.DataContext.Equals(_millingViewModel))
-                {
-                    // hide milling control
-                    RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
-                }
-            }
+            // hide milling control
+            RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
         }
-        if (RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is CorrelationOptionsControl coc)
+
+        if (
+            RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is CorrelationOptionsControl coc &&
+            coc.DataContext is CorrelationOptionsViewModel covm &&
+            Equals(covm.ImageChild)
+        )
         {
-            if (coc.DataContext is CorrelationOptionsViewModel covm)
-            {
-                if (Equals(covm.ImageChild))
-                {
-                    // hide correlation options control
-                    RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
-                }
-            }
+            // hide correlation options control
+            RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
         }
     }
 
@@ -140,8 +142,8 @@ public partial class SingleImageChildVM : ImageChildVM
             var left = new Ratio(millingArea.X / ImageMetadata.Coordinates.ImageSize.Width, RatioUnit.DecimalFraction);
             var top = new Ratio(millingArea.Y / ImageMetadata.Coordinates.ImageSize.Height, RatioUnit.DecimalFraction);
 
-            var right = new Ratio((millingArea.X + millingArea.Width) / ImageMetadata.Coordinates.ImageSize.Width, RatioUnit.DecimalFraction);
-            var bottom = new Ratio((millingArea.Y + millingArea.Height) / ImageMetadata.Coordinates.ImageSize.Height, RatioUnit.DecimalFraction);
+            var right = new Ratio((millingArea.X + millingArea.RealWidth) / ImageMetadata.Coordinates.ImageSize.Width, RatioUnit.DecimalFraction);
+            var bottom = new Ratio((millingArea.Y + millingArea.RealHeight) / ImageMetadata.Coordinates.ImageSize.Height, RatioUnit.DecimalFraction);
 
             var newMillingAreaInfo = rawMillingArea with
             {

@@ -7,8 +7,8 @@ public static class ColorSpace
 {
     private const int MinLightWavelength = 380;
     private const int MaxLightWavelength = 780;
-    internal const double ColorTo02Range = 255 / 2;
-    internal const double Color16To02Range = ushort.MaxValue / 2;
+    internal const double ColorTo02Range = (double)255 / 2;
+    internal const double Color16To02Range = (double)ushort.MaxValue / 2;
 
     private readonly static double[,] RedSteps_AlgCIE =
     {

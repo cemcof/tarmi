@@ -13,9 +13,9 @@ public partial class MainArea : ApplicationModeControlBase<LuminescenceModeViewM
         InitializeComponent();
     }
 
-    private void ImageViewerWithScaleBar_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    private void ImageControl_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        if (sender is ImageViewerWithScaleBar viewer && viewer.DataContext is VirtualDeviceViewModel viewModel)
+        if (sender is ImageControl viewer && viewer.DataContext is VirtualDeviceViewModel viewModel)
         {
             if (viewModel.ManualFocusEnabled)
             {

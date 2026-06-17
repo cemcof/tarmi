@@ -45,7 +45,7 @@ public sealed class IonBeamMode : StageControllingModeBase, IIonBeamMode
     public IObservable<bool> GrabbingActiveChanges => _grabbingActive.AsObservable().DistinctUntilChanged();
     public bool IsGrabbingActive => _grabbingActive.Value;
 
-    public IonBeamMode(IInstrument instrument, ISafeStageControlling safeStageControlling, IStageNavigation stageNavigation, ILimits limits, ApplicationConfig applicationConfig)
+    public IonBeamMode(IInstrument instrument, ISafeStageControlling safeStageControlling, ILimits limits)
         : base(instrument, safeStageControlling)
     {
         _limits = limits;
@@ -209,12 +209,12 @@ public sealed class IonBeamMode : StageControllingModeBase, IIonBeamMode
         _instrument.SetBeamFreeWorkingDistance(wd);
     }
 
-    public IDisposable UseReducedArea(RatioRectangle rectangle, Duration dwellTime, ImageFilterType imageFilterType, int frames, int lineIntegration)
+    public IDisposable UseReducedArea(RatioRectangle rectangle, Duration dwellTime, ImageFilterType imageFilterType = ImageFilterType.None, int frames = 1, int lineIntegration = 1)
     {
         var currentDwellTime = _instrument.CurrentBeamState.DwellTime;
-        var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;
+        //var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;
         var currentImageFilterType = _instrument.CurrentImageFilterState.Type;
-        var currentFrames = _instrument.CurrentImageFilterState.Frames;
+        //var currentFrames = _instrument.CurrentImageFilterState.Frames;
 
         var beamRectangle = new BeamCoordinatesRectangle
         {
@@ -228,12 +228,12 @@ public sealed class IonBeamMode : StageControllingModeBase, IIonBeamMode
         return Disposable.Create(() => _instrument.SetFullFrameMode(currentDwellTime, currentImageFilterType, frames, lineIntegration));
     }
 
-    public IDisposable UseFullFrameSettings(Duration dwellTime, ImageFilterType imageFilterType, int frames, int lineIntegration)
+    public IDisposable UseFullFrameSettings(Duration dwellTime, ImageFilterType imageFilterType = ImageFilterType.None, int frames = 1, int lineIntegration = 1)
     {
         var currentDwellTime = _instrument.CurrentBeamState.DwellTime;
-        var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;
+        //var currentLineIntegration = _instrument.CurrentBeamState.LineIntegration;
         var currentImageFilterType = _instrument.CurrentImageFilterState.Type;
-        var currentFrames = _instrument.CurrentImageFilterState.Frames;
+        //var currentFrames = _instrument.CurrentImageFilterState.Frames;
 
         _instrument.SetFullFrameMode(dwellTime, imageFilterType, frames, lineIntegration);
 

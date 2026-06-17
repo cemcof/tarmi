@@ -7,7 +7,7 @@ using UnitsNet;
 
 namespace Tarmi.VirtualDevices;
 
-public interface IConfocalMode : IVirtualDevice, IZStackGrabbingMode, ILuminescenceTubeControllingMode
+public interface IConfocalMode : IVirtualDevice, IZStackGrabbingMode
 {
     Task<FilterType> GetModeAsync();
     Task ChangeModeAsync(FilterType mode);

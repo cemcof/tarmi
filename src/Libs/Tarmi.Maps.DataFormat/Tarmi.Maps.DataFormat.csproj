@@ -5,8 +5,6 @@
 
     <ItemGroup>
         <PackageReference Include="OpenCvSharp4" />
-        <PackageReference Include="OpenCvSharp4.runtime.win" />
-        <PackageReference Include="OpenCvSharp4.WpfExtensions" />
         <PackageReference Include="UnitsNet" />
     </ItemGroup>
 

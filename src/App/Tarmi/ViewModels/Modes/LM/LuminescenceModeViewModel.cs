@@ -51,7 +51,7 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
     public Level GainStep { get; } = Level.FromDecibels(0.1);
 
     [ObservableProperty]
-    private FilterType _filterType;
+    public partial FilterType FilterType { get; set; }
 
     public Length FocusStep
     {
@@ -61,17 +61,18 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
     public IEnumerable<Length> AvailableFocusSteps => _virtualDevice.FocusStepSizes;
 
     [ObservableProperty]
-    private double _intensity;
+    public partial double Intensity { get; set; }
 
     [ObservableProperty]
-    private double _exposure;
+    public partial double Exposure { get; set; }
 
     [ObservableProperty]
-    private BinningSize _selectedBinningSize;
+    public partial BinningSize SelectedBinningSize { get; set; }
+
     public List<int> BinningSizes { get; } = [.. Enum.GetValues<BinningSize>().Select(x => (int)x)];
 
     [ObservableProperty]
-    private double _stageTilt = 1.0;
+    public partial double StageTilt { get; set; } = 1.0;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AutoFocusCommand))]
@@ -80,19 +81,19 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
     [NotifyCanExecuteChangedFor(nameof(TiltManuallyCommand))]
     [NotifyCanExecuteChangedFor(nameof(FocusDecrementManualCommand))]
     [NotifyCanExecuteChangedFor(nameof(FocusIncrementManualCommand))]
-    public bool _isProtracted;
+    public partial bool IsProtracted { get; set; }
 
     [ObservableProperty]
-    private double _lowerBound = 0;
+    public partial double LowerBound { get; set; } = 0;
 
     [ObservableProperty]
-    private double _upperBound = 255;
+    public partial double UpperBound { get; set; } = 255;
 
     [ObservableProperty]
-    private bool _autoExposureEnabled = false;
+    public partial bool AutoExposureEnabled { get; set; } = false;
 
     [ObservableProperty]
-    private SortedDictionary<int, double>? _histogramData;
+    public partial SortedDictionary<int, double>? HistogramData { get; set; }
 
     public override StageOverviewViewModel StageOverview { get; }
 
@@ -151,7 +152,7 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
         StageOverview = new StageOverviewLMModeViewModel(luminescenceVirtualDevice, stageNavigation, safeStageControlling, projectManager);
         LuminescenceImaging = luminescenceImagingViewModel;
         _tileSet3DGrabbingService = new TileSet3DGrabbingService(luminescenceVirtualDevice, _logger, _virtualDevice);
-        ZStackGrabbing = new(windowService, stageNavigation, projectManager, _genericImagingPipeline, safeStageControlling, luminescenceVirtualDevice, zStackGrabbingService, LuminescenceImaging, applicationConfig, loggerFactory.CreateLogger<ZStackGrabbingViewModel>(), this);
+        ZStackGrabbing = new(windowService, stageNavigation, projectManager, _genericImagingPipeline, safeStageControlling, luminescenceVirtualDevice, zStackGrabbingService, LuminescenceImaging, applicationConfig, this);
         TileSetGrabbing = new LuminescenceTilesetGrabbingViewModel(_logger, windowService, stageNavigation, luminescenceVirtualDevice, projectManager, _genericImagingPipeline, safeStageControlling, LuminescenceImaging, _tileSetGrabbingService, _tileSet3DGrabbingService, ZStackGrabbing, applicationConfig, this);
     }
 
@@ -160,6 +161,23 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
         LuminescenceImaging.Dispose();
         base.DisposeCore();
     }
+
+    protected override async Task AutoFocusAsync()
+    {
+        using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
+        await _virtualDevice.TurnLightOnAsync(default);
+        await base.AutoFocusAsync();
+        await _virtualDevice.TurnLightOffAsync(default);
+    }
+
+    protected override async Task AutoTiltAsync()
+    {
+        using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
+        await _virtualDevice.TurnLightOnAsync(default);
+        await base.AutoTiltAsync();
+        await _virtualDevice.TurnLightOffAsync(default);
+    }
+
 
     protected override async Task InitializeInternalAsync(ApplicationMode prevMode, CancellationToken cancellationToken)
     {
@@ -185,7 +203,7 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
                 LowerBound = _imagingPipeline.HistogramLowerBound;
                 UpperBound = _imagingPipeline.HistogramUpperBound;
             }),
-            _virtualDevice.CurrentActiveLightColor.Subscribe(HandleColorChanged)
+            _virtualDevice.CurrentSelectedLightColor.Subscribe(HandleColorChanged)
         ]);
     }
 
@@ -198,6 +216,14 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
             using var msgGuard = _windowService.ShowBusyMessage(Messages.RetractingObjectiveBusyMessage);
             await _virtualDevice.RetractAsync(cancellationToken);
         }
+    }
+
+    public override async Task GrabImageAsync()
+    {
+        using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
+        await _virtualDevice.TurnLightOnAsync(default);
+        await base.GrabImageAsync();
+        await _virtualDevice.TurnLightOffAsync(default);
     }
 
     protected override bool CanManualFocus(double change)
@@ -371,7 +397,7 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
 
         if (
             imageMetadata.GetSource() != StageCameraView.LM ||
-            IsProtracted == false ||
+            !IsProtracted ||
             imageMetadata.LuminescenceMetadata == null
         )
         {
@@ -384,6 +410,26 @@ public partial class LuminescenceModeViewModel : VirtualDeviceViewModel
         PersistentImagingSettings.ImagingSettings.Exposure = _virtualDevice.ExposureTime.Microseconds;
         PersistentImagingSettings.ImagingSettings.Gain = _virtualDevice.Gain.Decibels;
         PersistentImagingSettings.ImagingSettings.Gamma = _virtualDevice.Gamma;
+    }
+
+    protected override async Task ControlGrabbingImageAsync(CancellationToken cancellationToken)
+    {
+        using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
+
+        if (!IsGrabbingImage)
+        {
+            await RoiControl.ImagesStateManager.ClearState();
+            _imageGrabbingCts = new();
+            await _virtualDevice.TurnLightOnAsync(cancellationToken);
+            await _virtualDevice.StartGrabbingAsync(_imageGrabbingCts.Token);
+            RoiControl.ImagesStateManager.UpdateCanToggleVisibilities();
+        }
+        else
+        {
+            _virtualDevice.StopGrabbing();
+            await _virtualDevice.TurnLightOffAsync(cancellationToken);
+            RoiControl.ImagesStateManager.UpdateCanToggleVisibilities();
+        }
     }
 
     private void HandleColorChanged(LightColor? nullable)

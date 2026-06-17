@@ -10,7 +10,7 @@ public class NonblockingBufferedBehaviorSubject<T> : NonblockingBufferedSubject<
         : base(bufferSize, fullMode, itemDropped, cancellationToken)
     {
         Value = defaultValue;
-        OnNext(defaultValue);
+        base.OnNext(Value);
     }
 
     public override void OnNext(T value)

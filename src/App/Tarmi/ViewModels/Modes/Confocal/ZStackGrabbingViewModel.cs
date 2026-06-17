@@ -17,7 +17,7 @@ using UnitsNet;
 
 namespace Tarmi.App.ViewModels.Modes.Confocal;
 
-public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbingViewModel, IDisposable
+public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbingViewModel
 {
     private readonly ZStackGrabbingService _zStackGrabbingService;
     private readonly IImagingPipelineGrabber _pipelineGrabber;
@@ -81,7 +81,6 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
         IConfocalMode confocalMode,
         ZStackGrabbingService zStackGrabbingService,
         ApplicationConfig applicationConfig,
-        ILogger<ZStackGrabbingViewModel> logger,
         VirtualDeviceViewModel parent
     )
     {
@@ -129,13 +128,6 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
         ZStackStepSetting = setting;
     }
 
-    // TODO: Implement
-    [RelayCommand]
-    private void Recenter()
-    {
-
-    }
-
     [RelayCommand(CanExecute = nameof(CanAcquireZStack))]
     private async Task AcquireZStack()
     {
@@ -176,9 +168,9 @@ public partial class ZStackGrabbingViewModel : ObservableObject, IZStackGrabbing
 
         var zStackSettings = GetZStackOptions();
 
-        var initialColor = _confocalMode.LaserColor;
-        var initialIntensity = _confocalMode.Intensity;
-        var initialDwell = _confocalMode.Dwell;
+        //var initialColor = _confocalMode.LaserColor;
+        //var initialIntensity = _confocalMode.Intensity;
+        //var initialDwell = _confocalMode.Dwell;
         var part = Ratio.FromDecimalFractions(1.0);
         var linkId = UUIDNext.Uuid.NewSequential();
 

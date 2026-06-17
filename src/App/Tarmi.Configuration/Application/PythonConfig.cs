@@ -7,11 +7,11 @@ namespace Tarmi.Configuration.Application;
 public sealed record PythonConfig
 {
     [DataMember]
-    public required string ExecutablePath = string.Empty;
+    public required string ExecutablePath { get; set; } = string.Empty;
 
     [DataMember]
-    public required string ScriptPath = string.Empty;
+    public required string ScriptPath { get; set; } = string.Empty;
 
     [DataMember]
-    public required string ScriptTuningPath = string.Empty;
+    public required string ScriptTuningPath { get; set; } = string.Empty;
 }

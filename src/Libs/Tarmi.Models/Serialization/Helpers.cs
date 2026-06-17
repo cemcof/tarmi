@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Tarmi.Models.Serialization;
 
-public class Helpers
+public static class Helpers
 {
     public const string LegacyAppNamespace = "http://schemas.datacontract.org/2004/07/CFLMNavi";
     public const string AppNamespace = "http://schemas.datacontract.org/2004/07/Tarmi";

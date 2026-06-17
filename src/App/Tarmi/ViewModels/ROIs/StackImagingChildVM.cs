@@ -65,16 +65,14 @@ public partial class StackedImageChildVM : ImageChildVM
             return;
         }
 
-        if (RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is CorrelationOptionsControl coc)
+        if (
+            RoiVM.Parent.ActiveDevice?.SecondaryPanelContent is CorrelationOptionsControl coc &&
+            coc.DataContext is CorrelationOptionsViewModel covm &&
+            Equals(covm.ImageChild)
+        )
         {
-            if (coc.DataContext is CorrelationOptionsViewModel covm)
-            {
-                if (Equals(covm.ImageChild))
-                {
-                    // hide correlation options control
-                    RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
-                }
-            }
+            // hide correlation options control
+            RoiVM.Parent.ActiveDevice.SecondaryPanelContent = null;
         }
     }
 

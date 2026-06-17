@@ -21,23 +21,15 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </Grid.Resources>
         <UniformGrid Rows="1">
-            <localControls:ImageViewerWithScaleBar PreviewMouseWheel="ImageViewerWithScaleBar_PreviewMouseWheel" ImageWithMetadata="{Binding ImageWithMetadata}" Scale="{Binding ImageViewerVM.Scale}" ImageScale="{Binding ImageViewerVM.ImageScale, Mode=OneWayToSource}" IsScaleBarVisible="{Binding IsScaleBarVisible}">
+            <localControls:ImageControl MouseClickCommand="{Binding StageMoveClickCommand}" PreviewMouseWheel="ImageControl_PreviewMouseWheel" ImageWithMetadata="{Binding ImageWithMetadata}" 
+                                        Zoom="{Binding ImageViewerVM.Scale}" MinZoom="{Binding ImageViewerVM.PrimaryMinScale}" MaxZoom="{Binding ImageViewerVM.PrimaryMaxScale}"
+                                        ImageScale="{Binding ImageViewerVM.ImageScale, Mode=OneWayToSource}" IsScaleBarVisible="{Binding IsScaleBarVisible}"
+                                        IsCenterCrossVisible="{Binding ImageOverlayToggles.IsCenterCrossVisible}">
                 <Grid>
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ImageOverlayToggles.IsCenterCrossVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False">
-                        <Line X1="0" X2="40" Y1="20" Y2="20" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                        <Line X1="20" X2="20" Y1="0" Y2="40" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                    </Grid>
-
-                    <localControls:ClickArea
-                        Background="Transparent"
-                        Click="{Binding StageMoveClickCommand}"
-                        Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"
-                        Visibility="{Binding IsGrabbingImage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    />
                     <ItemsControl ItemsSource="{Binding RoiControl.ROIPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                                <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
@@ -51,7 +43,7 @@
                     <ItemsControl ItemsSource="{Binding FocusPointControl.AvailableFocusPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                                <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
@@ -68,7 +60,7 @@
                         </ItemsControl.Resources>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                                <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
@@ -88,9 +80,10 @@
                         </ItemsControl.ItemContainerStyle>
                     </ItemsControl>
                 </Grid>
-            </localControls:ImageViewerWithScaleBar>
+            </localControls:ImageControl>
 
-            <localControls:ImageViewerWithScaleBar Visibility="{Binding ShowSecondaryImage, Converter={StaticResource BooleanToVisibilityConverter}}" ImageWithMetadata="{Binding SecondaryImageWithMetadata}" IsScaleBarVisible="{Binding IsScaleBarVisible}">
+            <localControls:ImageControl Visibility="{Binding ShowSecondaryImage, Converter={StaticResource BooleanToVisibilityConverter}}" ImageWithMetadata="{Binding SecondaryImageWithMetadata}"
+                                        Zoom="{Binding ImageViewerVM.SecondaryScale}" MinZoom="{Binding ImageViewerVM.SecondaryMinScale}" MaxZoom="{Binding ImageViewerVM.SecondaryMaxScale}" IsScaleBarVisible="{Binding IsScaleBarVisible}">
                 <Grid>
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding ImageOverlayToggles.IsCenterCrossVisible, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False">
                         <Line X1="0" X2="40" Y1="20" Y2="20" Stroke="{StaticResource InfoForegroundBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
@@ -100,7 +93,7 @@
                     <ItemsControl ItemsSource="{Binding RoiControl.SecondaryROIPoints}" Visibility="{Binding IsMarksLayerVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                                <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
@@ -117,7 +110,7 @@
                         </ItemsControl.Resources>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <localControls:ScaledCanvas Scale="{Binding ImageScale, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageViewerWithScaleBar}}}"/>
+                                <localControls:TransformCanvas Transform="{Binding Transform, RelativeSource={RelativeSource AncestorType={x:Type localControls:ImageControl}}}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
@@ -137,7 +130,7 @@
                         </ItemsControl.ItemContainerStyle>
                     </ItemsControl>
                 </Grid>
-            </localControls:ImageViewerWithScaleBar>
+            </localControls:ImageControl>
             <UniformGrid.Style>
                 <Style TargetType="{x:Type UniformGrid}">
                     <Setter Property="Columns" Value="1"/>

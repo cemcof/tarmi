@@ -194,8 +194,8 @@ public abstract partial class ImageChildVM : RoiChildVM
     {
         return
             base.CanExecuteMakeReference() &&
-            ImageMetadata.GetSource().IsOneOf(StageCameraView.Unknown, StageCameraView.FIB_Milling) == false &&
-            IsReference == false;
+            !ImageMetadata.GetSource().IsOneOf(StageCameraView.Unknown, StageCameraView.FIB_Milling) &&
+            !IsReference;
     }
 
     [RelayCommand(CanExecute = nameof(CanToggle))]

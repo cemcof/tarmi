@@ -9,7 +9,7 @@ internal interface IXtObjectHandle
     void Disconnect();
 }
 
-internal interface IXtObjectHandle<T> : IXtObjectHandle
+internal interface IXtObjectHandle<out T> : IXtObjectHandle
     where T : class
 {
     public T Object { get; }

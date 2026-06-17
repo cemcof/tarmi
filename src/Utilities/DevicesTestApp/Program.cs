@@ -1,4 +1,4 @@
-using Tarmi.Communication.Common.Serial;
+﻿using Tarmi.Communication.Common.Serial;
 using Tarmi.Devices.Arduino.FilterHandler;
 using Tarmi.Devices.Thermofisher.Instrument;
 using DevicesTestApp.Commands.ArduinoFilterHandler;
@@ -16,16 +16,16 @@ namespace DevicesTestApp;
 
 public static class Program
 {
-    private static IConfiguration GetProgramConfiguration()
-    {
-        var builder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-        return builder.Build();
-    }
+    //private static IConfiguration GetProgramConfiguration()
+    //{
+    //    var builder = new ConfigurationBuilder()
+    //        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+    //    return builder.Build();
+    //}
 
     public static int Main(string[] args)
     {
-        var configuration = GetProgramConfiguration();
+        //var configuration = GetProgramConfiguration();
 
         var services = new ServiceCollection();
         services

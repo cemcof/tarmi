@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Markup;
 
 namespace Tarmi.WPF;
@@ -11,7 +11,7 @@ public class EnumItemsSource : MarkupExtension
     {
         ArgumentNullException.ThrowIfNull(enumType);
 
-        if (enumType.IsEnum == false)
+        if (!enumType.IsEnum)
         {
             throw new ArgumentException("Type must be an Enum.");
         }
@@ -24,17 +24,17 @@ public class EnumItemsSource : MarkupExtension
         return Enum.GetValues(_enumType);
     }
 
-    private string GetDescription(object enumValue)
-    {
-        if (_enumType.GetField(enumValue.ToString() ?? string.Empty)?
-                     .GetCustomAttributes(typeof(DescriptionAttribute), false)
-                     .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
-        {
-            return descriptionAttribute.Description;
-        }
-        else
-        {
-            return enumValue.ToString() ?? string.Empty;
-        }
-    }
+    //private string GetDescription(object enumValue)
+    //{
+    //    if (_enumType.GetField(enumValue.ToString() ?? string.Empty)?
+    //                 .GetCustomAttributes(typeof(DescriptionAttribute), false)
+    //                 .FirstOrDefault() is DescriptionAttribute descriptionAttribute)
+    //    {
+    //        return descriptionAttribute.Description;
+    //    }
+    //    else
+    //    {
+    //        return enumValue.ToString() ?? string.Empty;
+    //    }
+    //}
 }

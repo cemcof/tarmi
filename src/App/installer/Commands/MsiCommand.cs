@@ -6,7 +6,7 @@ namespace Tarmi.Installer.Commands;
 
 internal sealed class MsiCommand : Command<MsiCommandSettings>
 {
-    public override int Execute(CommandContext context, MsiCommandSettings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, MsiCommandSettings settings, CancellationToken cancellationToken)
     {
         try
         {
@@ -21,7 +21,7 @@ internal sealed class MsiCommand : Command<MsiCommandSettings>
         }
     }
 
-    public string BuildMsi(IMsiCommandSettingsAccessor settings)
+    public static string BuildMsi(IMsiCommandSettingsAccessor settings)
     {
         return MsiBuilder.Build(settings);
     }

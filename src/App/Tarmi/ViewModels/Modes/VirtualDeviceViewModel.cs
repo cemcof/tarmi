@@ -36,7 +36,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     protected readonly ImagingPipeline _genericImagingPipeline;
     private readonly SemaphoreSlim _activationLock = new(1, 1);
     private volatile bool _isActive;
-    private CancellationTokenSource? _imageGrabbingCts;
+    protected CancellationTokenSource? _imageGrabbingCts;
     protected readonly List<IDisposable> _subscriptions = [];
     protected readonly TileSetGrabbingService _tileSetGrabbingService;
     protected abstract string ModeName { get; }
@@ -46,19 +46,17 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     public abstract StageOverviewViewModel StageOverview { get; }
 
     [ObservableProperty]
-    private ObservableProject? _activeProject;
-
+    public partial ObservableProject? ActiveProject { get; set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CaptureImageEnabled))]
     [NotifyPropertyChangedFor(nameof(GrabImageEnabled))]
-    private bool _isGrabbingImage;
+    public partial bool IsGrabbingImage { get; set; }
 
     [ObservableProperty]
-    private bool _manualFocusEnabled;
+    public partial bool ManualFocusEnabled { get; set; }
 
     [ObservableProperty]
-    private bool _manualTiltEnabled;
-
+    public partial bool ManualTiltEnabled { get; set; }
     [ObservableProperty]
     public partial bool IsScaleBarVisible { get; set; } = true;
 
@@ -67,17 +65,16 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CaptureImageEnabled))]
-    protected ImageWithMetadata? _imageWithMetadata;
-    
-    [ObservableProperty]
-    protected ImageWithMetadata? _secondaryImageWithMetadata; // populate with desired image overlay, set to null to not display it
+    public partial ImageWithMetadata? ImageWithMetadata { get; set; }
 
     [ObservableProperty]
-    private bool _showSecondaryImage;
+    public partial ImageWithMetadata? SecondaryImageWithMetadata { get; set; }
 
     [ObservableProperty]
-    private int _selectedLowerRightPanelTab;
+    public partial bool ShowSecondaryImage { get; set; }
 
+    [ObservableProperty]
+    public partial int SelectedLowerRightPanelTab { get; set; }
     [ObservableProperty]
     public partial UIElement? SecondaryPanelContent { get; set; }
 
@@ -141,12 +138,22 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
         OverviewImageVM = overviewImageViewModel;
     }
 
+    protected override void DisposeCore()
+    {
+        if (_imageGrabbingCts is not null)
+        {
+            _imageGrabbingCts.Cancel();
+            _imageGrabbingCts.Dispose();
+        }
+        base.DisposeCore();
+    }
+
     [RelayCommand]
     public async Task StartGrabbingAsync()
         => await ControlGrabbingImageAsync(default);
 
     [RelayCommand(CanExecute = nameof(GrabImageEnabled))]
-    public async Task GrabImageAsync()
+    public virtual async Task GrabImageAsync()
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
         using (_windowService.ShowBusyMessage(Messages.AcquiringImageBusyMessage))
@@ -165,50 +172,64 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
             return $"{datePart}_{stageCameraView}{ProjectExtensions.ImageExtension}";
         }
 
-        if (ActiveProject is not null)
+        if (ActiveProject is null)
         {
-            var selectedRoi = ActiveProject.GetActiveRegionOfInterest();
-            if (selectedRoi is not null) {
+            return;
+        }
 
-                var image = await _genericImagingPipeline.GetImageCopyAsync(ImageProcessingStage.FilteredInput);
-                try
+        var selectedRoi = ActiveProject.GetActiveRegionOfInterest();
+        if (selectedRoi is null)
+        {
+            return;
+        }
+
+        var image = await _genericImagingPipeline.GetImageCopyAsync(ImageProcessingStage.FilteredInput);
+        try
+        {
+            // no need to distinguish between fluorescence and reflection images, layer is just a group, images are shown directly in ROI structure
+            var cameraSource = image.GetSource();
+            if (!ActiveProject.TryGetLayeredImageDescriptor(_safeStageControlling.ActiveCameraView, selectedRoi.Id, out var layeredImageDescriptor))
+            {
+                layeredImageDescriptor = ActiveProject.CreateLayeredImageDescriptor(_safeStageControlling.ActiveCameraView, selectedRoi.Id);
+            }
+            var imageContent = new LayerContentDescriptorWithCorrelationInfo()
+            {
+                SubDirectory = null,
+                Filename = GenerateNewFilename(cameraSource),
+                Id = image.ImageId
+            };
+            layeredImageDescriptor.Images.Add(imageContent);
+            var fullPath = ActiveProject.GetContentFilePath(layeredImageDescriptor, imageContent);
+            var tiffMetadata = image.TiffMetadata;
+            var dto = tiffMetadata.TimeOfAcquisition;
+            tiffMetadata = tiffMetadata with { ImageDescription = $"{dto:dd.MM. HH:mm:ss}" };
+            image = image with
+            {
+                LayerId = layeredImageDescriptor.Id,
+                RegionOfInterestId = selectedRoi.Id,
+                ImageId = imageContent.Id,
+                TiffMetadata = tiffMetadata
+            };
+            TiffImage.Save(image, fullPath);
+            ActiveProject.AddOrUpdateDescriptor(layeredImageDescriptor);
+
+            // first SEM ROI image/map is marked as reference
+            if (cameraSource == StageCameraView.SEM)
+            {
+                var hasReference =
+                    selectedRoi.Images.Any(id => id.Images.Any(desc => desc.CorrelationInfo.IsReferenceImage)) ||
+                    selectedRoi.TileSets.Any(id => id.CorrelationInfo.IsReferenceImage);
+
+                if (!hasReference)
                 {
-                    // no need to distinguish between fluorescence and reflection images, layer is just a group, images are shown directly in ROI structure
-                    var cameraSource = image.GetSource();
-                    if (!ActiveProject.TryGetLayeredImageDescriptor(_safeStageControlling.ActiveCameraView, selectedRoi.Id, out var layeredImageDescriptor))
-                    {
-                        layeredImageDescriptor = ActiveProject.CreateLayeredImageDescriptor(_safeStageControlling.ActiveCameraView, selectedRoi.Id);
-                    }
-                    var imageContent = new LayerContentDescriptorWithCorrelationInfo() { SubDirectory = null, Filename = GenerateNewFilename(cameraSource), Id = image.ImageId };
-
-                    layeredImageDescriptor.Images.Add(imageContent);
-                    var fullPath = ActiveProject.GetContentFilePath(layeredImageDescriptor, imageContent);
-                    var tiffMetadata = image.TiffMetadata;
-                    var dto = tiffMetadata.TimeOfAcquisition;
-                    tiffMetadata = tiffMetadata with { ImageDescription = $"{dto:dd.MM. HH:mm:ss}" };
-                    image = image with { LayerId = layeredImageDescriptor.Id, RegionOfInterestId = selectedRoi.Id, ImageId = imageContent.Id, TiffMetadata = tiffMetadata };
-                    TiffImage.Save(image, fullPath);
-                    ActiveProject.AddOrUpdateDescriptor(layeredImageDescriptor);
-
-                    // first SEM ROI image/map is marked as reference
-                    if (cameraSource == StageCameraView.SEM)
-                    {
-                        var hasReference =
-                            selectedRoi.Images.Any(id => id.Images.Any(desc => desc.CorrelationInfo.IsReferenceImage)) ||
-                            selectedRoi.TileSets.Any(id => id.CorrelationInfo.IsReferenceImage);
-
-                        if (!hasReference)
-                        {
-                            ActiveProject.SetReference(imageContent.CorrelationInfo);
-                        }
-                    }
-                    OnPropertyChanged(nameof(CaptureImageEnabled));
-                }
-                finally
-                {
-                    image.Dispose();
+                    ActiveProject.SetReference(imageContent.CorrelationInfo);
                 }
             }
+            OnPropertyChanged(nameof(CaptureImageEnabled));
+        }
+        finally
+        {
+            image.Dispose();
         }
     }
 
@@ -231,7 +252,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     protected virtual bool CanAutoFocus() => true;
 
     [RelayCommand(CanExecute = nameof(CanAutoFocus))]
-    private async Task AutoFocusAsync()
+    protected virtual async Task AutoFocusAsync()
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
 
@@ -262,7 +283,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     }
 
     [RelayCommand(CanExecute = nameof(CanAutoTilt))]
-    private async Task AutoTiltAsync()
+    protected virtual async Task AutoTiltAsync()
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
 
@@ -281,18 +302,18 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
 
-        if (ImageWithMetadata is not null && ImageWithMetadata.ImageId != Guid.Empty)
+        if (IsGrabbingImage && ImageWithMetadata is not null && ImageWithMetadata.ImageId != Guid.Empty)
         {
             var ratioPoint = new RatioPoint()
             {
-                X = Ratio.FromDecimalFractions((double)point.X / ImageWithMetadata.Coordinates.ImageSize.Width),
-                Y = Ratio.FromDecimalFractions((double)point.Y / ImageWithMetadata.Coordinates.ImageSize.Height),
+                X = Ratio.FromDecimalFractions(point.X / ImageWithMetadata.Coordinates.ImageSize.Width),
+                Y = Ratio.FromDecimalFractions(point.Y / ImageWithMetadata.Coordinates.ImageSize.Height),
             };
             var stagePosition = _stageNavigation.GetStagePositionFromImageLocation(ratioPoint, ImageWithMetadata, CameraView);
             
             using (_windowService.ShowBusyMessage(Messages.StageMoveBusyMessage))
             {
-                var success = await _virtualDevice.MoveStageAsync(stagePosition);
+                _ = await _virtualDevice.MoveStageAsync(stagePosition);
                 // TODO: in case of false, show limits error notification
             }
         }
@@ -345,7 +366,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
             {
                 OverviewImageVM.SelectedGrid = TileSetGrabbing.SelectedGrid;
             }
-            OverviewImageVM.AvailableGrids.FirstOrDefault(TileSetGrabbing.SelectedGrid);
+            //OverviewImageVM.AvailableGrids.FirstOrDefault(TileSetGrabbing.SelectedGrid);
         }
     }
 
@@ -443,7 +464,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
 
-        ImageWithMetadata = imageWithMetadata with { Image = imageWithMetadata.Image.Clone() };
+        ImageWithMetadata = imageWithMetadata.Clone();
         RoiControl.ImageWithMetadata = ImageWithMetadata;
         FocusPointControl.ImageWithMetadata = ImageWithMetadata;
     }
@@ -451,6 +472,7 @@ public abstract partial class VirtualDeviceViewModel : ApplicationModeViewModelB
     partial void OnSecondaryImageWithMetadataChanged(ImageWithMetadata? value)
     {
         RoiControl.SecondaryImageWithMetadata = value;
+        ImageViewerVM.UpdatePixelRatio(RoiControl.ImageWithMetadata, RoiControl.SecondaryImageWithMetadata);
     }
 
     protected virtual void HandleActiveProjectChanged(ObservableProject? project)

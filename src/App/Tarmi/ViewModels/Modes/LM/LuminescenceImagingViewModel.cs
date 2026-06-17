@@ -25,21 +25,24 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
     private readonly SemaphoreSlim _colorSwitchLock = new(1, 1);
 
     [ObservableProperty]
-    private double _intensity;
+    public partial double Intensity { get; set; }
 
     [ObservableProperty]
-    private double _exposure;
+    public partial double Exposure { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IntensityEditEnabled))]
     [NotifyPropertyChangedFor(nameof(ExposureEditEnabled))]
     public partial LightColor? SelectedLightColor { get; private set; }
 
-    public List<LightColor> LightColors { get; } = [];
+    [ObservableProperty]
+    public partial bool IsLightActive { get; set; }
+
+    public IEnumerable<LightColor> LightColors => LightSettings.Select(settings => settings.Color);
     public List<LightSettingsViewModel> LightSettings { get; } = [];
     public IObservable<bool> CanAcquireData { get; private set; }
-    public bool IntensityEditEnabled => _virtualDevice.ActiveLightColor is not null;
-    public bool ExposureEditEnabled => _virtualDevice.ActiveLightColor is not null;
+    public bool IntensityEditEnabled => _virtualDevice.SelectedLightColor is not null;
+    public bool ExposureEditEnabled => _virtualDevice.SelectedLightColor is not null;
 
     public LuminescenceImagingViewModel(ILuminescenceMode virtualDevice, IOptions<AppConfigurationOptions> options, ILoggerFactory loggerFactory)
     {
@@ -50,10 +53,10 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
 
     protected override Task InitializeCoreAsync()
     {
-        InitializeLightColors();
         Exposure = _virtualDevice.ExposureTime.Microseconds;
         Intensity = _virtualDevice.Intensity.Percent;
-        _disposables.Add(_virtualDevice.CurrentActiveLightColor.Subscribe(color => SelectedLightColor = color));
+        _disposables.Add(_virtualDevice.CurrentSelectedLightColor.Subscribe(color => SelectedLightColor = color));
+        _disposables.Add(_virtualDevice.CurrentIsLightActive.Subscribe(isActive => IsLightActive = isActive));
         LoadUserSettings();
         return base.InitializeCoreAsync();
     }
@@ -76,22 +79,22 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
 
         CanAcquireData = LightSettings
             .Select(setting => setting.IsSelectedChanged)
-            .Append(_virtualDevice.CurrentActiveLightColor.Select(color => color.HasValue))
+            .Append(_virtualDevice.CurrentSelectedLightColor.Select(color => color.HasValue))
             .Merge()
-            .Select(_ => _virtualDevice.ActiveLightColor.HasValue || LightSettings.Any(light => light.IsSelected))
+            .Select(_ => _virtualDevice.SelectedLightColor.HasValue || LightSettings.Any(light => light.IsSelected))
             .CombineLatest(_virtualDevice.IsProtracted, (isLightSelected, isProtracted) => isLightSelected && isProtracted)
             .DistinctUntilChanged();
     }
 
     [RelayCommand]
-    public async Task SetLightColorAsync(LightColor color)
+    public async Task SelectLightColorAsync(LightColor? color)
     {
         using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
         using var guard = await _colorSwitchLock.UseOnceAsync(default);
 
-        if (color == SelectedLightColor)
+        if (!color.HasValue || color == SelectedLightColor)
         {
-            await _virtualDevice.TurnLightOff(default);
+            await _virtualDevice.SelectLightAsync(null, default);
         }
         else
         {
@@ -99,7 +102,7 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
             Exposure = _virtualDevice.ExposureTime.Microseconds;
             await _virtualDevice.SetIntensityAsync(Ratio.FromPercent(LightSettings.First(ls => ls.Color == color).ImagingSettings.Intensity), default);
             Intensity = _virtualDevice.Intensity.Percent;
-            await _virtualDevice.TurnLightOn(color, default);
+            await _virtualDevice.SelectLightAsync(color, default);
         }
     }
 
@@ -111,9 +114,9 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
 
         _virtualDevice.ExposureTime = Duration.FromMicroseconds(Exposure);
         Exposure = _virtualDevice.ExposureTime.Microseconds;
-        if (_virtualDevice.ActiveLightColor is not null)
+        if (_virtualDevice.SelectedLightColor is not null)
         {
-            LightSettings.First(ls => ls.Color == _virtualDevice.ActiveLightColor).ImagingSettings.Exposure = Exposure;
+            LightSettings.First(ls => ls.Color == _virtualDevice.SelectedLightColor).ImagingSettings.Exposure = Exposure;
         }        
     }
 
@@ -125,9 +128,9 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
 
         await _virtualDevice.SetIntensityAsync(Ratio.FromPercent(Intensity), default);
         Intensity = _virtualDevice.Intensity.Percent;
-        if (_virtualDevice.ActiveLightColor is not null)
+        if (_virtualDevice.SelectedLightColor is not null)
         {
-            LightSettings.First(ls => ls.Color == _virtualDevice.ActiveLightColor).ImagingSettings.Intensity = Intensity;
+            LightSettings.First(ls => ls.Color == _virtualDevice.SelectedLightColor).ImagingSettings.Intensity = Intensity;
         }
     }
 
@@ -136,7 +139,7 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
         using var guard = await _colorSwitchLock.UseOnceAsync(default);
         try
         {
-            if (Exposure != item.Item2 && _virtualDevice.ActiveLightColor == item.Item1)
+            if (Exposure != item.Item2 && _virtualDevice.SelectedLightColor == item.Item1)
             {
                 _virtualDevice.ExposureTime = Duration.FromMicroseconds(item.Item2);
                 Exposure = _virtualDevice.ExposureTime.Microseconds;
@@ -151,7 +154,7 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
         using var guard = await _colorSwitchLock.UseOnceAsync(default);
         try
         {
-            if (Intensity != item.Item2 && _virtualDevice.ActiveLightColor == item.Item1)
+            if (Intensity != item.Item2 && _virtualDevice.SelectedLightColor == item.Item1)
             {
                 await _virtualDevice.SetIntensityAsync(Ratio.FromPercent(item.Item2), default);
                 Intensity = _virtualDevice.Intensity.Percent;
@@ -163,14 +166,14 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
 
     private void SaveUserSettings()
     {
-        string path = System.IO.Path.Combine(_options.Value.StateDirectory, "LM_light_settings.xml");
+        string path = Path.Combine(_options.Value.StateDirectory, "LM_light_settings.xml");
         using var file = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         Helpers.Save(GetSerializableSettings(), file);
     }
 
     private LightSettingsSerializable LoadUserSettingsFile()
     {
-        string path = System.IO.Path.Combine(_options.Value.StateDirectory, "LM_light_settings.xml");
+        string path = Path.Combine(_options.Value.StateDirectory, "LM_light_settings.xml");
         using var file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         var serializer = new DataContractSerializer(typeof(LightSettingsSerializable));
         return serializer.ReadObject(file) as LightSettingsSerializable ??
@@ -216,13 +219,9 @@ public partial class LuminescenceImagingViewModel : ViewModelBase
         };
     }
 
-    private string CreateActivityName([CallerMemberName] string methodName = "")
+    private static string CreateActivityName([CallerMemberName] string methodName = "")
         => $"{nameof(VirtualDeviceViewModel)}::{methodName}";
-
-    private void InitializeLightColors()
-    {
-        using var activity = AppTelemetry.UiActivitySource.StartActivity(CreateActivityName());
-
-        LightColors.AddRange(Enum.GetValues<LightColor>());
-    }
+    internal IEnumerable<LightColor> GetSelectedLights() => LightSettings
+        .Where(settings => settings.IsSelected)
+        .Select(settings => settings.Color);
 }

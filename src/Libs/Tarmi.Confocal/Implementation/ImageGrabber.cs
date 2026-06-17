@@ -9,14 +9,13 @@ internal class ImageGrabber : IImageGrabber
 {
     protected readonly ILogger _logger;
     private readonly Subject<ImageWithMetadata> _grabbedImageSubject = new();
-    private string _imagePath;
     private readonly PythonController _pythonController;
     public string DefaultImagePath { get; }
 
     public ImageGrabber(ILogger logger, PythonController pythonController)
     {
         _logger = logger;
-        _imagePath = string.Empty;
+        ImagePath = string.Empty;
         _pythonController = pythonController;
         DefaultImagePath = Path.Combine(Path.GetTempPath(), "confocalImage.tif");
     }
@@ -33,11 +32,7 @@ internal class ImageGrabber : IImageGrabber
 
     public IObservable<ImageWithMetadata> GrabbedImage => _grabbedImageSubject.AsObservable();
 
-    public string ImagePath
-    {
-        get => _imagePath;
-        set => _imagePath = value;
-    }
+    public string ImagePath { get; set; }
 
     public async Task<ImageWithMetadata> GrabImage(IConfocalDevice confocalDevice)
     {
@@ -50,7 +45,7 @@ internal class ImageGrabber : IImageGrabber
 
         // Grab image
         var args = PythonController.GeneratePythonArgs(confocalDevice, ImagePath);
-        _logger.LogDebug("Confocal, {name}, python args \n{args}", nameof(GrabImage), args);
+        _logger.LogDebug("Confocal, {Name}, python args \n{Args}", nameof(GrabImage), args);
         var (result, error) = await _pythonController.ExecuteScriptWithArgs(args);
 
         if (!result)
@@ -77,8 +72,8 @@ internal class ImageGrabber : IImageGrabber
         _logger.LogDebug("Confocal, start continuous grabbing.");
 
         var args = PythonController.GeneratePythonArgs(confocalDevice, ImagePath);
-        _logger.LogDebug("Confocal, {name}, python args \n{args}", nameof(StartContinuousGrabbing), args);
-        var (result, error) = await _pythonController.StartTuningScriptWithArgs(args);
+        _logger.LogDebug("Confocal, {Name}, python args \n{Args}", nameof(StartContinuousGrabbing), args);
+        _ = await _pythonController.StartTuningScriptWithArgs(args);
 
         _grabbedImageSubject.OnNext(ImageWithMetadata.Empty);
     }

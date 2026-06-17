@@ -108,12 +108,13 @@ public class TileSetCreationTransaction : IDisposable
         return metadata with
         {
             Software = CreateSoftwareName(),
-            ImageDescription = $"{_descriptor.Name} TileSet Image #{index++}"
+            ImageDescription = $"{_descriptor.Name} TileSet Image #{index + 1}"
         };
     }
 
     private TiffMetadata CreateOrUpdateStitchedImageTiffMetadata(TiffMetadata metadata, bool isThumbnail)
     {
+        _ = isThumbnail; // currently not used
         //var namePart = isThumbnail ? "Stitched TileSet Thumbnail " : "Stitched TileSet";
         return metadata with
         {
@@ -132,7 +133,7 @@ public class TileSetCreationTransaction : IDisposable
             RegionOfInterestId = _descriptor.RegionOfInterestId,
             LayerId = _descriptor.Id
         };
-        var filename = $"{index++:00000}{ProjectExtensions.ImageExtension}";
+        var filename = $"{index + 1:00000}{ProjectExtensions.ImageExtension}";
         var path = Path.Combine(_project.GetLayerDirectoryPath(_descriptor), filename);
         TiffImage.Save(image, path);
         _descriptor = _descriptor with

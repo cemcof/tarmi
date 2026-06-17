@@ -21,7 +21,7 @@ public class SimulatedPinHoleWheelController : IPinHoleWheelController
     private long _position = 0;
     private int _address = 1;
 
-    public SimulatedPinHoleWheelController(PinHoleWheelAlignments alignments, ILogger<PinHoleWheelController> logger)
+    public SimulatedPinHoleWheelController(PinHoleWheelAlignments alignments, ILogger logger)
     {
         _logger = logger;
         _minPinHoleSize = alignments.PinHoleAlignments.First().PinHoleSize;

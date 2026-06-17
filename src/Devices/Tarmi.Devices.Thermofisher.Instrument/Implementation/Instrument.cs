@@ -25,7 +25,6 @@ internal class Instrument : IInstrument
     private readonly IonBeam _ionBeam;
     private readonly SemImageSource _semImageSource;
     private readonly IonImageSource _ionImageSource;
-    private readonly Chamber _chamber;
     private readonly Stage _stage;
     private readonly CompositeDisposable _disposables = [];
 
@@ -55,14 +54,13 @@ internal class Instrument : IInstrument
         _semImageSource = semImageSource;
         _ionImageSource = ionImageSource;
         _stage = stage;
-        _chamber = chamber;
 
         IsConnected = brickConnector.IsConnected;
 
         _disposables.Add(
             Observable.CombineLatest(
-                _chamber.ChamberPressure,
-                _chamber.State,
+                chamber.ChamberPressure,
+                chamber.State,
                 (pressure, state) => new ChamberState
                 {
                     Pressure = pressure,
@@ -245,7 +243,10 @@ internal class Instrument : IInstrument
         if (mode == ActiveMode) { return; }
 
         _activeImageSourceDisposables.Dispose();
-        _activeImageSourceTokenSource?.Cancel();
+        if (_activeImageSourceTokenSource is not null)
+        {
+            await _activeImageSourceTokenSource.CancelAsync();
+        }
         _activeImageSourceTokenSource?.Dispose();
         _activeImageSourceTokenSource = null;
         _linkedTokenSource?.Dispose();
@@ -336,7 +337,7 @@ internal class Instrument : IInstrument
             throw new InvalidOperationException("Cannot set beam current in StageOnly mode");
         }
 
-        var result = _activeBeam!.SetBeamCurrentIndex(currentIndex);
+        _ = _activeBeam!.SetBeamCurrentIndex(currentIndex);
     }
 
     public Length GetBeamFreeWorkingDistance()

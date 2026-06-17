@@ -6,6 +6,8 @@ using Tarmi.Configuration.Devices;
 using Tarmi.Models;
 using UnitsNet;
 
+namespace ConfigsGenerator;
+
 internal static class ProdConfigGenerator
 {
     public static void Generate(string filename = "config.prod.xml")

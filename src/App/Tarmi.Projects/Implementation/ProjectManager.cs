@@ -6,15 +6,15 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Serialization;
 using System.Text;
-using Tarmi.App.Infrastructure.Options;
-using Tarmi.Models.Serialization;
-using Tarmi.Configuration;
-using Tarmi.Configuration.Holders;
+using System.Xml;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Xml;
+using Tarmi.App.Infrastructure.Options;
+using Tarmi.Configuration;
+using Tarmi.Configuration.Holders;
+using Tarmi.Models.Serialization;
 
 namespace Tarmi.Projects.Implementation;
 
@@ -40,8 +40,10 @@ public class ProjectManager : IProjectManager
     private readonly Lazy<ReadOnlyObservableCollection<ProjectDescriptor>> _lazyAllProjects;
 
     public ReadOnlyObservableCollection<ProjectDescriptor> RecentProjects => _recentProjects;
+#pragma warning disable S4275 // Getters and setters should access the expected fields
     public ReadOnlyObservableCollection<ProjectDescriptor> AllProjects => _lazyAllProjects.Value;
-    
+#pragma warning restore S4275 // Getters and setters should access the expected fields
+
     public IObservable<ObservableProject?> ActiveProject => _activeProject.AsObservable();
 
     public ProjectManager(ILoggerFactory loggerFactory, ILogger<ProjectManager> logger, ApplicationConfig configuration, IOptions<AppConfigurationOptions> options, TimeProvider timeProvider, ApplicationConfig applicationConfig)
@@ -178,7 +180,7 @@ public class ProjectManager : IProjectManager
         _ = DeleteProjectFromCollection(_allProjectsSource, project);
     }
 
-    private bool DeleteProjectFromCollection(Collection<ProjectDescriptor> collection, ProjectDescriptor project)
+    private static bool DeleteProjectFromCollection(Collection<ProjectDescriptor> collection, ProjectDescriptor project)
     {
         var comparer = EqualityComparerFactory.Create<ProjectDescriptor>(
             (project1, project2) => project1?.Directory == project2?.Directory
@@ -293,10 +295,10 @@ public class ProjectManager : IProjectManager
             throw new InvalidDataException($"Failed to deserialize {typeof(T)} from '{path}'.");
     }
 
-    public bool ProjectExists(string projectName)
+    public bool ProjectExists(string name)
     {
         _ = Directory.CreateDirectory(_projectsBaseDirectory);
-        var directory = Path.Join(_projectsBaseDirectory, NameToFilename(projectName));
+        var directory = Path.Join(_projectsBaseDirectory, NameToFilename(name));
         return Directory.Exists(directory);
     }
 }

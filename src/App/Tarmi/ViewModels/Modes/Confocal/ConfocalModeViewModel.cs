@@ -28,7 +28,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
     private readonly ConfocalImagingPipeline _imagingPipeline;
     private readonly bool _isSimulated;
 
-    public FieldSelectionViewModel FieldSelectionViewModel;
+    public FieldSelectionViewModel FieldSelectionViewModel { get; private set; }
     public bool IsFieldSeletion { get; private set; } = false;
     protected override string ModeName => "Confocal";
     protected override StageCameraView CameraView => StageCameraView.Confocal;
@@ -47,7 +47,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
     public IEnumerable<Duration> AvailableDwellRanges => _virtualDevice.DwellRanges;
 
     [ObservableProperty]
-    private FilterType _filterType;
+    public partial FilterType FilterType { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Resolution))]
@@ -97,10 +97,10 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
     }
 
     [ObservableProperty]
-    private double _intensity;
+    public partial double Intensity { get; set; }
 
     [ObservableProperty]
-    private double _gain;
+    public partial double Gain { get; set; }
 
     public IEnumerable<ElectricPotential> AvailableADCRanges => _virtualDevice.ADCRanges;
 
@@ -109,7 +109,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
     public IList<ConfocalLight> LaserColors => _virtualDevice.ConfocalLights;
 
     [ObservableProperty]
-    private double _stageTilt = 1.0;
+    public partial double StageTilt { get; set; } = 1.0;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AutoFocusCommand))]
@@ -119,9 +119,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
     [NotifyCanExecuteChangedFor(nameof(FocusDecrementManualCommand))]
     [NotifyCanExecuteChangedFor(nameof(FocusIncrementManualCommand))]
     [NotifyCanExecuteChangedFor(nameof(FieldSelectionCommand))]
-
-    public bool _isProtracted;
-
+    public partial bool IsProtracted { get; set; }
     public override StageOverviewViewModel StageOverview { get; }
 
     public override TileSetGrabbingViewModel TileSetGrabbing { get; }
@@ -175,7 +173,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
         var zStackGrabbingService = new ZStackGrabbingService(confocalVirtualDevice, confocalVirtualDevice, loggerFactory.CreateLogger<ZStackGrabbingService>());
         var tileSet3DGrabbingService = new TileSet3DGrabbingService(confocalVirtualDevice, _logger, _virtualDevice);
         StageOverview = new StageOverviewConfocalModeViewModel(confocalVirtualDevice, stageNavigation, safeStageControlling, projectManager);
-        ZStackGrabbing = new(windowService, stageNavigation, projectManager, _genericImagingPipeline, safeStageControlling, confocalVirtualDevice, zStackGrabbingService, applicationConfig, loggerFactory.CreateLogger<ZStackGrabbingViewModel>(), this);
+        ZStackGrabbing = new(windowService, stageNavigation, projectManager, _genericImagingPipeline, safeStageControlling, confocalVirtualDevice, zStackGrabbingService, applicationConfig, this);
         TileSetGrabbing = new ConfocalTilesetGrabbingViewModel(_logger, windowService, stageNavigation, confocalVirtualDevice, projectManager, _genericImagingPipeline, safeStageControlling, _tileSetGrabbingService, tileSet3DGrabbingService, ZStackGrabbing, applicationConfig, this);
         FieldWidth = _virtualDevice.FieldWidth;
         FieldHeight = _virtualDevice.FieldHeight;
@@ -184,11 +182,11 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
         FieldSelectionViewModel = new FieldSelectionViewModel(_virtualDevice.ConfocalData);
     }
 
-    protected override void DisposeCore()
-    {
-        //ConfocalImaging.Dispose();
-        base.DisposeCore();
-    }
+    //protected override void DisposeCore()
+    //{
+    //    //ConfocalImaging.Dispose();
+    //    base.DisposeCore();
+    //}
 
     protected override async Task InitializeInternalAsync(ApplicationMode prevMode, CancellationToken cancellationToken)
     {
@@ -316,7 +314,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
 
                 using (_windowService.ShowBusyMessage(Messages.StageMoveBusyMessage))
                 {
-                    var success = await _virtualDevice.MoveStageAsync(stagePosition);
+                    _ = await _virtualDevice.MoveStageAsync(stagePosition);
                 }
 
                 FieldSelectionViewModel.Close();
@@ -379,7 +377,7 @@ public partial class ConfocalModeViewModel : VirtualDeviceViewModel
 
         if (
             imageMetadata.GetSource() != StageCameraView.Confocal ||
-            IsProtracted == false ||
+            !IsProtracted ||
             imageMetadata.ConfocalMetadata == null
         )
         {

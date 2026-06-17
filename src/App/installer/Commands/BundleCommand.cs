@@ -6,16 +6,14 @@ namespace Tarmi.Installer.Commands;
 
 internal sealed class BundleCommand : AsyncCommand<BundleCommandSettings>
 {
-    private readonly MsiCommand _msiCommand = new();
-
-    public override ValidationResult Validate(CommandContext context, BundleCommandSettings settings)
+    protected override ValidationResult Validate(CommandContext context, BundleCommandSettings settings)
     {
         if (settings.RuntimeVersion is null && settings.RuntimeInstaller is null)
         {
             return ValidationResult.Error("Either runtime version or runtime installer path must be provided.");
         }
 
-        if (settings.RuntimeInstaller.Value?.Exists ?? false || settings.RuntimeVersion.Value is not null)
+        if (settings.RuntimeVersion.IsSet || (settings.RuntimeInstaller.Value?.Exists ?? false))
         {
             return ValidationResult.Success();
         }
@@ -23,7 +21,7 @@ internal sealed class BundleCommand : AsyncCommand<BundleCommandSettings>
         return ValidationResult.Error("Runtime installer file not found.");
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, BundleCommandSettings settings, CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext context, BundleCommandSettings settings, CancellationToken cancellationToken)
     {
         try
         {
@@ -38,9 +36,9 @@ internal sealed class BundleCommand : AsyncCommand<BundleCommandSettings>
         }
     }
 
-    public async Task<string> BuildBundle(BundleCommandSettings settings)
+    public static async Task<string> BuildBundle(BundleCommandSettings settings)
     {
-        var msiFilePath = _msiCommand.BuildMsi(settings);
+        var msiFilePath = MsiCommand.BuildMsi(settings);
         return await BundleBuilder.Build(settings, msiFilePath);
     }
 }

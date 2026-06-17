@@ -1,4 +1,4 @@
-using Tarmi.Imaging.Common;
+﻿using Tarmi.Imaging.Common;
 using Tarmi.Imaging.Common.OpenCvWrapper;
 using Tarmi.Models;
 using Tarmi.Configuration.Holders;
@@ -22,124 +22,122 @@ internal abstract class TileSetDefinition : IDisposable
     protected virtual string DefaultImagePath { get; } = string.Empty;
     protected virtual IntPoint TileSetGridCenter { get; } = IntPoint.Zero;
 
-    private ImageWithMetadata _defaultImage = ImageWithMetadata.Empty;
-    private IImage _tileSetImage = new Image<Gray, byte>(0, 0);
-    private PixelSize _pixelSize = PixelSize.Zero;
-    private IntSize2d _imageSize = IntSize2d.Zero;
-    private List<GridDescriptor> _grids = [];
+    private readonly ImageWithMetadata _defaultImage;
+    private readonly IImage _tileSetImage = new Image<Gray, byte>(0, 0);
+    private readonly List<GridDescriptor> _grids = [];
 
-    protected TileSetDefinition()
-    {
-    }
-
-    protected void Initialize(Holder holder)
+    protected TileSetDefinition(Holder holder)
     {
         _defaultImage = TiffImage.Load(DefaultImagePath);
         var mat = Cv2.ImRead(TileSetImagePath, ImreadModes.Unchanged);
-        _tileSetImage = mat.Type() == MatType.CV_8UC1 ? Image<Gray, byte>.FromMat(mat) : Image<Bgr, byte>.FromMat(mat);
-        _pixelSize = _defaultImage.GetPixelSize();
-        _imageSize = new IntSize2d { Width = _defaultImage.Image.Width, Height = _defaultImage.Image.Height };
-
-        foreach (var grid in holder.Grids)
+        var matType = mat.Type();
+        _tileSetImage = matType switch
         {
-            var gridRectangle = grid.BoundingRectangle;
-            var gridCenter = gridRectangle.GetCenter();
-            var isXAxesReversed = _defaultImage.GetRawImageRotationAngle().IsInTolerance(Angle.FromDegrees(0), Angle.FromDegrees(1));
-            var isYAxesReversed = !isXAxesReversed;
+            _ when matType == MatType.CV_8UC1 => Image<Gray, byte>.FromMat(mat),
+            _ when matType == MatType.CV_8UC3 => Image<Bgr, byte>.FromMat(mat),
+            _ => throw new InvalidOperationException($"Unexpected mat type {matType}.")
+        };
 
-            var lengthToTop = TileSetGridCenter.Y * _pixelSize.Y;
-            var lengthToLeft = TileSetGridCenter.X * _pixelSize.X;
-            var lengthToRight = (_tileSetImage.Width - TileSetGridCenter.X) * _pixelSize.X;
-            var lengthToBottom = (_tileSetImage.Height - TileSetGridCenter.Y) * _pixelSize.Y;
-
-            var tileSetRectangle = new LengthRectangle
-            {
-                Top = isYAxesReversed ? gridCenter.Y + lengthToTop : gridCenter.Y - lengthToTop,
-                Left = isXAxesReversed ? gridCenter.X + lengthToLeft : gridCenter.X - lengthToLeft,
-                Right = isXAxesReversed ? gridCenter.X - lengthToRight : gridCenter.X + lengthToRight,
-                Bottom = isYAxesReversed ? gridCenter.Y - lengthToBottom : gridCenter.Y + lengthToBottom,
-            };
-
-            var descriptor = new GridDescriptor
-            {
-                GridCenterPosition = gridCenter,
-                GridCenterImagePosition = TileSetGridCenter,
-                IsXAxesReversed = isXAxesReversed,
-                IsYAxesReversed = isYAxesReversed,
-                GridTileSetRectangle = tileSetRectangle
-            };
-
-            _grids.Add(descriptor);
-        }
+        _grids.AddRange(holder.Grids.Select(GenerateGridDescriptor));
     }
 
-    public ImageWithMetadata GetDefaultImage() => _defaultImage;
-
-    private GridDescriptor? LocateGrid(LengthPoint point)
+    private GridDescriptor GenerateGridDescriptor(AreaOfInterest areaOfInterest)
     {
-        foreach (var grid in _grids)
+        var pixelSize = _defaultImage.GetPixelSize();
+
+        var gridRectangle = areaOfInterest.BoundingRectangle;
+        var gridCenter = gridRectangle.GetCenter();
+        var lengthToTop = TileSetGridCenter.Y * pixelSize.Y;
+        var lengthToLeft = TileSetGridCenter.X * pixelSize.X;
+        var lengthToRight = (_tileSetImage.Width - TileSetGridCenter.X) * pixelSize.X;
+        var lengthToBottom = (_tileSetImage.Height - TileSetGridCenter.Y) * pixelSize.Y;
+
+        var tileSetRectangle = new LengthRectangle
         {
-            if (grid.GridTileSetRectangle.IsPointInsideRectangle(point))
-            {
-                return grid;
-            }
-        }
-        return null;
+            Top = gridCenter.Y - lengthToTop,
+            Bottom = gridCenter.Y + lengthToBottom,
+            Left = gridCenter.X - lengthToLeft,
+            Right = gridCenter.X + lengthToRight,
+        };
+
+        return new GridDescriptor
+        {
+            GridCenterPosition = gridCenter,
+            GridCenterImagePosition = TileSetGridCenter,
+            IsXAxesReversed = false,
+            IsYAxesReversed = false,
+            GridTileSetRectangle = tileSetRectangle
+        };
     }
 
-    private static (Length X, Length Y) GetDistanceFromCenter(LengthPoint point, GridDescriptor grid)
+    private static (Length X, Length Y) GetVectorFromCenter(LengthPoint point, GridDescriptor grid)
     {
-        var x = grid.IsXAxesReversed ?
-            grid.GridCenterPosition.X - point.X :
-            point.X - grid.GridCenterPosition.X;
+        Length x = point.X - grid.GridCenterPosition.X;
+        if (grid.IsXAxesReversed)
+        {
+            x = x.InvertSign();
+        }
 
-        var y = grid.IsYAxesReversed ?
-            grid.GridCenterPosition.Y - point.Y :
-            point.Y - grid.GridCenterPosition.Y;
-        return (-x, -y);
+        Length y = point.Y - grid.GridCenterPosition.Y;
+        if (grid.IsYAxesReversed)
+        {
+            y = y.InvertSign();
+        }
+
+        return (x, y);
     }
 
     private IImage GetSubImage(IImage image, LengthPoint point, GridDescriptor grid)
     {
-        var (xLenDiff, yLenDiff) = GetDistanceFromCenter(point, grid);
-        var xPointDiff = xLenDiff / _pixelSize.X;
-        var yPointDiff = yLenDiff / _pixelSize.Y;
+        var (xOffset, yOffset) = GetVectorFromCenter(point, grid);
+        
+        var pixelSize = _defaultImage.GetPixelSize();
+        var xPointOffset = (int)(xOffset / pixelSize.X);
+        var yPointOffset = (int)(yOffset / pixelSize.Y);
 
-        var x = grid.GridCenterImagePosition.X + (int)xPointDiff;
-        var y = grid.GridCenterImagePosition.Y + (int)yPointDiff;
+        var x = grid.GridCenterImagePosition.X + xPointOffset;
+        var y = grid.GridCenterImagePosition.Y + yPointOffset;
 
-        var rowStart = y - _imageSize.Height / 2;
+        var height = _defaultImage.Image.Height;
+        var width = _defaultImage.Image.Width;
+
+        var rowStart = y - height / 2;
         var rowStartAdjusted = Math.Max(rowStart, 0);
-        var rowEnd = y + _imageSize.Height / 2;
+        var rowEnd = y + height / 2;
         var rowEndAdjusted = Math.Min(rowEnd, image.Height);
-        var checkWidth = rowEndAdjusted - rowStartAdjusted;
-        if (checkWidth > _imageSize.Height)
+        var checkHeight = rowEndAdjusted - rowStartAdjusted;
+        if (checkHeight > height)
         {
-            rowEndAdjusted -= _imageSize.Height - checkWidth;
+            rowEndAdjusted -= height - checkHeight;
         }
 
-        var colStart = x - _imageSize.Width / 2;
+        var colStart = x - width / 2;
         var colStartAdjusted = Math.Max(colStart, 0);
-        var colEnd = x + _imageSize.Width / 2;
+        var colEnd = x + width / 2;
         var colEndAdjusted = Math.Min(colEnd, image.Width);
-        var checkHeight = colEndAdjusted - colStartAdjusted;
-        if (checkHeight > _imageSize.Width)
+        var checkWidth = colEndAdjusted - colStartAdjusted;
+        if (checkWidth > width)
         {
-            colEndAdjusted -= _imageSize.Width - checkHeight;
+            colEndAdjusted -= width - checkWidth;
         }
 
-        // TODO: Check the calculation, once the loc gets to 0, the sub matrix is not what's expected
-        using var subMat = _tileSetImage.GetSubRect(new Rect { Left = colStartAdjusted, Width = colEndAdjusted - colStartAdjusted, Top = rowStartAdjusted, Height = rowEndAdjusted - rowStartAdjusted });
+        using var subMat = _tileSetImage.GetSubRect(new Rect 
+        {
+            Left = colStartAdjusted,
+            Width = colEndAdjusted - colStartAdjusted,
+            Top = rowStartAdjusted,
+            Height = rowEndAdjusted - rowStartAdjusted
+        });
 
-        if (subMat.Width == _imageSize.Width && subMat.Height == _imageSize.Height)
+        if (subMat.Width == width && subMat.Height == height)
         {
             return subMat.Clone();
         }
 
-        var top = rowStart < rowStartAdjusted ? _imageSize.Height - subMat.Height : 0;
-        var bottom = rowEnd > rowEndAdjusted ? _imageSize.Height - (_imageSize.Height - subMat.Height) : _imageSize.Height;
-        var left = colStart < colStartAdjusted ? _imageSize.Width - subMat.Width : 0;
-        var right = colEnd > colEndAdjusted ? _imageSize.Width - (_imageSize.Width - subMat.Width) : _imageSize.Width;
+        var top = rowStart < rowStartAdjusted ? height - subMat.Height : 0;
+        var bottom = rowEnd > rowEndAdjusted ? height - (height - subMat.Height) : height;
+        var left = colStart < colStartAdjusted ? width - subMat.Width : 0;
+        var right = colEnd > colEndAdjusted ? width - (width - subMat.Width) : width;
 
         var newMat = _defaultImage.Image.Clone();
 
@@ -159,13 +157,16 @@ internal abstract class TileSetDefinition : IDisposable
 
     public ImageWithMetadata GetImage(LengthPoint center)
     {
-        var grid = LocateGrid(center);
-        if (grid is not null)
+        var grid = _grids.FirstOrDefault(
+            grid => grid.GridTileSetRectangle.IsPointInsideRectangle(center)
+        );
+        if (grid is null)
         {
-            var subImage = GetSubImage(_tileSetImage, center, grid);
-            return _defaultImage with { Image = subImage.Clone() };
+            return GetDefaultImage();
         }
-        return _defaultImage with { Image = _defaultImage.Image.Clone() };
+        _defaultImage.GetPixelSize();
+        using var subImage = GetSubImage(_tileSetImage, center, grid);
+        return _defaultImage with { Image = subImage.Clone() };
     }
 
 
@@ -175,5 +176,7 @@ internal abstract class TileSetDefinition : IDisposable
         _tileSetImage.Dispose();
         GC.SuppressFinalize(this);
     }
+
+    internal ImageWithMetadata GetDefaultImage() => _defaultImage.Clone();
 }
 

@@ -107,7 +107,7 @@ public partial class IonBeamModeViewModel : BeamModeViewModelBase
                 Right = Ratio.FromDecimalFractions(1 - rectangle.Left.DecimalFractions)
             };
         }
-        if (imageMetadata.Coordinates.ImageIsFlippedOnX == false)
+        if (!imageMetadata.Coordinates.ImageIsFlippedOnX)
         {
             rectangle = rectangle with
             {
@@ -147,13 +147,8 @@ public partial class IonBeamModeViewModel : BeamModeViewModelBase
             var scanRotation = Angle.FromRadians(imageMetadata.FeiXmlMetadata!.ScanSettings!.ScanRotation!.Value);
             _logger.Swallow(() => _virtualDevice.SetBeamRotation(scanRotation));
 
-            foreach (var millingArea in millingAreas)
+            foreach (var ratioRectangle in millingAreas.Select(millingArea => TransformRectangle(millingArea.Definition, imageMetadata)))
             {
-                var ratioRectangle = millingArea.Definition;
-
-                // tested only against simulation where y axis for milling should be transformed only,
-                // but x axis needed to be transformed as well, if not working as expected, update the transform method
-                ratioRectangle = TransformRectangle(ratioRectangle, imageMetadata);
                 _logger.Swallow(() => _virtualDevice.AddMillingDefinition(ratioRectangle));
             }
         });

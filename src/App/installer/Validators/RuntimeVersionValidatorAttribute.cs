@@ -20,23 +20,17 @@ internal sealed class RuntimeVersionValidatorAttribute : ParameterValidationAttr
         };
 
 
-        if (context.Value is FlagValue<int?> flaggedInt)
-        {
-            if (flaggedInt.Value.HasValue)
+        if (context.Value is FlagValue<int?> flaggedInt && flaggedInt.Value.HasValue)
             {
                 return GetResult(flaggedInt.Value.Value);
             }
-        }
         else if (context.Value is int value)
         {
             return GetResult(value);
         }
-        else if (context.Value is string stringValue)
-        {
-            if (int.TryParse(stringValue, out var intValue))
+        else if (context.Value is string stringValue && int.TryParse(stringValue, out var intValue))
             {
                 return GetResult(intValue);
-            }
         }
 
         throw new InvalidOperationException($"Parameter is not a number ({context.Parameter.PropertyName}).");

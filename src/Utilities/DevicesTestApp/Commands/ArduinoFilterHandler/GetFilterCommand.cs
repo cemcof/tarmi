@@ -15,13 +15,13 @@ internal class GetFilterCommand : AsyncCommand<FilterHandlerSettings>
         _filterHandlerFactory = filterHandlerFactory;
     }
 
-    public override async Task<int> ExecuteAsync(CommandContext context, FilterHandlerSettings settings, CancellationToken cancellationToken)
+    protected override async Task<int> ExecuteAsync(CommandContext context, FilterHandlerSettings settings, CancellationToken cancellationToken)
     {
         try
         {
             // TODO: fixme
             var filterHandler = _filterHandlerFactory.CreateFilterHandler();
-            CancellationTokenSource cts = new(TimeSpan.FromSeconds(5));
+            using CancellationTokenSource cts = new(TimeSpan.FromSeconds(5));
             var filter = await filterHandler.ReadFilterPositionAsync(cts.Token);
             AnsiConsole.MarkupLineInterpolated($"{filter} filter is currently selected");
         }

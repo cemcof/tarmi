@@ -35,7 +35,7 @@ internal static class Responses
 
         public EnumResponse(T value) => Value = value;
 
-        public static EnumResponse<T> Parse(string s, IFormatProvider? provider = null)
+        public static EnumResponse<T> Parse(string s, IFormatProvider? provider)
         {
             var value = Enum.Parse<T>(s);
             if (!typeof(T).IsDefined(typeof(FlagsAttribute), false) && !Enum.IsDefined(value))
@@ -66,7 +66,7 @@ internal static class Responses
 
         public StringResponse(string value) => Value = value;
 
-        public static StringResponse Parse(string s, IFormatProvider? provider = null) => new(s);
+        public static StringResponse Parse(string s, IFormatProvider? provider) => new(s);
 
         public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out StringResponse result)
         {

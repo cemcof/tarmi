@@ -2,7 +2,9 @@ using OpenCvSharp;
 
 namespace Tarmi.Imaging.Common.OpenCvWrapper;
 
+#pragma warning disable S4050 // Operators should be overloaded consistently
 public partial class Image<TColor, TDepth>
+#pragma warning restore S4050 // Operators should be overloaded consistently
 {
     public Image<TColor, TDepth> And(Image<TColor, TDepth> img2, Image<Gray, byte>? mask = null)
     {
@@ -17,11 +19,6 @@ public partial class Image<TColor, TDepth>
         using var ia = InputArray.Create(val.Scalar);
         Cv2.BitwiseAnd(InputArray, ia, result.OutputArray, mask?.InputArray);
         return result;
-    }
-
-    public void AndInplace(Image<TColor, TDepth> img2)
-    {
-        Cv2.BitwiseAnd(InputArray, img2.InputArray, OutputArray, null);
     }
 
     public void AndInplace(Image<TColor, TDepth> img2, Image<Gray, byte>? mask = null)

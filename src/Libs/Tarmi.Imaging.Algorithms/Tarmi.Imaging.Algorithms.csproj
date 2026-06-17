@@ -8,8 +8,6 @@
         <PackageReference Include="CommunityToolkit.Diagnostics" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="OpenCvSharp4" />
-        <PackageReference Include="OpenCvSharp4.runtime.win" />
-        <PackageReference Include="OpenCvSharp4.WpfExtensions" />
         <PackageReference Include="System.Reactive" />
     </ItemGroup>
 

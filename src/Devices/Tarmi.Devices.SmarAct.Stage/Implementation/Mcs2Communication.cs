@@ -25,14 +25,14 @@ public sealed class Mcs2Communication : IMcs2Communication
         _semaphore.Dispose();
     }
 
-    public async Task SendCommandAsync<TRequest>(CancellationToken cancellationToken) where TRequest : Commands.ICommitCommandBuilder<TRequest>
+    public async Task SendCommandAsync<TRequest>(CancellationToken cancellationToken = default) where TRequest : Commands.ICommitCommandBuilder<TRequest>
     {
         var command = Commands.Commit<TRequest>();
         using var lockGuard = await _semaphore.UseOnceAsync(cancellationToken);
         await SendCommandAsync(command, cancellationToken);
     }
 
-    public async Task SendCommandAsync<TRequest>(int index, CancellationToken cancellationToken)
+    public async Task SendCommandAsync<TRequest>(int index, CancellationToken cancellationToken = default)
         where TRequest : Commands.IIndexedCommitCommandBuilder<TRequest>
     {
         var command = Commands.Commit<TRequest>(index);
@@ -40,7 +40,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         await SendCommandAsync(command, cancellationToken);
     }
 
-    public async Task<TResponse> SendCommandAsync<TRequest, TResponse>(CancellationToken cancellationToken)
+    public async Task<TResponse> SendCommandAsync<TRequest, TResponse>(CancellationToken cancellationToken = default)
         where TRequest : Commands.IReadCommandBuilder<TRequest>
         where TResponse : IParsable<TResponse>
     {
@@ -50,7 +50,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         return await ReceiveResponseAsync<TResponse>(cancellationToken);
     }
 
-    public async Task<TResponse> SendCommandAsync<TRequest, TResponse>(int index, CancellationToken cancellationToken)
+    public async Task<TResponse> SendCommandAsync<TRequest, TResponse>(int index, CancellationToken cancellationToken = default)
         where TRequest : Commands.IIndexedReadCommandBuilder<TRequest>
         where TResponse : IParsable<TResponse>
     {
@@ -60,7 +60,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         return await ReceiveResponseAsync<TResponse>(cancellationToken);
     }
 
-    public async Task SendCommandAsync<TRequest>(object parameter, CancellationToken cancellationToken)
+    public async Task SendCommandAsync<TRequest>(object parameter, CancellationToken cancellationToken = default)
         where TRequest : Commands.IWriteCommandBuilder<TRequest>
     {
         var command = Commands.Write<TRequest>(parameter);
@@ -68,7 +68,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         await SendCommandAsync(command, cancellationToken);
     }
 
-    public async Task SendCommandAsync<TRequest>(int index, object parameter, CancellationToken cancellationToken)
+    public async Task SendCommandAsync<TRequest>(int index, object parameter, CancellationToken cancellationToken = default)
         where TRequest : Commands.IIndexedWriteCommandBuilder<TRequest>
     {
         var command = Commands.Write<TRequest>(index, parameter);
@@ -76,7 +76,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         await SendCommandAsync(command, cancellationToken);
     }
 
-    private async Task SendCommandAsync(string command, CancellationToken cancellationToken)
+    private async Task SendCommandAsync(string command, CancellationToken cancellationToken = default)
     {
         using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cancellationTokenSource.CancelAfter(DefaultTimeout);
@@ -91,7 +91,7 @@ public sealed class Mcs2Communication : IMcs2Communication
         }
     }
 
-    private async Task<TResponse> ReceiveResponseAsync<TResponse>(CancellationToken cancellationToken)
+    private async Task<TResponse> ReceiveResponseAsync<TResponse>(CancellationToken cancellationToken = default)
         where TResponse : IParsable<TResponse>
     {
         using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

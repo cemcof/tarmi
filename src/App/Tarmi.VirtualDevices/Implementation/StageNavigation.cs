@@ -210,7 +210,7 @@ internal class StageNavigation : IStageNavigation
         LengthPoint gridPosition;
         if (_holder!.Grids.Count > 0)
         {
-            gridPosition = _holder!.Grids.First().GetDefaultViewPosition();
+            gridPosition = _holder!.Grids[0].GetDefaultViewPosition();
             _logger.LogWarning("Selecting first grid navigation position.");
         }
         else
@@ -297,11 +297,11 @@ internal class StageNavigation : IStageNavigation
         return planePosition;
     }
 
-    public StagePosition GetStagePositionFromImageLocation(RatioPoint imagePosition, ImageMetadata imageMetadata, StageCameraView targetView)
+    public StagePosition GetStagePositionFromImageLocation(RatioPoint imagePosition, ImageMetadata metadata, StageCameraView targetView)
     {
         Guard.IsFalse(targetView == StageCameraView.Unknown);
 
-        var planePosition = GetPlanePositionFromImageLocation(imagePosition, imageMetadata);
+        var planePosition = GetPlanePositionFromImageLocation(imagePosition, metadata);
         var neutralPosition = new StagePosition
         {
             X = planePosition.X,
@@ -314,26 +314,26 @@ internal class StageNavigation : IStageNavigation
         var stagePosition = ConvertNeutralPositionToCameraViewPosition(neutralPosition, targetView);
 
         _logger.LogInformation(
-           "GetStagePositionFromImageLocation [{RatioPoint}], {StagePosition} [{CameraView}] {ImageSize}, {ImagePixelSize} -> {PlanePosition} -> {StagePosition} [{TargetCameraView}]",
-           imagePosition, imageMetadata.GetStagePosition(), imageMetadata.GetSource(), imageMetadata.Coordinates.ImageSize, imageMetadata.GetPixelSize(), planePosition, stagePosition, targetView
+           "GetStagePositionFromImageLocation [{RatioPoint}], {StagePosition} [{CameraView}] {ImageSize}, {ImagePixelSize} -> {PlanePosition} -> {TranslatedStagePosition} [{TargetCameraView}]",
+           imagePosition, metadata.GetStagePosition(), metadata.GetSource(), metadata.Coordinates.ImageSize, metadata.GetPixelSize(), planePosition, stagePosition, targetView
        );
 
         return stagePosition;
     }
 
-    public StagePosition GetStagePositionFromPoint(DoublePoint imagePoint, ImageMetadata imageMetadata, StageCameraView targetView)
+    public StagePosition GetStagePositionFromPoint(DoublePoint imagePoint, ImageMetadata metadata, StageCameraView targetView)
     {
         Guard.IsFalse(targetView == StageCameraView.Unknown);
 
         var imagePosition = new RatioPoint
         {
-            X = Ratio.FromDecimalFractions(imagePoint.X / imageMetadata.Coordinates.ImageSize.Width),
-            Y = Ratio.FromDecimalFractions(imagePoint.Y / imageMetadata.Coordinates.ImageSize.Height)
+            X = Ratio.FromDecimalFractions(imagePoint.X / metadata.Coordinates.ImageSize.Width),
+            Y = Ratio.FromDecimalFractions(imagePoint.Y / metadata.Coordinates.ImageSize.Height)
         };
 
         _logger.LogInformation("GetStagePositionFromPoint: {ImagePoint}", imagePoint);
 
-        return GetStagePositionFromImageLocation(imagePosition, imageMetadata, targetView);
+        return GetStagePositionFromImageLocation(imagePosition, metadata, targetView);
     }
 
     public DoublePoint GetImageLocationFromStagePosition(StagePosition stagePosition, ImageMetadata imageMetadata, StageCameraView stageView)

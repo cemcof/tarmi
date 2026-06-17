@@ -1,4 +1,4 @@
-using OpenCvSharp;
+﻿using OpenCvSharp;
 
 namespace Tarmi.Imaging.Algorithms.Utilities;
 
@@ -38,9 +38,11 @@ public static class Colors
         using Mat alphaChannel = channels[3];
         var alphaIndexer = alphaChannel.GetUnsafeGenericIndexer<byte>();
 
-        for (int i = 0; i < blueChannel.Height; i++)
+        var blueHeight = blueChannel.Height;
+        var blueWidth = blueChannel.Width;
+        for (int i = 0; i < blueHeight; i++)
         {
-            for (int j = 0; j < blueChannel.Width; j++)
+            for (int j = 0; j < blueWidth; j++)
             {
                 if (blueIndexer[i, j] <= color.Val0 && greenIndexer[i, j] <= color.Val1 && redIndexer[i, j] <= color.Val2)
                 {
@@ -78,9 +80,11 @@ public static class Colors
         using Mat alphaChannel = channels[3];
         var alphaIndexer = alphaChannel.GetUnsafeGenericIndexer<byte>();
 
-        for (int i = 0; i < bgraImage.Height; i++)
+        var height = bgraImage.Height;
+        var width = bgraImage.Width;
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < bgraImage.Width; j++)
+            for (int j = 0; j < width; j++)
             {
                 if (blueIndexer[i, j] <= 0 && greenIndexer[i, j] <= 0 && redIndexer[i, j] <= 0)
                 {
@@ -89,7 +93,7 @@ public static class Colors
             }
         }
 
-        var transparent = new Mat(image.Height, image.Width, MatType.CV_8UC4);
+        var transparent = new Mat(height, width, MatType.CV_8UC4);
         Cv2.Merge(channels, transparent);
 
         return transparent;

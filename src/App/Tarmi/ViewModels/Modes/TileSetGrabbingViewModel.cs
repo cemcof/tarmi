@@ -193,7 +193,7 @@ public partial class TileSetGrabbingViewModel : ObservableObject
         );
     }
 
-    private async Task TileSetReAcquisitionImplementation(TileSetDescriptor descriptor, IProgress<(string, Ratio)> progress, CancellationToken cancellationToken)
+    protected virtual async Task TileSetReAcquisitionImplementation(TileSetDescriptor descriptor, IProgress<(string, Ratio)> progress, CancellationToken cancellationToken)
     {
         if (ActiveProject is not null)
         {

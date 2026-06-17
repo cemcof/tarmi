@@ -59,7 +59,7 @@ internal class SafeStageControlling : ISafeStageControlling, IDisposable
         };
     }
 
-    public async Task<bool> SwitchStageViewAsync(StageCameraView targetView, CancellationToken cancellationToken)
+    public async Task<bool> SwitchStageViewAsync(StageCameraView targetView, CancellationToken cancellationToken = default)
     {
         if (ActiveCameraView == targetView)
         {
@@ -74,7 +74,7 @@ internal class SafeStageControlling : ISafeStageControlling, IDisposable
         return await Task.Run(async () => await MoveStageInModeSwitchSafeWayAsync(newPosition, cancellationToken));
     }
 
-    public async Task<bool> MoveStageAsync(StagePosition position, CancellationToken cancellationToken)
+    public async Task<bool> MoveStageAsync(StagePosition position, CancellationToken cancellationToken = default)
     {
         using var lockGuard = await _moveLock.UseOnceAsync(cancellationToken);
 
@@ -183,7 +183,7 @@ internal class SafeStageControlling : ISafeStageControlling, IDisposable
         return false;
     }
 
-    public async Task<bool> TiltStageAsync(Angle angle, CancellationToken cancellationToken)
+    public async Task<bool> TiltStageAsync(Angle angle, CancellationToken cancellationToken = default)
     {
         // wait till stage is idle
         await _stageIdleEvent.WaitAsync(cancellationToken);

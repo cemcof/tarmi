@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +8,17 @@ using UnitsNet;
 namespace Tarmi.Devices.Thorlabs.Light;
 public interface ILightController : IDisposable
 {
-    LightColor? ActiveLight { get; }
+    bool IsLightActive { get; }
+    LightColor? SelectedLight { get; }
     Ratio Brightness { get; }
-    IObservable<LightColor?> CurrentActiveLight { get; }
+    IObservable<bool> CurrentIsLightActive { get; }
+    IObservable<LightColor?> CurrentSelectedLight { get; }
     IObservable<Ratio> CurrentBrightness { get; }
 
     Task Deinitialize(CancellationToken cancellationToken);
     Task Initialize(CancellationToken cancellationToken);
-    Task SetActiveLightAsync(LightColor? color, CancellationToken cancellationToken);
+    Task SelectLightAsync(LightColor? color, CancellationToken cancellationToken);
     Task SetBrightnessAsync(Ratio brightness, CancellationToken cancellationToken);
+    Task TurnLightOnAsync(CancellationToken cancellationToken);
+    Task TurnLightOffAsync(CancellationToken cancellationToken);
 }

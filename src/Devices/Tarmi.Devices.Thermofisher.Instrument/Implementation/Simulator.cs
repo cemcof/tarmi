@@ -24,19 +24,19 @@ internal static class Simulator
                 Max = Length.FromMeters(0.0028)
             };
 
-            public static RangeDescriptor<int> BeamCurrentIndex = new()
+            public static RangeDescriptor<int> BeamCurrentIndex { get; } = new()
             {
                 Min = 1,
                 Max = 14
             };
 
-            public static RangeDescriptor<Duration> DwellTime = new()
+            public static RangeDescriptor<Duration> DwellTime { get; } = new()
             {
                 Min = Duration.FromSeconds(2.5E-08),
                 Max = Duration.FromSeconds(107.37408)
             };
 
-            public static RangeDescriptor<double> SpotSize = new()
+            public static RangeDescriptor<double> SpotSize { get; } = new()
             {
                 Min = -9.0,
                 Max = 7.0

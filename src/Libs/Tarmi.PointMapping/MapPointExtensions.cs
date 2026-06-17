@@ -31,9 +31,9 @@ public static class MapPointExtensions
     /// <param name="mat">Mat contains 3D point.</param>
     /// <returns>3D point.</returns>
     public static Point3d Get3DPointFromMat(this Mat mat) => new(
-        (double)mat.At<double>(0, 0),
-        (double)mat.At<double>(1, 0),
-        (double)mat.At<double>(2, 0));
+        mat.At<double>(0, 0),
+        mat.At<double>(1, 0),
+        mat.At<double>(2, 0));
 
     /// <summary>
     /// Get stage position from 3D point, rotation and tilt.
@@ -71,7 +71,7 @@ public static class MapPointExtensions
     /// <param name="point5D">Stage position 5D point.</param>
     /// <returns>3D point in nanometers.</returns>
     public static Point3d Get3DPointInNanometers(this StagePosition point5D) =>
-        new((double)point5D.X.Nanometers, (double)point5D.Y.Nanometers, (double)point5D.Z.Nanometers);
+        new(point5D.X.Nanometers, point5D.Y.Nanometers, point5D.Z.Nanometers);
 
     /// <summary>
     /// Get 2f points from array 2d points.

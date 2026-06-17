@@ -3,7 +3,6 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows10.0.19041</TargetFramework>
-        <WindowsSdkPackageVersion>10.0.19041.41</WindowsSdkPackageVersion>
         <UseWPF>true</UseWPF>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <RootNamespace>Tarmi.App</RootNamespace>
@@ -38,6 +37,7 @@
         <PackageReference Include="CommonNet.Logging" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Fluxera.Extensions.Hosting.Wpf" />
+        <PackageReference Include="JetBrains.Annotations" />
         <PackageReference Include="Microsoft.Diagnostics.Runtime" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />

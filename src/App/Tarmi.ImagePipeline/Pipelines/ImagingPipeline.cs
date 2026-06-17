@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using Tarmi.Imaging.Common;
 using Tarmi.ImagePipeline.Sinks;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Tarmi.ImagePipeline.Pipelines;
 
-public abstract class ImagingPipeline : IImagingPipelineGrabber
+public abstract class ImagingPipeline : IImagingPipelineGrabber, IDisposable
 {
     protected readonly ILogger _logger;
     protected readonly IImageSink _primarySink;
@@ -116,9 +116,10 @@ public abstract class ImagingPipeline : IImagingPipelineGrabber
     public void Dispose()
     {
         _primarySink.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public async Task<ImageWithMetadata> GrabOneWithResultCopyAsync(ImageProcessingStage processingStage = ImageProcessingStage.Input)
+    public async Task<ImageWithMetadata> GrabOneWithResultCopyAsync(ImageProcessingStage processingStage = ImageProcessingStage.FilteredInput)
     {
         var timestamp = DateTimeOffset.Now;
         var imageSink = processingStage switch
@@ -140,6 +141,6 @@ public abstract class ImagingPipeline : IImagingPipelineGrabber
 
         var result = await imageTask;
 
-        return result with { Image = result.Image.Clone() };
+        return result.Clone();
     }
 }

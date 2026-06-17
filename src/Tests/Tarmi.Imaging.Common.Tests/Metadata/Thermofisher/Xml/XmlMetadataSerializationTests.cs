@@ -1,4 +1,4 @@
-using Tarmi.Imaging.Common.Metadata.Thermofisher.XmlFormat;
+﻿using Tarmi.Imaging.Common.Metadata.Thermofisher.XmlFormat;
 using AwesomeAssertions;
 using Xunit;
 
@@ -183,6 +183,6 @@ public class XmlMetadataSerializationTests
         metadata.Instrument?.Manufacturer.Should().Be("FEI Company");
 
         var newXml = MetadataXmlSerializer.Serialize(metadata);
-
+        _ = newXml;
     }
 }

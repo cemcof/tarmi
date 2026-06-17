@@ -1,4 +1,4 @@
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Tarmi.Imaging.Common;
@@ -15,7 +15,7 @@ namespace Tarmi.ImagePipeline.Pipelines;
 
 public class ImageMultiplexer
 {
-    private record CorrelationImage : IDisposable
+    private sealed record CorrelationImage : IDisposable
     {
         public required ImageWithMetadata ImageWithMetadata { get; init; }
         public required CorrelationInfo CorrelationInfo { get; init; }
@@ -34,7 +34,7 @@ public class ImageMultiplexer
     public ImageMultiplexer(IObservable<ImageWithMetadata> primaryOutput, IStageNavigation stageNavigation)
     {
         _stageNavigation = stageNavigation;
-        _viewsPretilt = ImmutableDictionary<StageCameraView, Angle>.Empty;
+        _viewsPretilt = [];
         _disposables.Add(primaryOutput.Subscribe(ApplyLayers));
     }
 
@@ -48,7 +48,7 @@ public class ImageMultiplexer
     public Task<ImageWithMetadata> GetOutputCopyAsync()
     {
         var image = _output.Value;
-        return Task.FromResult(image with { Image = image.Image.Clone() });
+        return Task.FromResult(image.Clone());
     }
 
     private async Task<CorrelationImage> CreateCorrelationImage(string fileName, CorrelationInfo correlationInfo)

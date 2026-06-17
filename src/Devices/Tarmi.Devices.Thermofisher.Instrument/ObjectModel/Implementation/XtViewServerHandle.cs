@@ -1,4 +1,4 @@
-using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
+﻿using Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Abstractions;
 using Fei.XT.ViewServer.gen;
 
 namespace Tarmi.Devices.Thermofisher.Instrument.ObjectModel.Implementation;
@@ -32,7 +32,9 @@ internal class XtViewServerHandle<T> : IXtObjectHandle<T>
                 if (!result.IsSuccess)
                 {
 #pragma warning disable CA1065
+#pragma warning disable S2372 // Exceptions should not be thrown from property getters
                     throw result.Exception!;
+#pragma warning restore S2372 // Exceptions should not be thrown from property getters
 #pragma warning restore CA1065
                 }
             }

@@ -17,7 +17,7 @@ internal static class RuntimesDownloader
     {
         AnsiConsole.MarkupLineInterpolated($"[bold]Downloading:[/] [yellow]{downloadUrl}[/]");
         using HttpResponseMessage response = await GetHttpResponse(downloadUrl);
-        string savePath = await SaveFile(response.Content, outDir, downloadUrl.Split('/').Last());
+        string savePath = await SaveFile(response.Content, outDir, downloadUrl.Split('/')[^1]);
         AnsiConsole.MarkupLine("[green]Download complete.[/]");
         return savePath;
     }
